@@ -69,19 +69,19 @@ public class UserController {
 //
 //    }
 //
-//    @PostMapping("/users/names")
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public UserGetDTO getUser(@RequestBody UserPostDTO userPostDTO) {
-//        //convert API user to internal representation
-//        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-//
-//        //finds the user
-//        User foundUser = userService.getUser(userInput);
-//
-//        // convert internal representation of user back to API
-//        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
-//    }
+    @PostMapping("/users/names")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserGetDTO getUser(@RequestBody UserPostDTO userPostDTO) {
+        //convert API user to internal representation
+        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+
+        //finds the user
+        User foundUser = userService.getUser(userInput);
+
+        // convert internal representation of user back to API
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
+    }
 //
 //
 //    @GetMapping("/users/{userId}")

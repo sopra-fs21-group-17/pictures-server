@@ -37,6 +37,15 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
+    //returns user from userRepository
+    public User getUser(User userInput){
+
+        //checks if user exists and if the password is correct
+        checkUserLogin(userInput);
+
+        return userRepository.findByUsername(userInput.getUsername());
+    }
+
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.OFFLINE);
@@ -61,17 +70,23 @@ public class UserService {
      */
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-        User userByName = userRepository.findByName(userToBeCreated.getName());
 
-        String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-        if (userByUsername != null && userByName != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username and the name", "are"));
+
+        String baseErrorMessage = "username already taken, therefore the User could not be created!";
+        if (userByUsername != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, (baseErrorMessage));
         }
-        else if (userByUsername != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
-        }
-        else if (userByName != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+
+    }
+    //checks if the username and password are correct and if the user is registered
+    private void checkUserLogin(User userToBeFound){
+        User userByUsername = userRepository.findByUsername(userToBeFound.getUsername());
+        if(userByUsername != null){
+            if(!userByUsername.getUsername().equalsIgnoreCase(userToBeFound.getUsername()) || !userByUsername.getPassword().equalsIgnoreCase(userToBeFound.getPassword())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password!");
+            }
+        }else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not registered!");
         }
     }
 }
