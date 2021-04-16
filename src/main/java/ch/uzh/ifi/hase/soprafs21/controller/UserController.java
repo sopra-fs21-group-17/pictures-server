@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class UserController {
         for (User user : users) {
             userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
+        //returns list
         return userGetDTOs;
     }
 
@@ -53,4 +55,43 @@ public class UserController {
         // convert internal representation of user back to API
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
+
+
+//    @PutMapping("/users/{userId}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @ResponseBody
+//    public void updateUser(@RequestBody UserPutDTO userPutDTO, @PathVariable long userId ) throws ParseException {
+//        // convert API user to internal representation
+//        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+//
+//        //updates the User
+//        userService.updateUser(userInput, userId);
+//
+//    }
+//
+//    @PostMapping("/users/names")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public UserGetDTO getUser(@RequestBody UserPostDTO userPostDTO) {
+//        //convert API user to internal representation
+//        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+//
+//        //finds the user
+//        User foundUser = userService.getUser(userInput);
+//
+//        // convert internal representation of user back to API
+//        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
+//    }
+//
+//
+//    @GetMapping("/users/{userId}")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public UserGetDTO getUserByUserID(@PathVariable long userId){
+//
+//        //finds user by userId
+//        User user = userService.findByUserId(userId);
+//
+//        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+//    }
 }
