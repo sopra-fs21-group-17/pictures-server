@@ -48,7 +48,7 @@ public class UserService {
 
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.OFFLINE);
+        //newUser.setStatus(UserStatus.OFFLINE);
 
         checkIfUserExists(newUser);
 
@@ -81,6 +81,7 @@ public class UserService {
     //checks if the username and password are correct and if the user is registered
     private void checkUserLogin(User userToBeFound){
         User userByUsername = userRepository.findByUsername(userToBeFound.getUsername());
+
         if(userByUsername != null){
             if(!userByUsername.getUsername().equalsIgnoreCase(userToBeFound.getUsername()) || !userByUsername.getPassword().equalsIgnoreCase(userToBeFound.getPassword())){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password!");
