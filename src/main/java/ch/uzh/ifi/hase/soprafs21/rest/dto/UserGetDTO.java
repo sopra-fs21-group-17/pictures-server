@@ -1,9 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs21.entity.Guess;
-import ch.uzh.ifi.hase.soprafs21.entity.Model;
-
 import java.util.Date;
 import java.util.Dictionary;
 
@@ -13,7 +9,7 @@ public class UserGetDTO {
     private String username;
     private String password;
     private Date birthdate;
-    private Dictionary guess;
+    private String guess;
     private String model;
     private int totalScore;
     private boolean isReady;
@@ -47,9 +43,9 @@ public class UserGetDTO {
 
     public void setBirthdate(Date birthdate) { this.birthdate = birthdate; }
 
-    public Dictionary getGuess() { return guess; }
+    public String getGuess() { return guess; }
 
-    public void setGuess(Dictionary guess) { this.guess = guess; }
+    public void setGuess(String guess) { this.guess = guess; }
 
     public String getModel() { return model; }
 

@@ -35,7 +35,7 @@ public class User implements Serializable {
     private String token;
 
     @Column
-    private Dictionary guess;
+    private String guess;
 
     @Column
     private String model;
@@ -79,9 +79,9 @@ public class User implements Serializable {
         this.token = token;
     }
 
-    public Dictionary getGuess() { return guess; }
+    public String getGuess() { return guess; }
 
-    public void setGuess(Dictionary guess) { this.guess = guess; }
+    public void setGuess(String guess) { this.guess = guess; }
 
     public String getModel() { return model; }
 
