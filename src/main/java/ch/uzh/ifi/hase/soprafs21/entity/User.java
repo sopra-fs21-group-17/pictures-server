@@ -34,6 +34,10 @@ public class User implements Serializable {
     @Column(nullable = false)
     private UserStatus status;
 
+    // this attributed saves the assigned set of each user
+    @Column
+    private String assignedSet;
+
     public Long getId() {
         return id;
     }
@@ -72,5 +76,13 @@ public class User implements Serializable {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public String getAssignedSet() {
+        return assignedSet;
+    }
+
+    public void setAssignedSet(String assignedSet) {
+        this.assignedSet = assignedSet;
     }
 }
