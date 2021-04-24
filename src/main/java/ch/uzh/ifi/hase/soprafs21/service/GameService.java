@@ -41,14 +41,14 @@ public class GameService {
         while(idx < maxPictures){
             int randomizedID =random.nextInt(randomLimit);
             if(!checkID.contains(randomizedID)){
-                checkID.add(randomizedID);
-
-                Picture current = picturesRepository.findByID((long)randomizedID); //random has problems with long so to avoid, used int and parsed
-                current.setCoordinate(idx); // sets the coordinate for the picture       //TODO discuss implementation maybe store this differently because of multiple possible games in web
-
-                picturesRepository.flush();
-                pictures.add(current);
-                idx++;
+//                checkID.add(randomizedID);
+//
+//                Picture current = picturesRepository.findByID((long)randomizedID); //random has problems with long so to avoid, used int and parsed
+//                current.setCoordinate(idx); // sets the coordinate for the picture       //TODO discuss implementation maybe store this differently because of multiple possible games in web
+//
+//                picturesRepository.flush();
+//                pictures.add(current);
+//                idx++;
             }
 
         }

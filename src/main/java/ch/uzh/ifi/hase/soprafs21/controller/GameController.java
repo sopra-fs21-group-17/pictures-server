@@ -64,7 +64,7 @@ public class GameController {
         List<Picture> pictures = gameService.selectPictures();
         List<PicturesGetDTO> picturesGetDTOs = new ArrayList();
         for(Picture picture : pictures){
-            picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityTOPicturesGetDTO(picture));
+           // picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityTOPicturesGetDTO(picture));
         }
 
         return picturesGetDTOs;

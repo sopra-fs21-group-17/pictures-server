@@ -21,7 +21,7 @@ public class Picture implements Serializable {
     private String pictureLink;
 
     @Column(nullable = false, unique = true)
-    private int coordinate;
+    private int coordinates;
 
     @Column(unique = true)
     private Long userID;
@@ -50,11 +50,11 @@ public class Picture implements Serializable {
         this.userID = userID;
     }
 
-    public int getCoordinate() {
-        return coordinate;
+    public int getCoordinates() {
+        return coordinates;
     }
 
-    public void setCoordinate(int coordinate) {
-        this.coordinate = coordinate;
+    public void setCoordinates(int coordinates) {
+        this.coordinates = coordinates;
     }
 }

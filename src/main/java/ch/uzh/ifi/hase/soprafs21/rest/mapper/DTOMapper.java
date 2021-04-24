@@ -35,8 +35,8 @@ public interface DTOMapper {
     // TODO user PUT dto mapper
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
-@Mapping(source = "pictureLink", target = "pictureLink")
-@Mapping(source = "coordinate", target = "coordinate")
-@Mapping(source = "userID" , target = "userID")
-    PicturesGetDTO convertEntityTOPicturesGetDTO(Picture picture);
+//@Mapping(source = "pictureLink", target = "pictureLink")
+//@Mapping(source = "coordinate", target = "coordinate")
+//@Mapping(source = "userID" , target = "userID")
+//    PicturesGetDTO convertEntityTOPicturesGetDTO(Picture picture);
 }
