@@ -34,9 +34,16 @@ public class User implements Serializable {
     @Column(nullable = false)
     private UserStatus status;
 
-    // this attributed saves the assigned set of each user
+    @Column
+    private int assignedCoordinates; // A1 = 0, A2 = 1, D4 = 15 ...
+
+    // this attribute saves the assigned set of each user
     @Column
     private String assignedSet;
+
+    @Column
+    private String correctGuesses; // TODO store correctGuesses for each round like this guesses = ["y", "n", "n" ...] or similar...
+
 
     public Long getId() {
         return id;
@@ -84,5 +91,21 @@ public class User implements Serializable {
 
     public void setAssignedSet(String assignedSet) {
         this.assignedSet = assignedSet;
+    }
+
+    public int getAssignedCoordinates() {
+        return assignedCoordinates;
+    }
+
+    public void setAssignedCoordinates(int assignedCoordinates) {
+        this.assignedCoordinates = assignedCoordinates;
+    }
+
+    public String getCorrectGuesses() {
+        return correctGuesses;
+    }
+
+    public void setCorrectGuesses(String correctGuesses) {
+        this.correctGuesses = correctGuesses;
     }
 }
