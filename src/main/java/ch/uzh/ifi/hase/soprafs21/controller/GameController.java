@@ -4,6 +4,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 // TODO frage was braucht die Scoreboard klasse?
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.PicturesGetDTO;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * GameController is used to manage incoming REST request coming from the client
@@ -22,6 +24,7 @@ public class GameController {
 
     private final String mainGame = "/board";
     private final String pictures = "/pictures";
+    private final String guesses = "/guess";
 
     // TODO this ok??
 
@@ -57,7 +60,7 @@ public class GameController {
     public void postUserGuesses() {
         int[] userGuesses = {0, 15, 4, 5}; // TODO get user guesses from FE
 
-        gameService.handleGuesses(userGuesses);
+        gameService.handleGuesses(userGuesses,"Muster");
 
     }
 
@@ -66,10 +69,13 @@ public class GameController {
     }
 
 
-    @PutMapping(mainGame)
-    @ResponseStatus(HttpStatus.OK)
-    public void updateGuess(){
-        // TODO
+    @PutMapping(guesses)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void submitGuesses(@RequestBody UserPutDTO userPutDTO){
+       User  currentUser =  DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+       Long userID = currentUser.getId();
+       Map<User,String> guesses =  currentUser.getGuesses();
+       gameService.handleGuesses(guesses,userID);
     }
 
     /**
@@ -91,7 +97,7 @@ public class GameController {
     }
 
 
-    @GetMapping(mainGame)
+    @GetMapping(guesses)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void getUserPoints(){

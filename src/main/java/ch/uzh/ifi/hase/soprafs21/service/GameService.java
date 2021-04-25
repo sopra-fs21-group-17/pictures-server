@@ -89,6 +89,10 @@ public class GameService {
 
     public void saveScreenshots(){}
 
+    public void saveGuesses(User userGuess){
+        userRepository.findById(userGuess.getId())
+    }
+
     public void setCurrentUser(String userName){
         for(User user : playingUsers){
             if(user.getUsername().equals(userName)){
@@ -99,16 +103,18 @@ public class GameService {
         System.out.println("ERROR - COULDN'T FIND THAT USER!");
     }
 
-    public void handleGuesses(int[] userGuesses, String userName){
-        setCurrentUser(userName);
+    public void handleGuesses(Map<User,String> userGuesses, Long userID){
+       Optional<User> current = userRepository.findById(userID);
         String[] correctGuesses = {"n", "n", "n", "n"}; // TODO make better list
-        for(int i = 0; i < NR_OF_PLAYERS; i++){
-            if (this.playingUsers[i].getAssignedCoordinates() == userGuesses[i]){
-                correctGuesses[i] = "y";
-            }
-        }
+//        for(int i = 0; i < NR_OF_PLAYERS; i++){
+//            if (this.playingUsers[i].getAssignedCoordinates() == userGuesses[i]){
+//                correctGuesses[i] = "y";
+//            }
+//        }
 
-        currentUser.setCorrectGuesses(correctGuesses);
+   //     currentUser.setCorrectGuesses(correctGuesses);
+
+        for(User user : userGuesses)
 
     }
 
@@ -138,6 +144,7 @@ public class GameService {
     // coordinates represented in code like this:
     // A1 = 0, A2 = 1, D4 = 15 ...
     // so just pick random nr between 0-15
+
     public void assignCoordinates(User[] usersList) {
         int nrOfCoordinates = 15;
         Integer[] idxList = getShuffledIdxList(nrOfCoordinates);

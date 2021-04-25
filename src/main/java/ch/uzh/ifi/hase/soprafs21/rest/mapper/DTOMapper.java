@@ -33,6 +33,8 @@ public interface DTOMapper {
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     // TODO user PUT dto mapper
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "guesses", target = "guesses")
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
 //@Mapping(source = "pictureLink", target = "pictureLink")

@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+
 
 import javax.persistence.*;
 import java.io.Serializable;

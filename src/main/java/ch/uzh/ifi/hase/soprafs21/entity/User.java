@@ -4,6 +4,8 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Internal User Representation
@@ -44,6 +46,10 @@ public class User implements Serializable {
     @Column
     private String correctGuesses; // TODO store correctGuesses for each round like this guesses = ["y", "n", "n" ...] or similar...
 
+
+    @ElementCollection
+    @CollectionTable
+    private Map<User,String> guesses;
 
     public Long getId() {
         return id;
@@ -108,4 +114,13 @@ public class User implements Serializable {
     public void setCorrectGuesses(String correctGuesses) {
         this.correctGuesses = correctGuesses;
     }
+
+    public Map<User, String> getGuesses() {
+        return guesses;
+    }
+
+    public void setGuesses(Map<User, String> guesses) {
+        this.guesses = guesses;
+    }
+
 }
