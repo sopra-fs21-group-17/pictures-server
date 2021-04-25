@@ -60,7 +60,7 @@ public class GameController {
     public void postUserGuesses() {
         int[] userGuesses = {0, 15, 4, 5}; // TODO get user guesses from FE
 
-        gameService.handleGuesses(userGuesses,"Muster");
+        //gameService.handleGuesses(userGuesses,"Muster");
 
     }
 
@@ -72,10 +72,10 @@ public class GameController {
     @PutMapping(guesses)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void submitGuesses(@RequestBody UserPutDTO userPutDTO){
-       User  currentUser =  DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-       Long userID = currentUser.getId();
-       Map<User,String> guesses =  currentUser.getGuesses();
-       gameService.handleGuesses(guesses,userID);
+       User currentUser = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+       //Long userID = currentUser.getId();
+       //Map<User,String> guesses =  currentUser.getGuesses();
+       gameService.handleGuesses(currentUser);
     }
 
     /**

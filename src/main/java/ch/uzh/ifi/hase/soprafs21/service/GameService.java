@@ -89,10 +89,6 @@ public class GameService {
 
     public void saveScreenshots(){}
 
-    public void saveGuesses(User userGuess){
-        userRepository.findById(userGuess.getId())
-    }
-
     public void setCurrentUser(String userName){
         for(User user : playingUsers){
             if(user.getUsername().equals(userName)){
@@ -103,19 +99,33 @@ public class GameService {
         System.out.println("ERROR - COULDN'T FIND THAT USER!");
     }
 
-    public void handleGuesses(Map<User,String> userGuesses, Long userID){
-       Optional<User> current = userRepository.findById(userID);
-        String[] correctGuesses = {"n", "n", "n", "n"}; // TODO make better list
-//        for(int i = 0; i < NR_OF_PLAYERS; i++){
-//            if (this.playingUsers[i].getAssignedCoordinates() == userGuesses[i]){
-//                correctGuesses[i] = "y";
-//            }
-//        }
+    public void handleGuesses(User currentUser){
+        ArrayList<ArrayList<String>> correctedGuesses = new ArrayList<ArrayList<String>>() ; // TODO make better list
+        ArrayList<ArrayList<String>> userGuesses = currentUser.getGuesses();
+        User tempUser;
+        String isCorrect;
+        ArrayList<String> answer;
 
-   //     currentUser.setCorrectGuesses(correctGuesses);
+        for(ArrayList<String> tuple : userGuesses){
+            tempUser = userRepository.findByUsername(tuple.get(0));
+            if(tempUser != null){
+                isCorrect = "n";
+                if(tempUser.getAssignedCoordinates() == Integer.parseInt(tuple.get(1))){
+                    // TODO +1 point
+                    isCorrect = "y";
+                }
+                answer = new ArrayList<String>( Arrays.asList(tempUser.getUsername(), isCorrect) );
+                correctedGuesses.add(answer);
+            }
+            else{
+                System.out.println("ERROR couldn't find that user!"); // TOOD make exception
+                return;
+            }
+        }
 
-        for(User user : userGuesses)
-
+        // für Testzwecke guesses in console geschrieben
+        System.out.println(correctedGuesses);
+        // TODO update scoreboard
     }
 
     public Integer[] getShuffledIdxList(int listLength){
@@ -144,7 +154,6 @@ public class GameService {
     // coordinates represented in code like this:
     // A1 = 0, A2 = 1, D4 = 15 ...
     // so just pick random nr between 0-15
-
     public void assignCoordinates(User[] usersList) {
         int nrOfCoordinates = 15;
         Integer[] idxList = getShuffledIdxList(nrOfCoordinates);

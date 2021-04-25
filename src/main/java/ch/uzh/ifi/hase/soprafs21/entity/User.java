@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,10 +48,9 @@ public class User implements Serializable {
     @Column
     private String correctGuesses; // TODO store correctGuesses for each round like this guesses = ["y", "n", "n" ...] or similar...
 
-
     @ElementCollection
     @CollectionTable
-    private Map<User,String> guesses;
+    private ArrayList<ArrayList<String>> guesses;
 
     public Long getId() {
         return id;
@@ -115,12 +116,12 @@ public class User implements Serializable {
         this.correctGuesses = correctGuesses;
     }
 
-    public Map<User, String> getGuesses() {
+
+    public ArrayList<ArrayList<String>> getGuesses() {
         return guesses;
     }
 
-    public void setGuesses(Map<User, String> guesses) {
+    public void setGuesses(ArrayList<ArrayList<String>> guesses) {
         this.guesses = guesses;
     }
-
 }

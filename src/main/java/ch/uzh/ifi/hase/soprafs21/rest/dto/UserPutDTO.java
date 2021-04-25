@@ -6,5 +6,6 @@ import java.util.Map;
 
 public class UserPutDTO {
     private String username;
-    private Map<User, String> guesses;
+    private String[] guesses; // guess1: {"adam":null}, guess2: {"eva": null}, guess3: null, guess4: null
+    // [{"adam":null}, {"adam":null}]
 }
