@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -57,18 +58,18 @@ public class UserController {
     }
 
 
-//    @PutMapping("/users/{userId}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @ResponseBody
-//    public void updateUser(@RequestBody UserPutDTO userPutDTO, @PathVariable long userId ) throws ParseException {
-//        // convert API user to internal representation
-//        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-//
-//        //updates the User
-//        userService.updateUser(userInput, userId);
-//
-//    }
-//
+    @PutMapping("/users/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void updateUser(@RequestBody UserPutDTO userPutDTO, @PathVariable String username ) throws ParseException {
+        // convert API user to internal representation
+        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+
+        //updates the User
+        userService.updateIsReady(username, userInput);
+
+    }
+
     @PostMapping("/users/names")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -77,21 +78,21 @@ public class UserController {
         User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
         //finds the user
-        User foundUser = userService.getUser(userInput);
+        User foundUser = userService.getUserLogin(userInput);
 
         // convert internal representation of user back to API
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
     }
-//
-//
-//    @GetMapping("/users/{userId}")
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public UserGetDTO getUserByUserID(@PathVariable long userId){
-//
-//        //finds user by userId
-//        User user = userService.findByUserId(userId);
-//
-//        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
-//    }
+
+
+    @GetMapping("/users/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserGetDTO getUserByUsername(@PathVariable String username){
+
+        //finds user by userId
+        User user = userService.getUser(username);
+
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    }
 }

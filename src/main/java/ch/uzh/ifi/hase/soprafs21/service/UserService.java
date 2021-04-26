@@ -11,7 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,8 +43,13 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
+    public User getUser(String username){
+        User user = userRepository.findByUsername(username);
+        return user;
+    }
+
     //returns user from userRepository
-    public User getUser(User userInput){
+    public User getUserLogin(User userInput){
 
         //checks if user exists and if the password is correct
         checkUserLogin(userInput);
@@ -46,11 +57,12 @@ public class UserService {
         return userRepository.findByUsername(userInput.getUsername());
     }
 
-    public User createUser(User newUser) {
+    public User createUser(User newUser)  {
         newUser.setToken(UUID.randomUUID().toString());
-        //newUser.setStatus(UserStatus.OFFLINE);
+
 
         checkIfUserExists(newUser);
+        newUser.setIsReady(false);
 
         // saves the given entity but data is only persisted in the database once flush() is called
         newUser = userRepository.save(newUser);
@@ -58,6 +70,28 @@ public class UserService {
 
         log.debug("Created Information for User: {}", newUser);
         return newUser;
+    }
+
+    public void updateIsReady(String username, User user){
+        User foundByName = userRepository.findByUsername(username);
+        checkUserLogin(foundByName);
+        if (foundByName.getIsReady() == false){
+            foundByName.setIsReady(true);
+            userRepository.flush();
+        }else{
+            foundByName.setIsReady(false);
+            userRepository.flush();
+        }
+
+    }
+
+    //changes the date format of the input
+    public String changeDateFormat(String date) throws ParseException {
+
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat endFormat = new SimpleDateFormat("dd.MM.yyyy");
+        Date stringToDate = format.parse(date);
+        return endFormat.format(stringToDate);
     }
 
     /**

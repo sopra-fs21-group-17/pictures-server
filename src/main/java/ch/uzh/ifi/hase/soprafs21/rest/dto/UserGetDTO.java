@@ -35,9 +35,7 @@ public class UserGetDTO {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.username = password;
-    }
+    public void setPassword(String password) { this.password = password; }
 
     public Date getBirthdate() { return birthdate; }
 
@@ -57,16 +55,6 @@ public class UserGetDTO {
 
     public boolean getIsReady() { return isReady; }
 
-    public void setIsReady(boolean isReady) { this.isReady = isReady;
-    }
+    public void setIsReady(boolean isReady) { this.isReady = isReady;}
 
-
-
-    //    public UserStatus getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(UserStatus status) {
-//        this.status = status;
-//    }
 }

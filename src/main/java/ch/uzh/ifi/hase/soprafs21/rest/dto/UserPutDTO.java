@@ -4,7 +4,7 @@ public class UserPutDTO {
 
     private String username;
 
-    private String password;
+    private boolean isReady;
 
 
     public String getUsername() {
@@ -15,12 +15,7 @@ public class UserPutDTO {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    public boolean isReady() { return isReady; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
+    public void setIsReady(boolean isReady) { this.isReady = isReady;}
 }
