@@ -1,9 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Internal User Representation
@@ -33,6 +37,20 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     private UserStatus status;
+
+    @Column
+    private int assignedCoordinates; // A1 = 0, A2 = 1, D4 = 15 ...
+
+    // this attribute saves the assigned set of each user
+    @Column
+    private String assignedSet;
+
+    @Column
+    private String correctGuesses; // TODO store correctGuesses for each round like this guesses = ["y", "n", "n" ...] or similar...
+
+    @ElementCollection
+    @CollectionTable
+    private ArrayList<ArrayList<String>> guesses;
 
     public Long getId() {
         return id;
@@ -72,5 +90,38 @@ public class User implements Serializable {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public String getAssignedSet() {
+        return assignedSet;
+    }
+
+    public void setAssignedSet(String assignedSet) {
+        this.assignedSet = assignedSet;
+    }
+
+    public int getAssignedCoordinates() {
+        return assignedCoordinates;
+    }
+
+    public void setAssignedCoordinates(int assignedCoordinates) {
+        this.assignedCoordinates = assignedCoordinates;
+    }
+
+    public String getCorrectGuesses() {
+        return correctGuesses;
+    }
+
+    public void setCorrectGuesses(String correctGuesses) {
+        this.correctGuesses = correctGuesses;
+    }
+
+
+    public ArrayList<ArrayList<String>> getGuesses() {
+        return guesses;
+    }
+
+    public void setGuesses(ArrayList<ArrayList<String>> guesses) {
+        this.guesses = guesses;
     }
 }
