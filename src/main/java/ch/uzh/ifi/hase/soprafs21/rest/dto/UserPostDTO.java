@@ -13,6 +13,8 @@ public class UserPostDTO {
     public void setName(String name) {
         this.name = name;
     }
+    private String password;
+
 
     public String getUsername() {
         return username;
@@ -33,5 +35,13 @@ public class UserPostDTO {
     }
     public void setAssignedSet(String assignedSet) {
         this.assignedSet = assignedSet;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

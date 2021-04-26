@@ -11,7 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,11 +43,26 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
-    public User createUser(User newUser) {
+    public User getUser(String username){
+        User user = userRepository.findByUsername(username);
+        return user;
+    }
+
+    //returns user from userRepository
+    public User getUserLogin(User userInput){
+
+        //checks if user exists and if the password is correct
+        checkUserLogin(userInput);
+
+        return userRepository.findByUsername(userInput.getUsername());
+    }
+
+    public User createUser(User newUser)  {
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.OFFLINE);
+
 
         checkIfUserExists(newUser);
+        newUser.setIsReady(false);
 
         // saves the given entity but data is only persisted in the database once flush() is called
         newUser = userRepository.save(newUser);
@@ -49,6 +70,28 @@ public class UserService {
 
         log.debug("Created Information for User: {}", newUser);
         return newUser;
+    }
+
+    public void updateIsReady(String username, User user){
+        User foundByName = userRepository.findByUsername(username);
+        checkUserLogin(foundByName);
+        if (foundByName.getIsReady() == false){
+            foundByName.setIsReady(true);
+            userRepository.flush();
+        }else{
+            foundByName.setIsReady(false);
+            userRepository.flush();
+        }
+
+    }
+
+    //changes the date format of the input
+    public String changeDateFormat(String date) throws ParseException {
+
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat endFormat = new SimpleDateFormat("dd.MM.yyyy");
+        Date stringToDate = format.parse(date);
+        return endFormat.format(stringToDate);
     }
 
     /**
@@ -61,17 +104,24 @@ public class UserService {
      */
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-        User userByName = userRepository.findByName(userToBeCreated.getName());
 
-        String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-        if (userByUsername != null && userByName != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username and the name", "are"));
+
+        String baseErrorMessage = "username already taken, therefore the User could not be created!";
+        if (userByUsername != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, (baseErrorMessage));
         }
-        else if (userByUsername != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
-        }
-        else if (userByName != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+
+    }
+    //checks if the username and password are correct and if the user is registered
+    private void checkUserLogin(User userToBeFound){
+        User userByUsername = userRepository.findByUsername(userToBeFound.getUsername());
+
+        if(userByUsername != null){
+            if(!userByUsername.getUsername().equalsIgnoreCase(userToBeFound.getUsername()) || !userByUsername.getPassword().equalsIgnoreCase(userToBeFound.getPassword())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password!");
+            }
+        }else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not registered!");
         }
     }
 }

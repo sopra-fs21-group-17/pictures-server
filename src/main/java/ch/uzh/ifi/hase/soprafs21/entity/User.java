@@ -1,13 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Internal User Representation
@@ -26,67 +22,41 @@ public class User implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column
+    private String birthdate;
 
     @Column(nullable = false, unique = true)
     private String token;
 
-    @Column(nullable = false)
-    private UserStatus status;
-
     @Column
-    private int assignedCoordinates; // A1 = 0, A2 = 1, D4 = 15 ...
-
-    // this attribute saves the assigned set of each user
-    @Column
-    private String assignedSet;
-
-    @Column
-    private String correctGuesses; // TODO store correctGuesses for each round like this guesses = ["y", "n", "n" ...] or similar...
-
-    @ElementCollection
-    @CollectionTable
-    private ArrayList<ArrayList<String>> guesses;
+    private String guess;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column
+    private int totalScore;
 
-    public String getName() {
-        return name;
-    }
+    @Column
+    private Boolean isReady;
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public String getUsername() {
-        return username;
-    }
+    public Long getId() { return id; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public void setId(Long id) { this.id = id; }
 
-    public String getToken() {
-        return token;
-    }
+    public String getUsername() { return username; }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+    public void setUsername(String username) { this.username = username; }
 
-    public UserStatus getStatus() {
-        return status;
-    }
+    public String getPassword() { return password; }
 
     public void setStatus(UserStatus status) {
         this.status = status;
@@ -124,4 +94,30 @@ public class User implements Serializable {
     public void setGuesses(ArrayList<ArrayList<String>> guesses) {
         this.guesses = guesses;
     }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getBirthdate() { return birthdate; }
+
+    public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
+
+    public String getToken() { return token; }
+
+    public void setToken(String token) { this.token = token; }
+
+    public String getGuess() { return guess; }
+
+    public void setGuess(String guess) { this.guess = guess; }
+
+    public String getModel() { return model; }
+
+    public void setModel(String model) { this.model = model; }
+
+    public int getTotalScore() { return totalScore; }
+
+    public void setTotalScore(int totalScore) { this.totalScore = totalScore; }
+
+    public Boolean getIsReady() { return isReady; }
+
+    public void setIsReady(Boolean isReady) { this.isReady = isReady; }
+
 }

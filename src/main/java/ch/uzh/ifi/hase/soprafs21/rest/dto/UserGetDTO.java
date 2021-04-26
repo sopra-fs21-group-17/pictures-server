@@ -1,29 +1,27 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import java.util.Date;
+import java.util.Dictionary;
 
 public class UserGetDTO {
 
-    private Long id;
-    private String name;
+    //private Long id;
     private String username;
-    private UserStatus status;
+    private String password;
+    private Date birthdate;
+    private String guess;
+    private String model;
+    private int totalScore;
+    private boolean isReady;
+    //private UserStatus status;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
 
     public String getUsername() {
         return username;
@@ -33,11 +31,30 @@ public class UserGetDTO {
         this.username = username;
     }
 
-    public UserStatus getStatus() {
-        return status;
+    public String getPassword() {
+        return password;
     }
 
-    public void setStatus(UserStatus status) {
-        this.status = status;
-    }
+    public void setPassword(String password) { this.password = password; }
+
+    public Date getBirthdate() { return birthdate; }
+
+    public void setBirthdate(Date birthdate) { this.birthdate = birthdate; }
+
+    public String getGuess() { return guess; }
+
+    public void setGuess(String guess) { this.guess = guess; }
+
+    public String getModel() { return model; }
+
+    public void setModel(String model) { this.model = model; }
+
+    public int getTotalScore() { return totalScore; }
+
+    public void setTotalScore(int totalScore) { this.totalScore = totalScore; }
+
+    public boolean getIsReady() { return isReady; }
+
+    public void setIsReady(boolean isReady) { this.isReady = isReady;}
+
 }
