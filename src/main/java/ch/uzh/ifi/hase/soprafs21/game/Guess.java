@@ -6,4 +6,10 @@ package ch.uzh.ifi.hase.soprafs21.game;
  * */
 
 public class Guess {
+    public String userName;
+    public Long userID;
+    public int coordinate;
+
+    Guess(){}
+
 }
