@@ -8,7 +8,6 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,6 @@ public class UserController {
 
         //updates the User
         userService.updateIsReady(username, userInput);
-
     }
 
     @PostMapping("/users/names")

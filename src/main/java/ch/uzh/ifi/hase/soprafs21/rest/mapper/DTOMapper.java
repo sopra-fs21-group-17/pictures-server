@@ -47,7 +47,4 @@ public interface DTOMapper {
 //@Mapping(source = "userID" , target = "userID")
 //    PicturesGetDTO convertEntityTOPicturesGetDTO(Picture picture);
 
-    @Mapping(source = "username", target = "username")
-    //@Mapping(source = "isReady", target = "isReady")
-    User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 }

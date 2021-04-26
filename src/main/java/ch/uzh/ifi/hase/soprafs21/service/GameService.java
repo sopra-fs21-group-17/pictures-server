@@ -101,27 +101,27 @@ public class GameService {
 
     public void handleGuesses(User currentUser){
         ArrayList<ArrayList<String>> correctedGuesses = new ArrayList<ArrayList<String>>() ; // TODO make better list
-        ArrayList<ArrayList<String>> userGuesses = currentUser.getGuesses();
+        String userGuesses = currentUser.getGuesses();
         User tempUser;
         String isCorrect;
         ArrayList<String> answer;
 
-        for(ArrayList<String> tuple : userGuesses){
-            tempUser = userRepository.findByUsername(tuple.get(0));
-            if(tempUser != null){
-                isCorrect = "n";
-                if(tempUser.getAssignedCoordinates() == Integer.parseInt(tuple.get(1))){
-                    // TODO +1 point
-                    isCorrect = "y";
-                }
-                answer = new ArrayList<String>( Arrays.asList(tempUser.getUsername(), isCorrect) );
-                correctedGuesses.add(answer);
-            }
-            else{
-                System.out.println("ERROR couldn't find that user!"); // TOOD make exception
-                return;
-            }
-        }
+//        for(ArrayList<String> tuple : userGuesses){
+//            tempUser = userRepository.findByUsername(tuple.get(0));
+//            if(tempUser != null){
+//                isCorrect = "n";
+//                if(tempUser.getAssignedCoordinates() == Integer.parseInt(tuple.get(1))){
+//                    // TODO +1 point
+//                    isCorrect = "y";
+//                }
+//                answer = new ArrayList<String>( Arrays.asList(tempUser.getUsername(), isCorrect) );
+//                correctedGuesses.add(answer);
+//            }
+//            else{
+//                System.out.println("ERROR couldn't find that user!"); // TOOD make exception
+//                return;
+//            }
+//        }
 
         // für Testzwecke guesses in console geschrieben
         System.out.println(correctedGuesses);

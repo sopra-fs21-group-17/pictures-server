@@ -1,9 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Internal User Representation
@@ -35,11 +39,10 @@ public class User implements Serializable {
     private String token;
 
     @Column
-    private String guess;
+    private String model;
 
-    public Long getId() {
-        return id;
-    }
+    @Column
+    private String guess;
 
     @Column
     private int totalScore;
@@ -47,6 +50,20 @@ public class User implements Serializable {
     @Column
     private Boolean isReady;
 
+    @Column
+    private UserStatus status;
+
+    @Column
+    private String assignedSet;
+
+    @Column
+    private int assignedCoordinates; // mapping style: A1=0,A2=1...D5=15
+
+    @Column
+    private String correctedGuess; // TODO change to array sth...
+
+    @Column
+    private String guesses; // TODO change to array sth...
 
     public Long getId() { return id; }
 
@@ -78,22 +95,22 @@ public class User implements Serializable {
         this.assignedCoordinates = assignedCoordinates;
     }
 
-    public String getCorrectGuesses() {
-        return correctGuesses;
+    public String getCorrectedGuesses() {
+        return correctedGuess;
     }
 
-    public void setCorrectGuesses(String correctGuesses) {
-        this.correctGuesses = correctGuesses;
+    public void setCorrectedGuesses(String correctedGuess) {
+        this.correctedGuess = correctedGuess;
     }
 
-
-    public ArrayList<ArrayList<String>> getGuesses() {
+    public String getGuesses() {
         return guesses;
     }
 
-    public void setGuesses(ArrayList<ArrayList<String>> guesses) {
+    public void setGuesses(String guesses) {
         this.guesses = guesses;
     }
+
     public void setPassword(String password) { this.password = password; }
 
     public String getBirthdate() { return birthdate; }
