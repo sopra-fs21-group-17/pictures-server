@@ -26,7 +26,7 @@ public interface DTOMapper {
     @Mapping(source = "password", target = "password")
     User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
-    //@Mapping(source = "id", target = "id")
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "birthdate", target = "birthdate")
@@ -37,10 +37,19 @@ public interface DTOMapper {
     //@Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target = "username")
+    User convertUserGetDTOtoEntity(UserGetDTO userGetDTO);
+
+
     // TODO user PUT dto mapper
+    @Mapping(source = "id", target =  "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "guesses", target = "guesses")
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+
+    @Mapping(source = "pictureLink", target="pictureLink")
+    PicturesGetDTO convertEntityToPicturesGetDTO(Picture picture);
 
 //@Mapping(source = "pictureLink", target = "pictureLink")
 //@Mapping(source = "coordinate", target = "coordinate")

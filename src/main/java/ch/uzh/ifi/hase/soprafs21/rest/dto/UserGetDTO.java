@@ -5,7 +5,7 @@ import java.util.Dictionary;
 
 public class UserGetDTO {
 
-    //private Long id;
+    private Long id;
     private String username;
     private String password;
     private Date birthdate;
@@ -15,13 +15,13 @@ public class UserGetDTO {
     private boolean isReady;
     //private UserStatus status;
 
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;

@@ -2,8 +2,10 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 // Name can be refactored if it is not fitting (maybe to GameLogic)
 
+import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.repository.GameSessionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,12 @@ import java.util.*;
  */
 public class GameService {
 
-    private List<User> gameUsers;
+
     private final PicturesRepository picturesRepository;
     private final UserRepository userRepository;
+    private final GameSessionRepository gameSessionRepository;
+
+
 
     // game variables
     private final int NR_OF_PLAYERS = 5;    // TODO what is the range of min-max nr of players? How to get this?
@@ -29,18 +34,20 @@ public class GameService {
     public User currentUser = null;
 
     @Autowired
-    public GameService(@Qualifier("picturesRepository") PicturesRepository picturesRepository, UserRepository userRepository) {
+    public GameService(@Qualifier("picturesRepository") PicturesRepository picturesRepository, UserRepository userRepository, GameSessionRepository gameSessionRepository) {
         this.picturesRepository = picturesRepository;
         this.userRepository = userRepository;
+        this.gameSessionRepository = gameSessionRepository;
     }
 
-    public List<Picture> selectPictures(){
+    public void selectPictures(){
         //goes from 0 to 15 for easier mapping
         int maxPictures = 16;
         int randomLimit = 51; //limit will be strictly smaller than
         //TODO depending on storage will may need different implementation for the maximum limit.
+        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);  //TODO for M4 implement for mulitple lobbies
 
-        ArrayList<Picture> pictures = new ArrayList();
+
         ArrayList<Integer> checkID = new ArrayList();
 
         Random random = new Random();
@@ -48,18 +55,23 @@ public class GameService {
         while(idx < maxPictures){
             int randomizedID =random.nextInt(randomLimit);
             if(!checkID.contains(randomizedID)){
-//                checkID.add(randomizedID);
-//
-//                Picture current = picturesRepository.findByID((long)randomizedID); //random has problems with long so to avoid, used int and parsed
-//                current.setCoordinate(idx); // sets the coordinate for the picture       //TODO discuss implementation maybe store this differently because of multiple possible games in web
-//
-//                picturesRepository.flush();
-//                pictures.add(current);
-//                idx++;
+                checkID.add(randomizedID);
+                Picture current = picturesRepository.findByid((long)randomizedID); //random has problems with long so to avoid, used int and parsed
+                currentGame.addPicture(current,idx);  // adds the picture to the entity
+                idx++;
             }
 
         }
-        return pictures;
+    }
+
+    public List<Picture> getListOfPictures(){
+        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
+        return currentGame.getSelectedPictures();
+    }
+
+    public Picture getCorrespondingToUser(int token){
+        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
+        return currentGame.getPictureWithToken(token);
     }
 
     /**
@@ -72,8 +84,10 @@ public class GameService {
         User[] playingUsers = getPlayingUsers(userNames);
         assignCoordinates(playingUsers);
         assignSets(playingUsers);
-
+        this.gameSessionRepository.save(new GamePlay());   // needed for management fo Pictures
+        gameSessionRepository.flush();
         this.playingUsers = getPlayingUsers(userNames); // for dev use only
+
     }
 
     public User[] getPlayingUsers(String[] userNames){

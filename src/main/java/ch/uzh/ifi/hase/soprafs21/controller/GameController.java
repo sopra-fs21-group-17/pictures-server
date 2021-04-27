@@ -4,6 +4,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 // TODO frage was braucht die Scoreboard klasse?
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * GameController is used to manage incoming REST request coming from the client
@@ -25,6 +25,7 @@ public class GameController {
     private final String mainGame = "/board";
     private final String pictures = "/pictures";
     private final String guesses = "/guess";
+    private final String picture = "/picture";
 
     // TODO this ok??
 
@@ -87,13 +88,30 @@ public class GameController {
     @ResponseBody
     public List<PicturesGetDTO> getPictureURL(){
 
-        List<Picture> pictures = gameService.selectPictures();
+        List<Picture> pictures = gameService.getListOfPictures();  // is changed to take from gameplay
         List<PicturesGetDTO> picturesGetDTOs = new ArrayList();
         for(Picture picture : pictures){
            // picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityTOPicturesGetDTO(picture));
         }
 
         return picturesGetDTOs;
+    }
+
+    /**
+     *
+     * @param userGetDTO
+     * @return returns a Gameplay DTO that will contain a single pictureURL that has been stored in the gameplay entity
+     */
+    @GetMapping(picture)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO){
+        User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
+        int assignedToken = currentUser.getAssignedCoordinates();
+
+        Picture correspondingPicture = gameService.getCorrespondingToUser(assignedToken);
+        PicturesGetDTO pictureResult =  DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
+        return pictureResult;
     }
 
 

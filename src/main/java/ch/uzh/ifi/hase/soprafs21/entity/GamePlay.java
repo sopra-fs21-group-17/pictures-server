@@ -5,7 +5,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -28,6 +27,7 @@ public class GamePlay implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column
     private Long gameID;
 
 
@@ -38,10 +38,12 @@ public class GamePlay implements Serializable {
     private Map<Long, ArrayList<Integer>> guesses= new HashMap<>();
 
 
+
     // key PictureID, value Coordinate
     @ElementCollection
     @CollectionTable
-    private Map<Long,Integer> selectedPictures = new HashMap<>();
+    @Column
+    private Map<Integer,Picture> selectedPictures = new HashMap<>();
 
     //TODO see how screenshots are sent to backend
     //    @ElementCollection
@@ -53,10 +55,17 @@ public class GamePlay implements Serializable {
         return guesses;
     }
 
-    public Map<Long, Integer> getSelectedPictures() {
-        return selectedPictures;
+    public void addPicture(Picture picture, int coordinate){
+        selectedPictures.put(coordinate,picture);
     }
 
+    public Picture getPictureWithToken(int token){
+        return selectedPictures.get(token);
+    }
 
+    public Long getGameID(){return gameID;}
 
+    public ArrayList<Picture> getSelectedPictures(){
+        ArrayList<Picture> pictureArraylist = new ArrayList<>(selectedPictures.values());
+        return pictureArraylist;}
 }

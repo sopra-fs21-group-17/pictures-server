@@ -4,7 +4,7 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-
+@Embeddable
 @Entity
 @Table(name = "PICTURE")
 public class Picture implements Serializable {
