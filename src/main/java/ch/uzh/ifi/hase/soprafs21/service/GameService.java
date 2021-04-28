@@ -4,6 +4,7 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
+import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.GameSessionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
@@ -64,14 +65,40 @@ public class GameService {
         }
     }
 
+    /**
+     * Pictures that are Saved for the Current GameRound
+     * @return returns all Pictures for the current Round
+     */
     public List<Picture> getListOfPictures(){
         GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
         return currentGame.getSelectedPictures();
     }
 
+    /**
+     * Takes on token from user and gets the picture that has that coordinate
+     * @param token
+     * @return returns Picture that has the corresponding token of the User
+     */
     public Picture getCorrespondingToUser(int token){
         GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
         return currentGame.getPictureWithToken(token);
+    }
+
+    /**
+     * Saves screenshot from Controller to the corresponding Gameplay Entity
+     * @param submittedShot
+     */
+    public void saveScreenshot(Screenshot submittedShot){
+        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
+        currentGame.addScreenshot(submittedShot);
+    }
+
+    /**
+     *
+     */
+    public List<Screenshot> getScreenshots(){
+        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
+        return currentGame.getListOfScreenshots();
     }
 
     /**
@@ -101,7 +128,6 @@ public class GameService {
         return usersList;
     }
 
-    public void saveScreenshots(){}
 
     public void setCurrentUser(String userName){
         for(User user : playingUsers){

@@ -1,11 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
+import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.PicturesGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -50,6 +48,14 @@ public interface DTOMapper {
 
     @Mapping(source = "pictureLink", target="pictureLink")
     PicturesGetDTO convertEntityToPicturesGetDTO(Picture picture);
+
+    @Mapping(source = "URL", target = "URL")
+    @Mapping(source = "userID", target = "userID")
+    Screenshot convertScreenshotPutDTOtoEntity(ScreenshotPutDTO screenshotPutDTO);
+
+    @Mapping(source = "URL", target = "URL")
+    @Mapping(source = "userID", target = "userID")
+    ScreenshotGetDTO convertEntityToScreenshotGetDTO(Screenshot screenshot);
 
 //@Mapping(source = "pictureLink", target = "pictureLink")
 //@Mapping(source = "coordinate", target = "coordinate")

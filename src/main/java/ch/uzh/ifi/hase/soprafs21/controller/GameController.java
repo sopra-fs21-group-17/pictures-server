@@ -3,12 +3,11 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 //TODO see if class game should exist as entity like user
 // TODO frage was braucht die Scoreboard klasse?
 
+import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.PicturesGetDTO;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +25,9 @@ public class GameController {
     private final String pictures = "/pictures";
     private final String guesses = "/guess";
     private final String picture = "/picture";
+    private final String screenshot = "/screenshot";
 
-    // TODO this ok??
+
 
    // private user
 
@@ -65,10 +65,32 @@ public class GameController {
 
     }
 
-    public void showScreenshots(){
-        // return user list or pictures list
+    /**
+     * Used to save screenshot URLs to the Back end
+     * @param screenshotPutDTO
+     */
+    @PutMapping(screenshot)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO){
+        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
+        gameService.saveScreenshot(submittedShot);
     }
 
+    /**
+     *
+     * @return Return a List of Screenshots for the guessing screen
+     */
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<ScreenshotGetDTO> showScreenshots(){
+        List<Screenshot> screenshots = gameService.getScreenshots();
+        List<ScreenshotGetDTO> screenshotGetDTOs = new ArrayList<>();
+        for(Screenshot shot : screenshots){
+            screenshotGetDTOs.add(DTOMapper.INSTANCE.convertEntityToScreenshotGetDTO(shot));
+        }
+        return screenshotGetDTOs;
+    }
 
     @PutMapping(guesses)
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -126,14 +148,14 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void exitGame(){
-        // TODO
+        // TODO will have to delete the corresponding Gameplay instance using the gameID
     }
 
     @GetMapping(mainGame)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void playAgain(){
-        // TODO
+        // TODO will have to reset the Gameplay instances
     }
 
 

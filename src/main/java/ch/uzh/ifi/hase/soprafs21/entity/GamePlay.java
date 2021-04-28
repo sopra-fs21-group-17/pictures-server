@@ -3,9 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 //TODO discuss implementation for multiple instances of a game
@@ -45,10 +43,9 @@ public class GamePlay implements Serializable {
     @Column
     private Map<Integer,Picture> selectedPictures = new HashMap<>();
 
-    //TODO see how screenshots are sent to backend
-    //    @ElementCollection
-    //    @CollectionTable
-    //    private Map<Long,Screenshot> rebuilds = new HashMap<>();
+    @Column
+    @ElementCollection
+    private Set<Screenshot> screenshots = new HashSet<>();
 
 
     public Map<Long, ArrayList<Integer>> getGuesses() {
@@ -68,4 +65,18 @@ public class GamePlay implements Serializable {
     public ArrayList<Picture> getSelectedPictures(){
         ArrayList<Picture> pictureArraylist = new ArrayList<>(selectedPictures.values());
         return pictureArraylist;}
+
+    public void addScreenshot(Screenshot screenshot){
+        screenshots.add(screenshot);
+    }
+
+    public ArrayList<Screenshot> getListOfScreenshots(){
+        return new ArrayList<>(screenshots);
+    }
+    public void clearScreenshots(){
+        screenshots.clear();
+    }
+    public void clearSelectedPictures(){
+        selectedPictures.clear();
+    }
 }
