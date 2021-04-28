@@ -32,7 +32,7 @@ public class GameController {
 
     GameController(GameService gameService){ this.gameService = gameService; }
 
-    @PostMapping("/board")
+    @GetMapping("/board")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<UserGetDTO> initGame() {
@@ -52,7 +52,6 @@ public class GameController {
         }
 
         return initedUsersDTOs;
-
     }
 
     @PostMapping("/board/guess")
