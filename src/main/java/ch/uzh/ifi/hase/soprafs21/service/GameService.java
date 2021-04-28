@@ -60,7 +60,7 @@ public class GameService {
         int maxPictures = 16;
         int randomLimit = 51; //limit will be strictly smaller than
         //TODO depending on storage will may need different implementation for the maximum limit.
-        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);  //TODO for M4 implement for mulitple lobbies
+        GamePlay currentGame = gameSessionRepository.findByGameID(1L);  //TODO for M4 implement for mulitple lobbies
 
 
         ArrayList<Integer> checkID = new ArrayList();
@@ -84,7 +84,7 @@ public class GameService {
      * @return returns all Pictures for the current Round
      */
     public List<Picture> getListOfPictures(){
-        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
+        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
         return currentGame.getSelectedPictures();
     }
 
@@ -94,7 +94,7 @@ public class GameService {
      * @return returns Picture that has the corresponding token of the User
      */
     public Picture getCorrespondingToUser(int token){
-        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
+        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
         return currentGame.getPictureWithToken(token);
     }
 
@@ -103,7 +103,7 @@ public class GameService {
      * @param submittedShot
      */
     public void saveScreenshot(Screenshot submittedShot){
-        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
+        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
         currentGame.addScreenshot(submittedShot);
     }
 
@@ -111,7 +111,7 @@ public class GameService {
      *
      */
     public List<Screenshot> getScreenshots(){
-        GamePlay currentGame = gameSessionRepository.findbyGameID(1L);
+        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
         return currentGame.getListOfScreenshots();
     }
 
