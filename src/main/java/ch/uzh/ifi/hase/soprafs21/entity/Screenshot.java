@@ -3,6 +3,10 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 
+/**
+ * used to store the generated Screenshots as entities for the game
+ */
+
 @Embeddable
 @Entity
 @Table(name = "SCREENSHOT")
