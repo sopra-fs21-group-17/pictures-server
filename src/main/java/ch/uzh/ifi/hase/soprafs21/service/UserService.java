@@ -112,6 +112,7 @@ public class UserService {
         }
 
     }
+
     //checks if the username and password are correct and if the user is registered
     private void checkUserLogin(User userToBeFound){
         User userByUsername = userRepository.findByUsername(userToBeFound.getUsername());

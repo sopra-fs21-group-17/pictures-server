@@ -26,16 +26,23 @@ public class User implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    //@Column(nullable = false, unique = true)
+    @Column(unique = true) // commented out for testing
+    private String name;
+
+    //@Column(nullable = false, unique = true)
+    @Column // for testing
     private String username;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
+    @Column // for testing
     private String password;
 
     @Column
     private String birthdate;
 
-    @Column(nullable = false, unique = true)
+    //@Column(nullable = false, unique = true)
+    @Column // for testing
     private String token;
 
     @Column
@@ -54,7 +61,7 @@ public class User implements Serializable {
     private UserStatus status;
 
     @Column
-    private String assignedSet;
+    private String assignedSet; // nr corresponding to array with set names
 
     @Column
     private int assignedCoordinates; // mapping style: A1=0,A2=1...D5=15
@@ -137,4 +144,15 @@ public class User implements Serializable {
 
     public void setIsReady(Boolean isReady) { this.isReady = isReady; }
 
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

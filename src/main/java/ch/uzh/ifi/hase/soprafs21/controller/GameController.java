@@ -19,6 +19,7 @@ import java.util.List;
  * GameController is used to manage incoming REST request coming from the client
  * that are related to the gameplay itself
  */
+@RestController
 public class GameController {
 
     private final String mainGame = "/board";
@@ -27,35 +28,33 @@ public class GameController {
     private final String picture = "/picture";
     private final String screenshot = "/screenshot";
 
-
-
-   // private user
-
     private final GameService gameService;
 
-    GameController(GameService gameService) { this.gameService = gameService; }
+    GameController(GameService gameService){ this.gameService = gameService; }
 
-    @PostMapping(mainGame)
+    @GetMapping("/board")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void initGame() {
-        // game init
-        // - 16 Bilder für Gameboard auswählen  ==> separat  gemacht da es mehrmals benötigt werden wird
-        // - coordinaten zuweisen ==> coordinaten werden ebenfalls bereits mit den bildern zugewiesen
-        // - sets zuweisen
+    public List<UserGetDTO> initGame() {
 
         // TODO get users names list from FE
-        String[] userNames = {"a", "b", "c"};
+        String[] userNames = {"a", "b", "c", "d"};
+        //List<User> users = userService.getUsers();
 
         gameService.initGame(userNames);
         User[] usersList = gameService.getPlayingUsers(userNames);
 
-        // TODO return DTO mapper instance
-        // return DTOMapper.INSTANCE.convertUserPostDTOtoEntity(usersList);
+        List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
 
+        // convert each user to the API representation
+        for (User user : usersList) {
+            initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
+        }
+
+        return initedUsersDTOs;
     }
 
-    @PostMapping(mainGame)
+    @PostMapping("/board/guess")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void postUserGuesses() {
@@ -131,33 +130,39 @@ public class GameController {
         User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
         int assignedToken = currentUser.getAssignedCoordinates();
 
-        Picture correspondingPicture = gameService.getCorrespondingToUser(assignedToken);
-        PicturesGetDTO pictureResult =  DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
-        return pictureResult;
-    }
+//    @GetMapping(guesses)
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public void getUserPoints(){
+//        // TODO
+//    }
+//
+//    @GetMapping(mainGame)
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public void exitGame(){
+//        // TODO
+//    }
+//
+//    @GetMapping(mainGame)
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public void playAgain(){
+//        // TODO
+//    }
 
-
-    @GetMapping(guesses)
+    @GetMapping(mainGame)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void getUserPoints(){
+    public void exitGame(){
         // TODO
     }
 
     @GetMapping(mainGame)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void exitGame(){
-        // TODO will have to delete the corresponding Gameplay instance using the gameID
-    }
-
-    @GetMapping(mainGame)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public void playAgain(){
-        // TODO will have to reset the Gameplay instances
+        // TODO
     }
-
-
 
 }

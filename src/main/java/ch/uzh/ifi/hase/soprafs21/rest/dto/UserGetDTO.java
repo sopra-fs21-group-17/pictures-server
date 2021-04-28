@@ -6,7 +6,10 @@ import java.util.Dictionary;
 public class UserGetDTO {
 
     private Long id;
+    private String name;
     private String username;
+    private int assignedCoordinates;
+    private String assignedSet;
     private String password;
     private Date birthdate;
     private String guess;
@@ -15,13 +18,9 @@ public class UserGetDTO {
     private boolean isReady;
     //private UserStatus status;
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) { this.id = id; }
 
     public String getUsername() {
         return username;
@@ -57,4 +56,27 @@ public class UserGetDTO {
 
     public void setIsReady(boolean isReady) { this.isReady = isReady;}
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAssignedCoordinates() {
+        return assignedCoordinates;
+    }
+
+    public void setAssignedCoordinates(int assignedCoordinates) {
+        this.assignedCoordinates = assignedCoordinates;
+    }
+
+    public String getAssignedSet() {
+        return assignedSet;
+    }
+
+    public void setAssignedSet(String assignedSet) {
+        this.assignedSet = assignedSet;
+    }
 }
