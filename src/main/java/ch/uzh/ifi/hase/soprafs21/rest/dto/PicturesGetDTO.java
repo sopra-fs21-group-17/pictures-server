@@ -4,6 +4,7 @@ public class PicturesGetDTO {
 
     // picture ID is missing since it is only needed to randomize pictures
 
+
     private String pictureLink;
     private int coordinate;
     private Long UserID;
@@ -18,6 +19,10 @@ public class PicturesGetDTO {
 
     public Long getUserID() {
         return UserID;
+    }
+
+    public void setPictureLink(String pictureLink) {
+        this.pictureLink = pictureLink;
     }
 
 

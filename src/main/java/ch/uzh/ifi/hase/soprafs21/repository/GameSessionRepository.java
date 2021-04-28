@@ -13,5 +13,5 @@ import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
 @Repository("GameSessionRepository")
 public interface GameSessionRepository extends JpaRepository<GamePlay,Long>{
 
-    GamePlay findbyGameID(Long gameID);
+    GamePlay findByGameID(Long gameID);
 }
