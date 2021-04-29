@@ -24,7 +24,7 @@ public interface DTOMapper {
     @Mapping(source = "password", target = "password")
     User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
-    @Mapping(source = "id", target = "id")
+ //   @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "birthdate", target = "birthdate")
@@ -32,7 +32,7 @@ public interface DTOMapper {
     @Mapping(source = "model", target = "model")
     @Mapping(source = "totalScore", target = "totalScore")
     @Mapping(source = "isReady", target = "isReady")
-    //@Mapping(source = "status", target = "status")
+ //   @Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "id", target = "id")
@@ -41,12 +41,12 @@ public interface DTOMapper {
 
 
     // TODO user PUT dto mapper
-    @Mapping(source = "id", target =  "id")
+  //  @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "guesses", target = "guesses")
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
-    @Mapping(source = "pictureLink", target="pictureLink")
+    @Mapping(source = "pictureLink", target = "pictureLink")
     PicturesGetDTO convertEntityToPicturesGetDTO(Picture picture);
 
     @Mapping(source = "URL", target = "URL")
@@ -56,10 +56,5 @@ public interface DTOMapper {
     @Mapping(source = "URL", target = "URL")
     @Mapping(source = "userID", target = "userID")
     ScreenshotGetDTO convertEntityToScreenshotGetDTO(Screenshot screenshot);
-
-//@Mapping(source = "pictureLink", target = "pictureLink")
-//@Mapping(source = "coordinate", target = "coordinate")
-//@Mapping(source = "userID" , target = "userID")
-//    PicturesGetDTO convertEntityTOPicturesGetDTO(Picture picture);
 
 }

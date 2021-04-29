@@ -137,4 +137,6 @@ public class User implements Serializable {
 
     public void setIsReady(Boolean isReady) { this.isReady = isReady; }
 
+    public UserStatus getStatus(){return status; }
+
 }

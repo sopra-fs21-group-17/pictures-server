@@ -23,6 +23,8 @@ public class GamePlay implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+
     @Id
     @GeneratedValue
     @Column
@@ -78,5 +80,10 @@ public class GamePlay implements Serializable {
     }
     public void clearSelectedPictures(){
         selectedPictures.clear();
+    }
+
+    // currently for testing only
+    public void setGameID(Long gameID) {
+        this.gameID = gameID;
     }
 }

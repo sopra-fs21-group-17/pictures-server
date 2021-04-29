@@ -11,6 +11,10 @@ import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -18,6 +22,8 @@ import java.util.*;
  * GameService is responsible for handling the incoming information from the Client and manipulate the
  * State of the Game according to the position in the round
  */
+@Service
+@Transactional
 public class GameService {
 
 
@@ -35,12 +41,16 @@ public class GameService {
     public User currentUser = null;
 
     @Autowired
-    public GameService(@Qualifier("picturesRepository") PicturesRepository picturesRepository, UserRepository userRepository, GameSessionRepository gameSessionRepository) {
+    public GameService(@Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) {
         this.picturesRepository = picturesRepository;
         this.userRepository = userRepository;
         this.gameSessionRepository = gameSessionRepository;
     }
 
+    /**
+     * selects Pictures from the external API according to their ID randomly
+     * So there are 16 chosen and saved into the corresponding GamePlay entity.
+     */
     public void selectPictures(){
         //goes from 0 to 15 for easier mapping
         int maxPictures = 16;
@@ -57,7 +67,8 @@ public class GameService {
             int randomizedID =random.nextInt(randomLimit);
             if(!checkID.contains(randomizedID)){
                 checkID.add(randomizedID);
-                Picture current = picturesRepository.findByid((long)randomizedID); //random has problems with long so to avoid, used int and parsed
+                Picture current = picturesRepository.findByid((long)randomizedID);
+                //random has problems with long so to avoid, used int and parsed
                 currentGame.addPicture(current,idx);  // adds the picture to the entity
                 idx++;
             }
@@ -66,7 +77,7 @@ public class GameService {
     }
 
     /**
-     * Pictures that are Saved for the Current GameRound
+     * gets Pictures that are Saved for the Current GameRound in the Gameplay entity
      * @return returns all Pictures for the current Round
      */
     public List<Picture> getListOfPictures(){
@@ -116,7 +127,12 @@ public class GameService {
         this.playingUsers = getPlayingUsers(userNames); // for dev use only
 
     }
-
+//TODO please check if javadoc is correct like this
+    /**
+     * used to get the playing users from the Lobby
+     * @param userNames
+     * @return returns a list of the playing users
+     */
     public User[] getPlayingUsers(String[] userNames){
 
         User[] usersList = new User[NR_OF_PLAYERS];
@@ -128,17 +144,28 @@ public class GameService {
         return usersList;
     }
 
-
+    /**
+     * identifies and stores the current user in the method
+     * @param userName
+     */
     public void setCurrentUser(String userName){
+        Boolean userFound = false;
         for(User user : playingUsers){
             if(user.getUsername().equals(userName)){
                 this.currentUser = user;
+                userFound = true;
             }
         }
+        if(userFound==false){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User could not be found!");
+        }
 
-        System.out.println("ERROR - COULDN'T FIND THAT USER!");
     }
 
+    /**
+     * used to update the score of a user depending on if they macht to the other users assigned token
+     * @param currentUser
+     */
     public void handleGuesses(User currentUser){
         ArrayList<ArrayList<String>> correctedGuesses = new ArrayList<ArrayList<String>>() ; // TODO make better list
         String userGuesses = currentUser.getGuesses();
@@ -158,8 +185,7 @@ public class GameService {
 //                correctedGuesses.add(answer);
 //            }
 //            else{
-//                System.out.println("ERROR couldn't find that user!"); // TOOD make exception
-//                return;
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User could not be found!");
 //            }
 //        }
 
@@ -168,6 +194,11 @@ public class GameService {
         // TODO update scoreboard
     }
 
+    /**
+     * Helper method used to shuffle lists for random assignment
+     * @param listLength
+     * @return returns an Array of shuffled indices
+     */
     public Integer[] getShuffledIdxList(int listLength){
         // make array with indices to randomly assign sets
         Integer[] idxList = new Integer[listLength];
@@ -181,6 +212,10 @@ public class GameService {
         return idxList;
     }
 
+    /**
+     * Method is used to assigned a random set to every User
+     * @param usersList
+     */
     public void assignSets(User[] usersList) {
         // make shuffled array with indices to randomly assign sets
         Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
@@ -191,6 +226,10 @@ public class GameService {
         }
     }
 
+    /**
+     * Method is used to assign a random Token coordinate for every User
+     * @param usersList
+     */
     // coordinates represented in code like this:
     // A1 = 0, A2 = 1, D4 = 15 ...
     // so just pick random nr between 0-15

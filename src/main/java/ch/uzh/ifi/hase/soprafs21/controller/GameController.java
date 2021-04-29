@@ -19,6 +19,7 @@ import java.util.List;
  * GameController is used to manage incoming REST request coming from the client
  * that are related to the gameplay itself
  */
+@RestController
 public class GameController {
 
     private final String mainGame = "/board";
@@ -136,28 +137,28 @@ public class GameController {
         return pictureResult;
     }
 
+//
+//    @GetMapping(guesses)
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public void getUserPoints(){
+//        // TODO
+//    }
 
-    @GetMapping(guesses)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void getUserPoints(){
-        // TODO
-    }
-
-    @GetMapping(mainGame)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void exitGame(){
-        // TODO will have to delete the corresponding Gameplay instance using the gameID
-    }
-
-    @GetMapping(mainGame)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void playAgain(){
-        // TODO will have to reset the Gameplay instances
-    }
-
+//    @GetMapping(mainGame)
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public void exitGame(){
+//        // TODO will have to delete the corresponding Gameplay instance using the gameID
+//    }
+//
+//    @GetMapping(mainGame)
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public void playAgain(){
+//        // TODO will have to reset the Gameplay instances
+//    }
+//
 
 
 }
