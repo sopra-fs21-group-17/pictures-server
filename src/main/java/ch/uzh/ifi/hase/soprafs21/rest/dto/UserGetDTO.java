@@ -12,9 +12,9 @@ public class UserGetDTO {
     private String username;
     private int assignedCoordinates;
     private String assignedSet;
+    private String correctedGuesses;
     private String password;
     private Date birthdate;
-    private String guess;
     private String model;
     private int totalScore;
     private boolean isReady;
@@ -41,10 +41,6 @@ public class UserGetDTO {
     public Date getBirthdate() { return birthdate; }
 
     public void setBirthdate(Date birthdate) { this.birthdate = birthdate; }
-
-    public String getGuess() { return guess; }
-
-    public void setGuess(String guess) { this.guess = guess; }
 
     public String getModel() { return model; }
 
@@ -88,5 +84,13 @@ public class UserGetDTO {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public String getCorrectedGuesses() {
+        return correctedGuesses;
+    }
+
+    public void setCorrectedGuesses(String correctedGuesses) {
+        this.correctedGuesses = correctedGuesses;
     }
 }

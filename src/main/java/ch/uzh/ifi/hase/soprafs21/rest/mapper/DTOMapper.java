@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.game.Guesses;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -20,6 +21,7 @@ public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
+    // USER DTOs //
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "id", target = "id")
@@ -31,24 +33,21 @@ public interface DTOMapper {
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "birthdate", target = "birthdate")
-    @Mapping(source = "guess", target = "guess")
     @Mapping(source = "model", target = "model")
     @Mapping(source = "totalScore", target = "totalScore")
     @Mapping(source = "isReady", target = "isReady")
-    //@Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     User convertUserGetDTOtoEntity(UserGetDTO userGetDTO);
 
-
-    // TODO user PUT dto mapper
-    @Mapping(source = "id", target =  "id")
+    //@Mapping(source = "id", target =  "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "guesses", target = "guesses")
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
+    // PICTURES DTOs //
     @Mapping(source = "pictureLink", target="pictureLink")
     PicturesGetDTO convertEntityToPicturesGetDTO(Picture picture);
 
@@ -63,6 +62,6 @@ public interface DTOMapper {
 //@Mapping(source = "pictureLink", target = "pictureLink")
 //@Mapping(source = "coordinate", target = "coordinate")
 //@Mapping(source = "userID" , target = "userID")
-//    PicturesGetDTO convertEntityTOPicturesGetDTO(Picture picture);
+//    PicturesGetDTO convertEntityToPicturesGetDTO(Picture picture);
 
 }

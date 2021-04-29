@@ -11,7 +11,6 @@ import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ch.uzh.ifi.hase.soprafs21.game.SetNames;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,13 +37,9 @@ public class GameService {
     private final GameSessionRepository gameSessionRepository;
 
     // game variables
-    private final int NR_OF_PLAYERS = 3;    // TODO what is the range of min-max nr of players? How to get this?
+    private final int NR_OF_PLAYERS = 4;    // TODO what is the range of min-max nr of players? How to get this?
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS", "LACE"};
     private final int NR_OF_SETS = SET_NAMES.length;
-
-    // user references
-    //public User[] playingUsers = null;  // index of playing users will remain the same for the entire game
-    //public User currentUser = null;
 
     @Autowired
     public GameService(@Qualifier("picturesRepository") PicturesRepository picturesRepository, UserRepository userRepository, GameSessionRepository gameSessionRepository) {
@@ -104,7 +99,6 @@ public class GameService {
         GamePlay currentGame = gameSessionRepository.findByGameID(1L);
         currentGame.addScreenshot(submittedShot);
     }
-
     /**
      *
      */
@@ -118,9 +112,11 @@ public class GameService {
         ArrayList<String> temp = new ArrayList<>();
 
         // for test purposes
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < NR_OF_PLAYERS; i++){
+            playingUsers[i].setUsername("USER " + String.valueOf(i));
+            playingUsers[i].setAssignedCoordinates(i);
+            playingUsers[i].setPoints(0); // init all points to 0
             playingUsers[i].setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
-            playingUsers[i].setUsername(String.valueOf(i));
             userRepository.save(playingUsers[i]);
             userRepository.flush();
         }
@@ -146,7 +142,7 @@ public class GameService {
         //this.playingUsers = getPlayingUsers(userNames); // for dev use only
 
         // for test purposes
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 3; i++){
             playingUsers[i].setUsername(String.valueOf(i));
             userRepository.save(playingUsers[i]);
             userRepository.flush();
@@ -172,44 +168,61 @@ public class GameService {
         return usersList;
     }
 
+    public Map<String, String> getGuessesHashMap(String guesses){
+        // convert string and save values into hashmap ////////
+        String tempUsername = "";
+        String tempCoordinates = "";
+        Map<String, String> result = new HashMap<String, String>();
 
-//    public void setCurrentUser(String userName){
-//        for(User user : playingUsers){
-//            if(user.getUsername().equals(userName)){
-//                this.currentUser = user;
-//            }
-//        }
-//
-//        System.out.println("ERROR - COULDN'T FIND THAT USER!");
-//    }
+        for(int i = 0; i < guesses.length(); i++){
+            for(int j = 0; j < 2; j++){ // first 2 letters are coordinates
+                tempCoordinates += guesses.charAt(i+j);
+            }
+            i+=2; // skip coordinates, goto username
 
-    public void handleGuesses(User currentUser){
-        ArrayList<ArrayList<String>> correctedGuesses = new ArrayList<ArrayList<String>>() ; // TODO make better list
-        String userGuesses = currentUser.getGuesses();
-        User tempUser;
-        String isCorrect;
-        ArrayList<String> answer;
+            while(i < guesses.length()-1 && guesses.charAt(i) != '-'){
+                tempUsername += guesses.charAt(i);
+                i++;
+            }
+            result.put(tempUsername, tempCoordinates);
+            tempUsername = tempCoordinates = "";
+        }
 
-//        for(ArrayList<String> tuple : userGuesses){
-//            tempUser = userRepository.findByUsername(tuple.get(0));
-//            if(tempUser != null){
-//                isCorrect = "n";
-//                if(tempUser.getAssignedCoordinates() == Integer.parseInt(tuple.get(1))){
-//                    // TODO +1 point
-//                    isCorrect = "y";
-//                }
-//                answer = new ArrayList<String>( Arrays.asList(tempUser.getUsername(), isCorrect) );
-//                correctedGuesses.add(answer);
-//            }
-//            else{
-//                System.out.println("ERROR couldn't find that user!"); // TOOD make exception
-//                return;
-//            }
-//        }
+        return result;
+    }
 
-        // für Testzwecke guesses in console geschrieben
-        System.out.println(correctedGuesses);
-        // TODO update scoreboard
+    public void handleGuesses(User user){
+        User player = userRepository.findByUsername(user.getUsername());
+
+        // convert String(guesses) to hashmap with username and coordinate
+        Map<String, String> guesses = getGuessesHashMap(user.getGuesses());
+
+        // correct guesses
+        String[] coordinateNames = { "A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "D1", "D2", "D3", "D4" };
+        User tempUsr;
+        Map<String, String> correctedGuesses = new HashMap<String, String>();
+        String result = "";
+        for( Map.Entry<String, String> entry : guesses.entrySet() ){
+            tempUsr = userRepository.findByUsername(entry.getKey());
+            // check if coordinates match
+            if( coordinateNames[tempUsr.getAssignedCoordinates()].equals( entry.getValue().toUpperCase() ) ){
+                tempUsr.setPoints(tempUsr.getPoints()+1); // give user a point
+                result += "y" + entry.getKey();
+            }
+            else{
+                result += "n" + entry.getKey();
+            }
+            result += "-";
+        }
+
+        String x;
+        if(player.getCorrectedGuesses() == null){ x = result; }
+        else{ x = player.getCorrectedGuesses() + result; }
+
+        player.setCorrectedGuesses(x);
+
+        userRepository.save(player);
+        userRepository.flush();
     }
 
     public Integer[] getShuffledIdxList(int listLength){
@@ -264,4 +277,34 @@ public class GameService {
         }
     }
 
+    public Map<String, Map<String, String>> returnCorrectedGuesses() {
+        String correctedGuesses = "";
+        Map<String, String> temp = new HashMap<>();
+        String username = "";
+        String answer = "";
+        Map<String, Map<String, String>> result = new HashMap<>(); // { username:{max:y,eva:n}, username:{max:y,eva:n}}
+
+        for(User usr : playingUsers){
+            correctedGuesses = usr.getCorrectedGuesses();
+            if(correctedGuesses != null){
+                // convert
+                for(int i = 0; i < correctedGuesses.length(); i++){
+                    answer += correctedGuesses.charAt(i);
+                    i++; // skip answer "y"/"n"
+                    // parse username
+                    while(i < correctedGuesses.length()-1 && correctedGuesses.charAt(i) != '-'){
+                        username += correctedGuesses.charAt(i);
+                        i++;
+                    }
+                    temp.put(username, answer);
+                    username = answer = ""; // reset
+                }
+                System.out.println("username: "+usr.getUsername());
+                System.out.println(temp.values());
+                result.put(usr.getUsername(), temp);
+            }
+        }
+        System.out.println(result.values());
+        return result;
+    }
 }

@@ -1,18 +1,16 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs21.game.Guesses;
+
+import java.util.List;
+import java.util.Set;
+
 public class UserPutDTO {
+
     private String username;
-
-
-
     private Long id;
-    private String guesses; // guess1: {"adam":null}, guess2: {"eva": null}, guess3: null, guess4: null
-    // [{"adam":null}, {"adam":null}]
-
+    private String guesses;
     private boolean isReady;
-
-    public String getGuesses() { return guesses; }
-    public void setGuesses(String guesses) { this.guesses = guesses; }
 
     public String getUsername() {
         return username;
@@ -30,9 +28,11 @@ public class UserPutDTO {
         return id;
     }
 
-    public void setId(Long userID) {
-        this.id = id;
+    public String getGuesses() {
+        return guesses;
     }
 
-
+    public void setGuesses(String guesses) {
+        this.guesses = guesses;
+    }
 }

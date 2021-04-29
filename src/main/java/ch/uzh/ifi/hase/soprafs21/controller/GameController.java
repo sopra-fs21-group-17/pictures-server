@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * GameController is used to manage incoming REST request coming from the client
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 public class GameController {
 
+    // TODO delete this...
     private final String mainGame = "/board";
     private final String pictures = "/pictures";
     private final String guesses = "/guess";
@@ -99,13 +101,21 @@ public class GameController {
         return screenshotGetDTOs;
     }
 
-    @PutMapping(guesses)
+    @PutMapping("/guesses")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void submitGuesses(@RequestBody UserPutDTO userPutDTO){
-       User currentUser = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-       //Long userID = currentUser.getId();
-       //Map<User,String> guesses =  currentUser.getGuesses();
-       gameService.handleGuesses(currentUser);
+        User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        gameService.handleGuesses(user);
+    }
+
+    @GetMapping("/correctedGuesses")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Map<String, Map<String, String>> returnCorrectedGuesses(){
+        Map<String, Map<String, String>> correctedGuesses = gameService.returnCorrectedGuesses();
+        System.out.println(correctedGuesses.values());
+
+        return correctedGuesses;
     }
 
     /**
@@ -141,13 +151,6 @@ public class GameController {
         return null;
     }
 
-//    @GetMapping(guesses)
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public void getUserPoints(){
-//        // TODO
-//    }
-//
 //    @GetMapping(mainGame)
 //    @ResponseStatus(HttpStatus.OK)
 //    @ResponseBody

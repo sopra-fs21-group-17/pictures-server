@@ -1,12 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.game.Guesses;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -49,9 +52,6 @@ public class User implements Serializable {
     private String model;
 
     @Column
-    private String guess;
-
-    @Column
     private int totalScore;
 
     @Column
@@ -67,13 +67,16 @@ public class User implements Serializable {
     private int assignedCoordinates; // mapping style: A1=0,A2=1...D5=15
 
     @Column
-    private String correctedGuess; // TODO change to array sth...
+    private String correctedGuesses; // TODO change to array sth...
 
     @Column
-    private String guesses; // TODO change to array sth...
+    private String guesses; // TODO how to make collection for guesses???
 
     @Column
     private String screenshotURL;
+
+    @Column
+    private int points;
 
     public User() {
     }
@@ -109,19 +112,11 @@ public class User implements Serializable {
     }
 
     public String getCorrectedGuesses() {
-        return correctedGuess;
+        return correctedGuesses;
     }
 
-    public void setCorrectedGuesses(String correctedGuess) {
-        this.correctedGuess = correctedGuess;
-    }
-
-    public String getGuesses() {
-        return guesses;
-    }
-
-    public void setGuesses(String guesses) {
-        this.guesses = guesses;
+    public void setCorrectedGuesses(String correctedGuesses) {
+        this.correctedGuesses = correctedGuesses;
     }
 
     public void setPassword(String password) { this.password = password; }
@@ -133,10 +128,6 @@ public class User implements Serializable {
     public String getToken() { return token; }
 
     public void setToken(String token) { this.token = token; }
-
-    public String getGuess() { return guess; }
-
-    public void setGuess(String guess) { this.guess = guess; }
 
     public String getModel() { return model; }
 
@@ -168,5 +159,21 @@ public class User implements Serializable {
 
     public void setScreenshotURL(String screenshotURL) {
         this.screenshotURL = screenshotURL;
+    }
+
+    public String getGuesses() {
+        return guesses;
+    }
+
+    public void setGuesses(String guesses) {
+        this.guesses = guesses;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 }
