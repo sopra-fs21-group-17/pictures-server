@@ -1,8 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+
 public class UserPutDTO {
     private String username;
-    private String guesses; // guess1: {"adam":null}, guess2: {"eva": null}, guess3: null, guess4: null
+    private String guesses;
+    private String lobbyId;// guess1: {"adam":null}, guess2: {"eva": null}, guess3: null, guess4: null
     // [{"adam":null}, {"adam":null}]
 
     private boolean isReady;
@@ -21,4 +24,8 @@ public class UserPutDTO {
     public boolean isReady() { return isReady; }
 
     public void setIsReady(boolean isReady) { this.isReady = isReady;}
+
+    public String getLobbyId() { return lobbyId; }
+
+    public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
 }

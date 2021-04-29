@@ -1,11 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Countdown;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.PicturesGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -34,13 +33,33 @@ public interface DTOMapper {
     @Mapping(source = "model", target = "model")
     @Mapping(source = "totalScore", target = "totalScore")
     @Mapping(source = "isReady", target = "isReady")
-    //@Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     // TODO user PUT dto mapper
     @Mapping(source = "username", target = "username")
     @Mapping(source = "guesses", target = "guesses")
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+
+
+    @Mapping(source="count", target = "count")
+    CountdownGetDTO converEntityToCountdownDTO(Countdown countdown);
+
+    @Mapping(source = "lobbyId", target = "lobbyId")
+    @Mapping(source = "count", target = "count")
+    Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
+
+    @Mapping(source = "lobbyId", target = "lobbyId")
+    @Mapping(source = "userList", target = "userList")
+    @Mapping(source = "count", target = "count")
+    @Mapping(source = "lobbyReady", target = "lobbyReady")
+    @Mapping(source = "playersCount", target = "playersCount")
+    LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
+
+    @Mapping(source = "lobbyId", target = "lobbyId")
+    @Mapping(source = "userList", target = "userList")
+    @Mapping(source = "lobbyReady", target = "lobbyReady")
+    @Mapping(source = "playersCount", target = "playersCount")
+    Lobby convertLobbyPutDTOtoEntity(LobbyPutDTO lobbyPutDTO);
 
 //@Mapping(source = "pictureLink", target = "pictureLink")
 //@Mapping(source = "coordinate", target = "coordinate")

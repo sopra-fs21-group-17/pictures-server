@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+
 import java.util.Date;
 import java.util.Dictionary;
 
@@ -13,7 +15,7 @@ public class UserGetDTO {
     private String model;
     private int totalScore;
     private boolean isReady;
-    //private UserStatus status;
+    private String lobbyId;
 
 //    public Long getId() {
 //        return id;
@@ -57,4 +59,7 @@ public class UserGetDTO {
 
     public void setIsReady(boolean isReady) { this.isReady = isReady;}
 
+    public String getLobbyId() { return lobbyId; }
+
+    public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
 }

@@ -44,4 +44,6 @@ public class UserPostDTO {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
 }

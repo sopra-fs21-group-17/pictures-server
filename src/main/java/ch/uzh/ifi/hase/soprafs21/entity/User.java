@@ -50,6 +50,9 @@ public class User implements Serializable {
     @Column
     private Boolean isReady;
 
+    //@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private String lobbyId;
+
     @Column
     private UserStatus status;
 
@@ -64,6 +67,9 @@ public class User implements Serializable {
 
     @Column
     private String guesses; // TODO change to array sth...
+
+    public User() {
+    }
 
     public Long getId() { return id; }
 
@@ -137,4 +143,7 @@ public class User implements Serializable {
 
     public void setIsReady(Boolean isReady) { this.isReady = isReady; }
 
+    public String getLobbyId() { return lobbyId; }
+
+    public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
 }
