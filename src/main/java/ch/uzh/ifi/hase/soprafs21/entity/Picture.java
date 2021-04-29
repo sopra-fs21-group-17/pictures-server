@@ -20,7 +20,7 @@ public class Picture implements Serializable {
     @Column(nullable = false, unique = true)
     private String pictureLink;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private int coordinates;
 
     @Column(unique = true)
