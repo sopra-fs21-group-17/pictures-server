@@ -8,7 +8,7 @@ import java.util.UUID;
 
 
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
-import ch.uzh.ifi.hase.soprafs21.entity.Picture;
+
 import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

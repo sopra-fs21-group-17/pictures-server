@@ -17,7 +17,7 @@ public class Picture implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column
     private String pictureLink;
 
     @Column(unique = true)
