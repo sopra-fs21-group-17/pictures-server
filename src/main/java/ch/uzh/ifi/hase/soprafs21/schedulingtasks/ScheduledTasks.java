@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-
 
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 
@@ -52,46 +50,39 @@ public class ScheduledTasks {
     /**
      * calls the Unsplash API en retrieves a list with all the URLs of the pictures in a specified interval
      */
-    @Scheduled(cron="*/50 * * * * *")
+    @Scheduled(fixedRate = 1000*60*60*12) //timeinterval set to execute every 12 hours
     public void reportCurrentTime() {
         RestTemplate restTemplate = new RestTemplate();
+
+        //executes API call to retrieve all the Pictures
         ResponseEntity<Object[]> response1 = restTemplate.getForEntity("https://api.unsplash.com/collections/92251930/photos/?client_id=XOKcoSRnH7ajyAT1Qd0kQ0K0-fDjw_FGvqFyZE27Zso&per_page=30", Object[].class);
         ResponseEntity<Object[]> response2 = restTemplate.getForEntity("https://api.unsplash.com/collections/92251930/photos/?client_id=XOKcoSRnH7ajyAT1Qd0kQ0K0-fDjw_FGvqFyZE27Zso&per_page=30&page=2", Object[].class);
+
+        //response bodies added to a object list
         Object[] objects1 = response1.getBody();
         Object[] objects2 = response2.getBody();
-        ArrayList<String> pictures = new ArrayList<String>();
 
+        //creates a picture entity and adds it to the picturesrepository for every picture in the objectlist
         for(int i = 0; i < objects1.length; i++){
 
             String test = objects1[i].toString();
-
             Picture newPicture = new Picture();
-
             newPicture.setPictureLink(test.substring(test.indexOf("regular=")+8, test.indexOf(",",test.indexOf("regular="))));
-
             createPicture(newPicture);
-
-
-//            pictures.add(test.substring(test.indexOf("regular=")+8, test.indexOf(",",test.indexOf("regular="))));
-//            log.info(pictures.get(i));
         }
+
+        //creates a picture entity and adds it to the picturesrepository for every picture in the objectlist
         for(int i = 0; i < objects2.length; i++){
 
             String test = objects2[i].toString();
-
             Picture newPicture = new Picture();
-
             newPicture.setPictureLink(test.substring(test.indexOf("regular=")+8, test.indexOf(",",test.indexOf("regular="))));
-
             createPicture(newPicture);
-
-
-//            pictures.add(test.substring(test.indexOf("regular=")+8, test.indexOf(",",test.indexOf("regular="))));
-//            log.info(pictures.get(i));
         }
 
-        log.info("The time is now {}", dateFormat.format(new Date()));
-        log.info(String.valueOf(this.picturesRepository.findAll()));
+        //created for testing purposes
+//        log.info("The time is now {}", dateFormat.format(new Date()));
+//        log.info(String.valueOf(this.picturesRepository.findAll()));
     };
 
     public void createPicture(Picture newPicture)  {
@@ -99,8 +90,5 @@ public class ScheduledTasks {
         // saves the given entity but data is only persisted in the database once flush() is called
         picturesRepository.save(newPicture);
         picturesRepository.flush();
-
-        //log.debug("Created Information for Picture: {}", newPicture);
-        //return newPicture;
     }
 }

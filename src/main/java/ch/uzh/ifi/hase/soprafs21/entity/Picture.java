@@ -20,10 +20,10 @@ public class Picture implements Serializable {
     @Column
     private String pictureLink;
 
-    @Column(unique = true)
+    @Column
     private int coordinates;
 
-    @Column(unique = true)
+    @Column
     private Long userID;
 
     public String getPictureLink() {
