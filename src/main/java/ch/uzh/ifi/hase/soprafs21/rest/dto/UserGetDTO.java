@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+
 import java.util.Date;
 import java.util.Dictionary;
 
@@ -16,7 +18,7 @@ public class UserGetDTO {
     private String model;
     private int totalScore;
     private boolean isReady;
-    //private UserStatus status;
+    private UserStatus status;
 
     public Long getId() { return id; }
 
@@ -78,5 +80,13 @@ public class UserGetDTO {
 
     public void setAssignedSet(String assignedSet) {
         this.assignedSet = assignedSet;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
 }
