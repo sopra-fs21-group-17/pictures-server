@@ -129,18 +129,18 @@ public class GameController {
     /**
      *
      * @param userGetDTO
-     * @return returns a Gameplay DTO that will contain a single pictureURL that has been stored in the gameplay entity
      */
     @GetMapping(picture)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
+
     public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO) {
         User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
         int assignedToken = currentUser.getAssignedCoordinates();
 
         return null;
     }
-
+    
 //    @GetMapping(guesses)
 //    @ResponseStatus(HttpStatus.OK)
 //    @ResponseBody
@@ -161,5 +161,4 @@ public class GameController {
 //    public void playAgain(){
 //        // TODO
 //    }
-
 }

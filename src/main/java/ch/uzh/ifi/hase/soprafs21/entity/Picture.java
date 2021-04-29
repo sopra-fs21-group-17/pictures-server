@@ -17,13 +17,13 @@ public class Picture implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column
     private String pictureLink;
 
-    @Column(nullable = false, unique = true)
+    @Column
     private int coordinates;
 
-    @Column(unique = true)
+    @Column
     private Long userID;
 
     public String getPictureLink() {
