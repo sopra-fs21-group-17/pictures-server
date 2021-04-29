@@ -72,6 +72,12 @@ public class User implements Serializable {
     @Column
     private String guesses; // TODO change to array sth...
 
+    @Column
+    private String screenshotURL;
+
+    public User() {
+    }
+
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
@@ -154,5 +160,13 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getScreenshotURL() {
+        return screenshotURL;
+    }
+
+    public void setScreenshotURL(String screenshotURL) {
+        this.screenshotURL = screenshotURL;
     }
 }

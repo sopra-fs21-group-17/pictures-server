@@ -64,6 +64,14 @@ public class GameController {
 
     }
 
+    @GetMapping("/screenshots")
+    @ResponseStatus(HttpStatus.OK)
+    public ArrayList<ArrayList<String>> getScreenshots(){
+        ArrayList<ArrayList<String>> response = gameService.getUsersScreenshots();
+
+        return response;
+    }
+
     /**
      * Used to save screenshot URLs to the Back end
      * @param screenshotPutDTO
@@ -126,9 +134,12 @@ public class GameController {
     @GetMapping(picture)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO){
+    public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO) {
         User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
         int assignedToken = currentUser.getAssignedCoordinates();
+
+        return null;
+    }
 
 //    @GetMapping(guesses)
 //    @ResponseStatus(HttpStatus.OK)
@@ -150,19 +161,5 @@ public class GameController {
 //    public void playAgain(){
 //        // TODO
 //    }
-
-    @GetMapping(mainGame)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void exitGame(){
-        // TODO
-    }
-
-    @GetMapping(mainGame)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void playAgain(){
-        // TODO
-    }
 
 }

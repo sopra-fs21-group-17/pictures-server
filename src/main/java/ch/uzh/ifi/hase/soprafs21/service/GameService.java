@@ -37,8 +37,6 @@ public class GameService {
     private final UserRepository userRepository;
     private final GameSessionRepository gameSessionRepository;
 
-
-
     // game variables
     private final int NR_OF_PLAYERS = 3;    // TODO what is the range of min-max nr of players? How to get this?
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS", "LACE"};
@@ -115,6 +113,29 @@ public class GameService {
         return currentGame.getListOfScreenshots();
     }
 
+    public ArrayList<ArrayList<String>> getUsersScreenshots(){
+        ArrayList<ArrayList<String>> response = new ArrayList<>();
+        ArrayList<String> temp = new ArrayList<>();
+
+        // for test purposes
+        for(int i = 0; i < 4; i++){
+            playingUsers[i].setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
+            playingUsers[i].setUsername(String.valueOf(i));
+            userRepository.save(playingUsers[i]);
+            userRepository.flush();
+        }
+        ////////////////////
+
+        for(User u : playingUsers){
+            temp.add(u.getUsername());
+            temp.add(u.getScreenshotURL());
+            response.add(temp);
+            temp = new ArrayList<>();
+        }
+
+        return response;
+    }
+
     /**
      * Initializes the game:
      *  - Assign random coordinates to each user
@@ -127,7 +148,6 @@ public class GameService {
         // for test purposes
         for(int i = 0; i < 4; i++){
             playingUsers[i].setUsername(String.valueOf(i));
-            //playingUsers[i].setId(Long.valueOf(i));
             userRepository.save(playingUsers[i]);
             userRepository.flush();
         }
