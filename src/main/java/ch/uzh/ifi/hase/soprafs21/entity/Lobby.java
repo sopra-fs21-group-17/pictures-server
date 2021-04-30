@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.persistence.*;
 import java.util.*;
@@ -14,12 +16,15 @@ public class Lobby {
     @Id
     private String lobbyId;
 
-    @Column
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "lobby")
-    private List<User> userList = new ArrayList<User>();
+//    @Column
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "lobby")
+//    private List<User> userList = new ArrayList<User>();
 
     @Column
-    private int count;
+    private long creationTime;
+
+    @Column
+    private double timeDifference;
 
     @Column int playersCount;
 
@@ -30,13 +35,15 @@ public class Lobby {
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
 
-    public List<User> getUserList() { return userList; }
 
-    public void setUserList(List<User> userList) { this.userList = userList; }
 
-    public int getCount() { return count; }
+    public long getCreationTime() { return creationTime; }
 
-    public void setCount(int count) { this.count = count; }
+    public void setCreationTime(long creationTime) { this.creationTime = creationTime; }
+
+    public double getTimeDifference() { return timeDifference; }
+
+    public void setTimeDifference(double timeDifference) { this.timeDifference = timeDifference; }
 
     public boolean isLobbyReady() { return lobbyReady; }
 
@@ -46,3 +53,5 @@ public class Lobby {
 
     public void setPlayersCount(int playersCount) { this.playersCount = playersCount; }
 }
+
+

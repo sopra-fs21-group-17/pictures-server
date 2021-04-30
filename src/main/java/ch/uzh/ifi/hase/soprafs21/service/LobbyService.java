@@ -25,33 +25,26 @@ public class LobbyService {
         this.userRepository = userRepository;
     }
 
+    //returns the list of Users in the Lobby
     public List<User> getUsersInLobby(String lobbyId) {
-        List<User> usersInLobby= userRepository.findDistinctUserBy(lobbyId);
+        List<User> usersInLobby= new ArrayList<>();
+        List<User> allUsers = this.userRepository.findAll();
+        System.out.println(allUsers);
 
-//        List<User> allUsers = this.userRepository.findAll();
-//        for(User user: allUsers){
-//            Lobby userLobby = user.getLobby();
-//            if (userLobby.getLobbyId() == lobbyId){
-//                usersInLobby.add(user);
-//            }
-//        }
-//        Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
-//        List<User> usersInLobby = currentLobby.getUserList();
+        for(User user: allUsers){
+            if (user.getLobbyId().equals(lobbyId)){
+                usersInLobby.add(user);
+            }
+        }
+
         return usersInLobby;
     }
 
-
-//    public List<User> getUsers(String lobbyId) {
-//        Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
-//        //List<User> usersInLobby = userRepository.findAllBy(currentLobby);
-//        List<User> usersInLobby = currentLobby.getUserList();
-//        return usersInLobby ;
-//    }
-
+    //creates a new Lobby
     public Lobby createLobby(Lobby newLobby)  {
 
         checkIfLobbyExists(newLobby);
-        //newUser.setIsReady(false);
+        newLobby.setCreationTime(System.nanoTime());
 
         // saves the given entity but data is only persisted in the database once flush() is called
         newLobby = lobbyRepository.save(newLobby);
@@ -61,22 +54,44 @@ public class LobbyService {
         return newLobby;
     }
 
+    //calculates and sets the timeDifference in order to after update the count
+    public void updateCount(String lobbyId){
+        Lobby foundByLobbyId = lobbyRepository.findByLobbyId(lobbyId);
+
+        long currentTime = System.nanoTime();
+
+        long timeDifference = foundByLobbyId.getCreationTime() - currentTime;
+
+        foundByLobbyId.setTimeDifference((double) timeDifference /1_000_000_000);
+
+        lobbyRepository.flush();
+
+    }
+
+    //adds  User to the Lobby
     public void addUserToLobby(User user, String lobbyId){
         String username = user.getUsername();
+
+
         User userToAdd = userRepository.findByUsername(username);
-        //Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
         userToAdd.setLobbyId(lobbyId);
+        userToAdd.setIsReady(false);
+
+
 
         userRepository.flush();
         lobbyRepository.flush();
     }
 
+
+    //checks if the User are ready and gets the Players count in the lobby
     public Lobby checkReadyAndGetCount(String lobbyId){
         int countReady = 0;
         int countUsers = 0;
 
         Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
-        List<User>usersInLobby = userRepository.findDistinctUserBy(lobbyId);
+        List<User> usersInLobby = getUsersInLobby(lobbyId);
+
         for(User user : usersInLobby){
             countUsers += 1;
             if (user.getIsReady()){
@@ -86,24 +101,24 @@ public class LobbyService {
         currentLobby.setPlayersCount(countUsers);
         if (countReady >= 3 && countReady == countUsers){
             currentLobby.setLobbyReady(true);
+        }else if (countReady == 5){
+            currentLobby.setLobbyReady(true);
+
         }else{
             currentLobby.setLobbyReady(false);
         }
+        lobbyRepository.flush();
+
         return currentLobby;
     }
 
-    public int countDown(){
-        int count = 100;
-        return count;
 
-    }
-
+    //checks if the lobby exists and is full
     private void checkIfLobbyExists(Lobby lobbyToBeCreated) {
         Lobby lobbyByLobbyId = lobbyRepository.findByLobbyId(lobbyToBeCreated.getLobbyId());
 
-
-        String baseErrorMessage = "lobby already taken, therefore the User could not be created!";
-        if (lobbyByLobbyId != null) {
+        String baseErrorMessage = "lobby already taken, therefore the User could not be added to the lobby!";
+        if (lobbyByLobbyId != null && lobbyByLobbyId.getPlayersCount() >= 5) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, (baseErrorMessage));
         }
 
@@ -113,11 +128,11 @@ public class LobbyService {
         Lobby lobbyById = lobbyRepository.findByLobbyId(lobbyId);
 
         if(lobbyById != null){
-            if(lobbyById.getLobbyId() != lobbyId){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game code!");
+            if(!lobbyById.getLobbyId().equals(lobbyId)){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game Code!");
             }
         }else{
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game Code!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game Code1!");
         }
     }
 }

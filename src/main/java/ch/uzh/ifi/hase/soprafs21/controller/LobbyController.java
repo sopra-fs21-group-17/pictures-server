@@ -1,15 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,36 +19,6 @@ public class LobbyController {
     LobbyController(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
     }
-//    @GetMapping("/lobbies/{lobbyId}")
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public List<UserGetDTO> getAllUsers(@PathVariable String lobbyId) {
-//        // fetch all users in the internal representation
-//        List<User> users = lobbyService.getUsers(lobbyId);
-//        List<UserGetDTO> userGetDTOs = new ArrayList<>();
-//
-//        // convert each user to the API representation
-//        for (User user : users) {
-//            userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
-//        }
-//        //returns list
-//        return userGetDTOs;
-//    }
-//    @GetMapping("/lobbies")
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public List<LobbyGetDTO> getAllLobbies() {
-//        // fetch all lobbies in the internal representation
-//        List<Lobby> lobbies = lobbyService.getLobbies();
-//        List<LobbyGetDTO> lobbyGetDTO = new ArrayList<>();
-//
-//        // convert each user to the API representation
-//        for (Lobby lobby : lobbies) {
-//        lobbyGetDTO.add(DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby));
-//     }
-//        //returns list
-//        return lobbyGetDTO;
-//}
 
     @PostMapping("/lobbies")
     @ResponseStatus(HttpStatus.CREATED)
@@ -59,45 +27,56 @@ public class LobbyController {
 
         Lobby lobbyInput = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(lobbyPostDTO);
 
+        //creates a new lobby
         Lobby createdLobby = lobbyService.createLobby(lobbyInput);
 
+        //returns the createdLobby to the API
         return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(createdLobby);
     }
 
     @PutMapping("/lobbies/users/{lobbyId}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    //post user to lobbyArray
     public void addUserToLobby(@RequestBody UserPostDTO userPostDTO, @PathVariable String lobbyId){
 
         User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+        //posts user to lobbyArray
 
         lobbyService.addUserToLobby(userInput, lobbyId);
     }
-    @PutMapping("/lobbies/{lobbyId}/users/")
+
+    @PutMapping("/lobbies/{lobbyId}/users")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    //post user to lobbyArray
     public void checkLobbyById(@PathVariable String lobbyId){
 
+        //checks if the lobby Id is correct
         lobbyService.checkLobbyId(lobbyId);
     }
+    @PutMapping("/lobbies/count/{lobbyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void updateCount(@PathVariable String lobbyId)  {
 
-
-    @GetMapping("/lobbies/users/{lobbyId}")
+        //updates the lobby count
+        lobbyService.updateCount(lobbyId);
+    }
+    @GetMapping("/lobbies/ready/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<UserGetDTO> getAllUsers(@PathVariable String lobbyId) {
-        // fetch all users in the internal representation
-        List<User> users = lobbyService.getUsersInLobby(lobbyId);
-        List<UserGetDTO> userGetDTOs = new ArrayList<>();
+    public LobbyGetDTO checkIsLobbyReady(@PathVariable String lobbyId) {
 
-        // convert each user to the API representation
-        for (User user : users) {
-            userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
-        }
-        //returns list
-        return userGetDTOs;
+        //gets the current Lobby
+        Lobby lobby = lobbyService.checkReadyAndGetCount(lobbyId);
+
+        // convert lobby to the API representation
+
+        //returns lobby
+        return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
     }
+
+
+
+
 
 }

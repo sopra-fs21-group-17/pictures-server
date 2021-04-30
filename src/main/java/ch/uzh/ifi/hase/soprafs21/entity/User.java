@@ -53,6 +53,7 @@ public class User implements Serializable {
     //@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private String lobbyId;
 
+
     @Column
     private UserStatus status;
 
@@ -146,4 +147,6 @@ public class User implements Serializable {
     public String getLobbyId() { return lobbyId; }
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
+
 }
+

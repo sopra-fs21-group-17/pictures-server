@@ -8,9 +8,9 @@ public class LobbyGetDTO {
 
     private String lobbyId;
 
-    private List<User> userList = new ArrayList<User>();
+    private long creationTime;
 
-    private int count;
+    private double timeDifference;
 
     private boolean lobbyReady;
 
@@ -20,13 +20,13 @@ public class LobbyGetDTO {
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
 
-    public List<User> getUserList() { return userList; }
+    public long getCreationTime() { return creationTime; }
 
-    public void setUserList(List<User> userList) { this.userList = userList; }
+    public void setCreationTime(long creationTime) { this.creationTime = creationTime; }
 
-    public int getCount() { return count; }
+    public double getTimeDifference() { return timeDifference; }
 
-    public void setCount(int count) { this.count = count; }
+    public void setTimeDifference(double timeDifference) { this.timeDifference = timeDifference; }
 
     public boolean isLobbyReady() { return lobbyReady; }
 

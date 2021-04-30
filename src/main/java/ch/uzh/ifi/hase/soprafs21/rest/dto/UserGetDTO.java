@@ -17,6 +17,7 @@ public class UserGetDTO {
     private boolean isReady;
     private String lobbyId;
 
+
 //    public Long getId() {
 //        return id;
 //    }
@@ -62,4 +63,5 @@ public class UserGetDTO {
     public String getLobbyId() { return lobbyId; }
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
+
 }

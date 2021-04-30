@@ -10,21 +10,29 @@ public class LobbyPutDTO {
 
     private boolean lobbyReady;
 
+    private long creationTime;
+
+    private double timeDifference;
+
     private int playersCount;
 
-    private List<User> userList = new ArrayList<User>();
 
     public String getLobbyId() { return lobbyId; }
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
 
-    public List<User> getUserList() { return userList; }
-
-    public void setUserList(List<User> userList) { this.userList = userList; }
 
     public boolean isLobbyReady() { return lobbyReady; }
 
     public void setLobbyReady(boolean lobbyReady) { this.lobbyReady = lobbyReady; }
+
+    public long getCreationTime() { return creationTime; }
+
+    public void setCreationTime(long creationTime) { this.creationTime = creationTime; }
+
+    public double getTimeDifference() { return timeDifference; }
+
+    public void setTimeDifference(double timeDifference) { this.timeDifference = timeDifference; }
 
     public int getPlayersCount() { return playersCount; }
 

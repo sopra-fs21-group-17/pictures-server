@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Countdown;
+
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -41,22 +41,19 @@ public interface DTOMapper {
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
 
-    @Mapping(source="count", target = "count")
-    CountdownGetDTO converEntityToCountdownDTO(Countdown countdown);
-
     @Mapping(source = "lobbyId", target = "lobbyId")
-    @Mapping(source = "count", target = "count")
     Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
 
     @Mapping(source = "lobbyId", target = "lobbyId")
-    @Mapping(source = "userList", target = "userList")
-    @Mapping(source = "count", target = "count")
+    @Mapping(source = "creationTime", target = "creationTime")
+    @Mapping(source = "timeDifference", target = "timeDifference")
     @Mapping(source = "lobbyReady", target = "lobbyReady")
     @Mapping(source = "playersCount", target = "playersCount")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
     @Mapping(source = "lobbyId", target = "lobbyId")
-    @Mapping(source = "userList", target = "userList")
+    @Mapping(source = "creationTime", target = "creationTime")
+    @Mapping(source = "timeDifference", target = "timeDifference")
     @Mapping(source = "lobbyReady", target = "lobbyReady")
     @Mapping(source = "playersCount", target = "playersCount")
     Lobby convertLobbyPutDTOtoEntity(LobbyPutDTO lobbyPutDTO);

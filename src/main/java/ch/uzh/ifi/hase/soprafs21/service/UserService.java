@@ -17,6 +17,7 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -47,6 +48,22 @@ public class UserService {
         User user = userRepository.findByUsername(username);
         return user;
     }
+    public List<User> getUsersInLobby(String lobbyId) {
+
+        List<User> usersInLobby = new ArrayList<>();
+        List<User> allUsers = getUsers();
+
+
+        for (User user : allUsers) {
+            if (user.getLobbyId().equals(lobbyId)) {
+                usersInLobby.add(user);
+            }
+        }
+
+        userRepository.flush();
+
+        return usersInLobby;
+    }
 
     //returns user from userRepository
     public User getUserLogin(User userInput){
@@ -72,6 +89,7 @@ public class UserService {
         return newUser;
     }
 
+    //updates isReady of the User
     public void updateIsReady(String username, User user){
         User foundByName = userRepository.findByUsername(username);
         checkUserLogin(foundByName);
@@ -84,6 +102,7 @@ public class UserService {
         }
 
     }
+
 
     //changes the date format of the input
     public String changeDateFormat(String date) throws ParseException {
