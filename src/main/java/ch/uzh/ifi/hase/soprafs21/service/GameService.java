@@ -25,19 +25,18 @@ import java.util.*;
 public class GameService {
 
     // user list for test purposes
-    User a = new User();
-    User b = new User();
-    User c = new User();
-    User d = new User();
-    User[] playingUsers = {a, b, c, d};
+//    User a = new User();
+//    User b = new User();
+//    User c = new User();
+//    User d = new User();
+    ArrayList<User> playingUsers;
 
-    //private List<User> gameUsers;
     private final PicturesRepository picturesRepository;
     private final UserRepository userRepository;
     private final GameSessionRepository gameSessionRepository;
 
     // game variables
-    private final int NR_OF_PLAYERS = 4;    // TODO what is the range of min-max nr of players? How to get this?
+    private final int NR_OF_PLAYERS = 4;
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS", "LACE"};
     private final int NR_OF_SETS = SET_NAMES.length;
 
@@ -46,6 +45,23 @@ public class GameService {
         this.picturesRepository = picturesRepository;
         this.userRepository = userRepository;
         this.gameSessionRepository = gameSessionRepository;
+    }
+
+    public void createTestUsers(){
+
+        for(int i = 0; i < NR_OF_PLAYERS; i++){
+            User user = new User();
+            user.setUsername("USER " + String.valueOf(i));
+            user.setAssignedCoordinates(i);
+            user.setPoints(0); // init all points to 0
+            user.setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
+            
+            userRepository.save(user);
+            userRepository.flush();
+
+            playingUsers.add(user);
+        }
+        
     }
 
     public void selectPictures(){
@@ -111,15 +127,18 @@ public class GameService {
         ArrayList<ArrayList<String>> response = new ArrayList<>();
         ArrayList<String> temp = new ArrayList<>();
 
+        createTestUsers(); // for test purposes
         // for test purposes
-        for(int i = 0; i < NR_OF_PLAYERS; i++){
-            playingUsers[i].setUsername("USER " + String.valueOf(i));
-            playingUsers[i].setAssignedCoordinates(i);
-            playingUsers[i].setPoints(0); // init all points to 0
-            playingUsers[i].setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
-            userRepository.save(playingUsers[i]);
-            userRepository.flush();
-        }
+//        for(int i = 0; i < NR_OF_PLAYERS; i++){
+//            playingUsers[i] = userRepository.save(playingUsers[i]);
+//            userRepository.flush();
+//            playingUsers[i].setUsername("USER " + String.valueOf(i));
+//            playingUsers[i].setAssignedCoordinates(i);
+//            playingUsers[i].setPoints(0); // init all points to 0
+//            playingUsers[i].setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
+//            userRepository.save(playingUsers[i]);
+//            userRepository.flush();
+//        }
         ////////////////////
 
         for(User u : playingUsers){
@@ -140,29 +159,33 @@ public class GameService {
      * */
     public void initGame(String[] userNames){
         //this.playingUsers = getPlayingUsers(userNames); // for dev use only
+        createTestUsers();
 
         // for test purposes
-        for(int i = 0; i < 3; i++){
-            playingUsers[i].setUsername(String.valueOf(i));
-            userRepository.save(playingUsers[i]);
-            userRepository.flush();
-        }
+//        for(int i = 0; i < 3; i++){
+//            playingUsers[i] = userRepository.save(playingUsers[i]);
+//            userRepository.flush();
+//            playingUsers[i].setUsername("USER " + String.valueOf(i));
+//            userRepository.save(playingUsers[i]);
+//            userRepository.flush();
+//        }
         ////////////////////
 
         assignCoordinates(playingUsers);
         assignSets(playingUsers);
+
         this.gameSessionRepository.save(new GamePlay());   // needed for management fo Pictures
         gameSessionRepository.flush();
         this.playingUsers = getPlayingUsers(userNames); // for dev use only
 
     }
 
-    public User[] getPlayingUsers(String[] userNames){
+    public ArrayList<User> getPlayingUsers(String[] userNames){
 
-        User[] usersList = new User[NR_OF_PLAYERS];
+        ArrayList<User> usersList = new ArrayList<>();
 
         for(int i = 0; i < NR_OF_PLAYERS; i++){
-            usersList[i] = userRepository.findByUsername(String.valueOf(i));
+            usersList.add(userRepository.findByUsername(String.valueOf(i)));
         }
 
         return usersList;
@@ -191,7 +214,7 @@ public class GameService {
         return result;
     }
 
-    public void handleGuesses(User user){
+    public String handleGuesses(User user){
         User player = userRepository.findByUsername(user.getUsername());
 
         // convert String(guesses) to hashmap with username and coordinate
@@ -220,9 +243,11 @@ public class GameService {
         else{ x = player.getCorrectedGuesses() + result; }
 
         player.setCorrectedGuesses(x);
-
         userRepository.save(player);
         userRepository.flush();
+
+        return x;
+
     }
 
     public Integer[] getShuffledIdxList(int listLength){
@@ -238,20 +263,21 @@ public class GameService {
         return idxList;
     }
 
-    public void assignSets(User[] usersList) {
+    public void assignSets(ArrayList<User> usersList) {
         // make shuffled array with indices to randomly assign sets
         Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
-
+        int i = 0;
         // assign random sets
-        for(int i = 0; i < NR_OF_PLAYERS; i++){
-            usersList[i].setAssignedSet(SET_NAMES[idxList[i]]);
+        for(User user : usersList){
+            user.setAssignedSet(SET_NAMES[idxList[i]]);
+            i++;
         }
     }
 
     // coordinates represented in code like this:
     // A1 = 0, A2 = 1, D4 = 15 ...
     // so just pick random nr between 0-15x3
-    public void assignCoordinates(User[] usersList) {
+    public void assignCoordinates(ArrayList<User> usersList) {
         int repetitions = 3;
         int nrOfCoordinates = 16;
         int totalCoordinates = repetitions * nrOfCoordinates; // 16 cards on board, 3x same coordinate
@@ -272,9 +298,13 @@ public class GameService {
         tempList.toArray(idxList);
 
         // assign coordinates to players
-        for(int i = 0; i < NR_OF_PLAYERS; i++){
-            usersList[i].setAssignedCoordinates(idxList[i]);
+        int i = 0;
+        for(User user : usersList){
+            user.setAssignedCoordinates(idxList[i]);
+            i++;
         }
+
+
     }
 
     public Map<String, Map<String, String>> returnCorrectedGuesses() {

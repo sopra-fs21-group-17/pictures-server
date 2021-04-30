@@ -1,10 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs21.game.Guesses;
-
-import java.util.List;
-import java.util.Set;
-
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 
 public class UserPutDTO {
@@ -12,9 +7,6 @@ public class UserPutDTO {
     private String username;
     private String guesses;
     private String lobbyId;
-    // guess1: {"adam":null}, guess2: {"eva": null}, guess3: null, guess4: null
-    // [{"adam":null}, {"adam":null}]
-
     private Long id;
     private boolean isReady;
 

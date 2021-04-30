@@ -8,6 +8,7 @@ public class UserPostDTO {
     private int assignedCoordinates;
     private String assignedSet;
     private String password;
+    private String guesses;
 
     public String getName() {
         return name;
@@ -16,8 +17,6 @@ public class UserPostDTO {
     public void setName(String name) {
         this.name = name;
     }
-
-
 
     public String getUsername() {
         return username;
@@ -61,4 +60,11 @@ public class UserPostDTO {
         this.id = id;
     }
 
+    public String getGuesses() {
+        return guesses;
+    }
+
+    public void setGuesses(String guesses) {
+        this.guesses = guesses;
+    }
 }

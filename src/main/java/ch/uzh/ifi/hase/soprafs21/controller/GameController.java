@@ -40,11 +40,11 @@ public class GameController {
     public List<UserGetDTO> initGame() {
 
         // TODO get users names list from FE
-        String[] userNames = {"a", "b", "c", "d"};
+        String[] userNames = {"USER 0", "USER 1", "USER 2", "USER 3"};
         //List<User> users = userService.getUsers();
 
         gameService.initGame(userNames);
-        User[] usersList = gameService.getPlayingUsers(userNames);
+        ArrayList<User> usersList = gameService.getPlayingUsers(userNames);
 
         List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
 
@@ -106,6 +106,17 @@ public class GameController {
     public void submitGuesses(@RequestBody UserPutDTO userPutDTO){
         User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
         gameService.handleGuesses(user);
+    }
+
+    // since get/correcteddGuesses not returning anything at the moment, using this instead
+    // when it works use @PutMapping("/guesses") again...
+    @PostMapping("/guesses")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public String submitGuesses(@RequestBody UserPostDTO userPostDTO){
+        User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+
+        return gameService.handleGuesses(user);
     }
 
     @GetMapping("/correctedGuesses")
