@@ -81,6 +81,7 @@ public class ScheduledTasks {
         }
 
         //created for testing purposes
+        log.info("Pictures Fetched");
 //        log.info("The time is now {}", dateFormat.format(new Date()));
 //        log.info(String.valueOf(this.picturesRepository.findAll()));
     };
