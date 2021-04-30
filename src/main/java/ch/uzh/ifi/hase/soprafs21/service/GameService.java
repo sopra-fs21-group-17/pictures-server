@@ -11,10 +11,8 @@ import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -27,11 +25,7 @@ import java.util.*;
 public class GameService {
 
     // user list for test purposes
-//    User a = new User();
-//    User b = new User();
-//    User c = new User();
-//    User d = new User();
-    ArrayList<User> playingUsers;
+    ArrayList<User> playingUsers = new ArrayList<>();
 
     private final PicturesRepository picturesRepository;
     private final UserRepository userRepository;
@@ -49,10 +43,6 @@ public class GameService {
         this.gameSessionRepository = gameSessionRepository;
     }
 
-    /**
-     * selects Pictures from the external API according to their ID randomly
-     * So there are 16 chosen and saved into the corresponding GamePlay entity.
-     */
     public void createTestUsers(){
 
         for(int i = 0; i < NR_OF_PLAYERS; i++){
@@ -70,6 +60,10 @@ public class GameService {
         
     }
 
+    /**
+     * selects Pictures from the external API according to their ID randomly
+     * So there are 16 chosen and saved into the corresponding GamePlay entity.
+     */
     public void selectPictures(){
         //goes from 0 to 15 for easier mapping
         int maxPictures = 16;
@@ -122,6 +116,7 @@ public class GameService {
         GamePlay currentGame = gameSessionRepository.findByGameID(1L);
         currentGame.addScreenshot(submittedShot);
     }
+
     /**
      *
      */
@@ -134,7 +129,7 @@ public class GameService {
         ArrayList<ArrayList<String>> response = new ArrayList<>();
         ArrayList<String> temp = new ArrayList<>();
 
-        createTestUsers(); // for test purposes
+        //createTestUsers(); // for test purposes
         // for test purposes
 //        for(int i = 0; i < NR_OF_PLAYERS; i++){
 //            playingUsers[i] = userRepository.save(playingUsers[i]);
@@ -165,18 +160,7 @@ public class GameService {
      *  - Initialize and select pictures for game
      * */
     public void initGame(String[] userNames){
-        //this.playingUsers = getPlayingUsers(userNames); // for dev use only
         createTestUsers();
-
-        // for test purposes
-//        for(int i = 0; i < 3; i++){
-//            playingUsers[i] = userRepository.save(playingUsers[i]);
-//            userRepository.flush();
-//            playingUsers[i].setUsername("USER " + String.valueOf(i));
-//            userRepository.save(playingUsers[i]);
-//            userRepository.flush();
-//        }
-        ////////////////////
 
         assignCoordinates(playingUsers);
         assignSets(playingUsers);
@@ -192,12 +176,12 @@ public class GameService {
      * @param userNames
      * @return returns a list of the playing users
      */
-    public User[] getPlayingUsers(String[] userNames){
+    public ArrayList<User> getPlayingUsers(String[] userNames){
 
         ArrayList<User> usersList = new ArrayList<>();
 
         for(int i = 0; i < NR_OF_PLAYERS; i++){
-            usersList.add(userRepository.findByUsername(String.valueOf(i)));
+            usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
         }
 
         return usersList;
@@ -284,13 +268,13 @@ public class GameService {
      * Method is used to assigned a random set to every User
      * @param usersList
      */
-    public void assignSets(User[] usersList) {
+    public void assignSets(ArrayList<User> usersList) {
         // make shuffled array with indices to randomly assign sets
         Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
         int i = 0;
         // assign random sets
         for(User user : usersList){
-            user.setAssignedSet(SET_NAMES[idxList[i]]);
+            user.setAssignedSet(SET_NAMES[idxList[i % SET_NAMES.length]]);
             i++;
         }
     }
