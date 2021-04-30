@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class GameControllerTest {
         given(gameService.getListOfPictures()).willReturn(allPictures);
 
         //when incoming get request
-        MockHttpServletRequestBuilder getRequest = get("/picture").contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/pictures").contentType(MediaType.APPLICATION_JSON);
 
         //then perform the request
         mockMvc.perform(getRequest).andExpect(status().isOk())
@@ -58,18 +59,29 @@ public class GameControllerTest {
     }
 //
    @Test
-    public void testReturnPictureCorrespondingToUser(){
+    public void testReturnPictureCorrespondingToUser() throws Exception{
          //given
        Picture testPicture = new Picture();
        testPicture.setPictureLink("testLink");
 
        GamePlay testGame = new GamePlay();
+       testGame.setGameID(1L);
        testGame.addPicture(testPicture,1);
 
        User testUser = new User();
        testUser.setUsername("TestUser");
        testUser.setId(1L);
        testUser.setAssignedCoordinates(1);
+       testUser.setToken("token");
+
+       given(gameService.getCorrespondingToUser(testUser.getToken())).willReturn(testPicture);
+       //when incoming request
+       MockHttpServletRequestBuilder getRequest = get("/picture").contentType(MediaType.APPLICATION_JSON);
+
+       //then perform the request
+       mockMvc.perform(getRequest).andExpect(status().isOk())
+               .andExpect(jsonPath("$.pictureLink", is(testPicture.getPictureLink())));
+
 
        //mocking gameService
 
