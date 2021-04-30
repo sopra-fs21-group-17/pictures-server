@@ -16,13 +16,8 @@ public class UserPutDTO {
     // [{"adam":null}, {"adam":null}]
 
     private Long id;
-    private String guesses;
     private boolean isReady;
 
-
-
-    public String getGuesses() { return guesses; }
-    public void setGuesses(String guesses) { this.guesses = guesses; }
 
     public String getUsername() {
         return username;
