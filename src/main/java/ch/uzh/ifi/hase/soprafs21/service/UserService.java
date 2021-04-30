@@ -40,6 +40,9 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * @return returns a List of all users.
+     */
     public List<User> getUsers() {
         return this.userRepository.findAll();
     }
@@ -65,7 +68,11 @@ public class UserService {
         return usersInLobby;
     }
 
-    //returns user from userRepository
+    /**
+     * Gets user from Repository if User exists
+     * @param userInput
+     * @return returns user from userRepository
+     */
     public User getUserLogin(User userInput){
 
         //checks if user exists and if the password is correct
@@ -74,6 +81,11 @@ public class UserService {
         return userRepository.findByUsername(userInput.getUsername());
     }
 
+    /**
+     * Saves a new User to the UserRepository
+     * @param newUser
+     * @return newUser
+     */
     public User createUser(User newUser)  {
         newUser.setToken(UUID.randomUUID().toString());
 
@@ -103,8 +115,12 @@ public class UserService {
 
     }
 
-
-    //changes the date format of the input
+    /**changes the date format of the input
+     *
+     * @param date
+     * @return formatted date
+     * @throws ParseException
+     */
     public String changeDateFormat(String date) throws ParseException {
 
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -132,7 +148,10 @@ public class UserService {
 
     }
 
-    //checks if the username and password are correct and if the user is registered
+    /**checks if the username and password are correct and if the user is registered
+     * @throws ResponseStatusException
+     * @param userToBeFound
+     */
     private void checkUserLogin(User userToBeFound){
         User userByUsername = userRepository.findByUsername(userToBeFound.getUsername());
 

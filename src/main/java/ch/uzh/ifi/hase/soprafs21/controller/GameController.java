@@ -56,15 +56,15 @@ public class GameController {
         return initedUsersDTOs;
     }
 
-    @PostMapping("/board/guess")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void postUserGuesses() {
-        int[] userGuesses = {0, 15, 4, 5}; // TODO get user guesses from FE
-
-        //gameService.handleGuesses(userGuesses,"Muster");
-
-    }
+//    @PostMapping(mainGame)
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public void postUserGuesses() {
+//        int[] userGuesses = {0, 15, 4, 5}; // TODO get user guesses from FE
+//
+//        //gameService.handleGuesses(userGuesses,"Muster");
+//
+//    }
 
     @GetMapping("/screenshots")
     @ResponseStatus(HttpStatus.OK)
@@ -89,7 +89,7 @@ public class GameController {
      *
      * @return Return a List of Screenshots for the guessing screen
      */
-    @GetMapping
+    @GetMapping(screenshot)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<ScreenshotGetDTO> showScreenshots(){
@@ -141,7 +141,7 @@ public class GameController {
         List<Picture> pictures = gameService.getListOfPictures();  // is changed to take from gameplay
         List<PicturesGetDTO> picturesGetDTOs = new ArrayList();
         for(Picture picture : pictures){
-           // picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityTOPicturesGetDTO(picture));
+            picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(picture));
         }
 
         return picturesGetDTOs;
@@ -157,9 +157,11 @@ public class GameController {
 
     public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO) {
         User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
-        int assignedToken = currentUser.getAssignedCoordinates();
+        String assignedToken = currentUser.getToken();
 
-        return null;
+        Picture correspondingPicture = gameService.getCorrespondingToUser(assignedToken);
+        PicturesGetDTO pictureResult =  DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
+        return pictureResult;
     }
 
 //    @GetMapping(mainGame)
