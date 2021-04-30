@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -36,6 +38,7 @@ public interface DTOMapper {
     @Mapping(source = "model", target = "model")
     @Mapping(source = "totalScore", target = "totalScore")
     @Mapping(source = "isReady", target = "isReady")
+    //@Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "id", target = "id")
@@ -46,6 +49,24 @@ public interface DTOMapper {
     @Mapping(source = "username", target = "username")
     @Mapping(source = "guesses", target = "guesses")
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+
+
+    @Mapping(source = "lobbyId", target = "lobbyId")
+    Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
+
+    @Mapping(source = "lobbyId", target = "lobbyId")
+    @Mapping(source = "creationTime", target = "creationTime")
+    @Mapping(source = "timeDifference", target = "timeDifference")
+    @Mapping(source = "lobbyReady", target = "lobbyReady")
+    @Mapping(source = "playersCount", target = "playersCount")
+    LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
+
+    @Mapping(source = "lobbyId", target = "lobbyId")
+    @Mapping(source = "creationTime", target = "creationTime")
+    @Mapping(source = "timeDifference", target = "timeDifference")
+    @Mapping(source = "lobbyReady", target = "lobbyReady")
+    @Mapping(source = "playersCount", target = "playersCount")
+    Lobby convertLobbyPutDTOtoEntity(LobbyPutDTO lobbyPutDTO);
 
     // PICTURES DTOs //
     @Mapping(source = "pictureLink", target="pictureLink")

@@ -57,6 +57,10 @@ public class User implements Serializable {
     @Column
     private Boolean isReady;
 
+    //@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private String lobbyId;
+
+
     @Column
     private UserStatus status;
 
@@ -77,6 +81,9 @@ public class User implements Serializable {
 
     @Column
     private int points;
+
+    public User() {
+    }
 
     public User() {
     }
@@ -141,6 +148,10 @@ public class User implements Serializable {
 
     public void setIsReady(Boolean isReady) { this.isReady = isReady; }
 
+    public String getLobbyId() { return lobbyId; }
+
+    public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
+
     public UserStatus getStatus() {
         return status;
     }
@@ -177,3 +188,4 @@ public class User implements Serializable {
         this.points = points;
     }
 }
+

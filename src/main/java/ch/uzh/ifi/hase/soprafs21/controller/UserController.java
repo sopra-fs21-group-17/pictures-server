@@ -41,6 +41,21 @@ public class UserController {
         //returns list
         return userGetDTOs;
     }
+    @GetMapping("/lobbies/users/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<UserGetDTO> getAllUsers(@PathVariable String lobbyId) {
+        // fetch all users in the internal representation
+        List<User> users = userService.getUsersInLobby(lobbyId);
+        List<UserGetDTO> userGetDTOs = new ArrayList<>();
+
+        // convert each user to the API representation
+        for (User user : users) {
+            userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
+        }
+        //returns list
+        return userGetDTOs;
+    }
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
