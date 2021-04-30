@@ -146,7 +146,7 @@ public class GameController {
 
     public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO) {
         User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
-        int assignedToken = currentUser.getAssignedCoordinates();
+        String assignedToken = currentUser.getToken();
 
         Picture correspondingPicture = gameService.getCorrespondingToUser(assignedToken);
         PicturesGetDTO pictureResult =  DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
