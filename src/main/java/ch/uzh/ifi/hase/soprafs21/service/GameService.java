@@ -2,11 +2,9 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 // Name can be refactored if it is not fitting (maybe to GameLogic)
 
-import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
-import ch.uzh.ifi.hase.soprafs21.entity.Picture;
-import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.repository.GameSessionRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,7 @@ public class GameService {
     private final PicturesRepository picturesRepository;
     private final UserRepository userRepository;
     private final GameSessionRepository gameSessionRepository;
+    private final LobbyRepository lobbyRepository;
 
     // game variables
     private final int NR_OF_PLAYERS = 4;
@@ -37,10 +36,11 @@ public class GameService {
     private final int NR_OF_SETS = SET_NAMES.length;
 
     @Autowired
-    public GameService(@Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) {
+    public GameService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) {
         this.picturesRepository = picturesRepository;
         this.userRepository = userRepository;
         this.gameSessionRepository = gameSessionRepository;
+        this.lobbyRepository = lobbyRepository;
     }
 
     public void createTestUsers(){
@@ -125,25 +125,15 @@ public class GameService {
         return currentGame.getListOfScreenshots();
     }
 
-    public ArrayList<ArrayList<String>> getUsersScreenshots(){
+    public ArrayList<ArrayList<String>> getUsersScreenshots(String lobbyId){
+
         ArrayList<ArrayList<String>> response = new ArrayList<>();
         ArrayList<String> temp = new ArrayList<>();
 
-        //createTestUsers(); // for test purposes
-        // for test purposes
-//        for(int i = 0; i < NR_OF_PLAYERS; i++){
-//            playingUsers[i] = userRepository.save(playingUsers[i]);
-//            userRepository.flush();
-//            playingUsers[i].setUsername("USER " + String.valueOf(i));
-//            playingUsers[i].setAssignedCoordinates(i);
-//            playingUsers[i].setPoints(0); // init all points to 0
-//            playingUsers[i].setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
-//            userRepository.save(playingUsers[i]);
-//            userRepository.flush();
-//        }
-        ////////////////////
+        Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
+        Set<User> usersList = lobby.getUsersList();
 
-        for(User u : playingUsers){
+        for(User u : usersList){
             temp.add(u.getUsername());
             temp.add(u.getScreenshotURL());
             response.add(temp);
@@ -158,17 +148,25 @@ public class GameService {
      *  - Assign random coordinates to each user
      *  - Assign random sets to each user
      *  - Initialize and select pictures for game
-     * */
-    public void initGame(String[] userNames){
-        createTestUsers();
+     *
+     * @return*/
+    public Set<User> initGame(String lobbyId){
 
-        assignCoordinates(playingUsers);
-        assignSets(playingUsers);
+        Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
+        Set<User> usersList = lobby.getUsersList();
+
+        assignCoordinates(usersList);
+        assignSets(usersList);
+
+        for(User u : usersList){
+            userRepository.save(u);
+            userRepository.flush();
+        }
 
         this.gameSessionRepository.save(new GamePlay());   // needed for management fo Pictures
         gameSessionRepository.flush();
-        this.playingUsers = getPlayingUsers(userNames); // for dev use only
 
+        return usersList;
     }
 //TODO please check if javadoc is correct like this
     /**
@@ -234,15 +232,11 @@ public class GameService {
             result += "-";
         }
 
-        String x;
-        if(player.getCorrectedGuesses() == null){ x = result; }
-        else{ x = player.getCorrectedGuesses() + result; }
-
-        player.setCorrectedGuesses(x);
+        player.setCorrectedGuesses(result);
         userRepository.save(player);
         userRepository.flush();
 
-        return x;
+        return result;
 
     }
 
@@ -268,7 +262,7 @@ public class GameService {
      * Method is used to assigned a random set to every User
      * @param usersList
      */
-    public void assignSets(ArrayList<User> usersList) {
+    public void assignSets(Set<User> usersList) {
         // make shuffled array with indices to randomly assign sets
         Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
         int i = 0;
@@ -282,7 +276,7 @@ public class GameService {
     // coordinates represented in code like this:
     // A1 = 0, A2 = 1, D4 = 15 ...
     // so just pick random nr between 0-15x3
-    public void assignCoordinates(ArrayList<User> usersList) {
+    public void assignCoordinates(Set<User> usersList) {
         int repetitions = 3;
         int nrOfCoordinates = 16;
         int totalCoordinates = repetitions * nrOfCoordinates; // 16 cards on board, 3x same coordinate
@@ -305,21 +299,23 @@ public class GameService {
         // assign coordinates to players
         int i = 0;
         for(User user : usersList){
-            user.setAssignedCoordinates(idxList[i]);
+            user.setAssignedCoordinates(idxList[i%totalCoordinates]);
             i++;
         }
-
-
     }
 
-    public Map<String, Map<String, String>> returnCorrectedGuesses() {
+    public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) {
+
+        Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
+        Set<User> usersList = lobby.getUsersList();
+
         String correctedGuesses = "";
         Map<String, String> temp = new HashMap<>();
         String username = "";
         String answer = "";
         Map<String, Map<String, String>> result = new HashMap<>(); // { username:{max:y,eva:n}, username:{max:y,eva:n}}
 
-        for(User usr : playingUsers){
+        for(User usr : usersList){
             correctedGuesses = usr.getCorrectedGuesses();
             if(correctedGuesses != null){
                 // convert
@@ -334,12 +330,11 @@ public class GameService {
                     temp.put(username, answer);
                     username = answer = ""; // reset
                 }
-                System.out.println("username: "+usr.getUsername());
-                System.out.println(temp.values());
+
                 result.put(usr.getUsername(), temp);
             }
         }
-        System.out.println(result.values());
+
         return result;
     }
 }
