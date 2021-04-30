@@ -11,8 +11,10 @@ import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -42,12 +44,16 @@ public class GameService {
     private final int NR_OF_SETS = SET_NAMES.length;
 
     @Autowired
-    public GameService(@Qualifier("picturesRepository") PicturesRepository picturesRepository, UserRepository userRepository, GameSessionRepository gameSessionRepository) {
+    public GameService(@Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) {
         this.picturesRepository = picturesRepository;
         this.userRepository = userRepository;
         this.gameSessionRepository = gameSessionRepository;
     }
 
+    /**
+     * selects Pictures from the external API according to their ID randomly
+     * So there are 16 chosen and saved into the corresponding GamePlay entity.
+     */
     public void selectPictures(){
         //goes from 0 to 15 for easier mapping
         int maxPictures = 16;
@@ -73,7 +79,7 @@ public class GameService {
     }
 
     /**
-     * Pictures that are Saved for the Current GameRound
+     * gets Pictures that are Saved for the Current GameRound in the Gameplay entity
      * @return returns all Pictures for the current Round
      */
     public List<Picture> getListOfPictures(){
@@ -86,9 +92,10 @@ public class GameService {
      * @param token
      * @return returns Picture that has the corresponding token of the User
      */
-    public Picture getCorrespondingToUser(int token){
+    public Picture getCorrespondingToUser(String token){
         GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        return currentGame.getPictureWithToken(token);
+        User corresponding = userRepository.findByToken(token);
+        return currentGame.getPictureWithToken(corresponding.getAssignedCoordinates());
     }
 
     /**
@@ -156,7 +163,12 @@ public class GameService {
         this.playingUsers = getPlayingUsers(userNames); // for dev use only
 
     }
-
+//TODO please check if javadoc is correct like this
+    /**
+     * used to get the playing users from the Lobby
+     * @param userNames
+     * @return returns a list of the playing users
+     */
     public User[] getPlayingUsers(String[] userNames){
 
         User[] usersList = new User[NR_OF_PLAYERS];
@@ -225,6 +237,11 @@ public class GameService {
         userRepository.flush();
     }
 
+    /**
+     * Helper method used to shuffle lists for random assignment
+     * @param listLength
+     * @return returns an Array of shuffled indices
+     */
     public Integer[] getShuffledIdxList(int listLength){
         // make array with indices to randomly assign sets
         Integer[] idxList = new Integer[listLength];
@@ -238,6 +255,10 @@ public class GameService {
         return idxList;
     }
 
+    /**
+     * Method is used to assigned a random set to every User
+     * @param usersList
+     */
     public void assignSets(User[] usersList) {
         // make shuffled array with indices to randomly assign sets
         Integer[] idxList = getShuffledIdxList(NR_OF_SETS);

@@ -15,4 +15,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     //List<User>findDistinctUserBy(String lobbyId);
 
+    User findByToken(String token);
 }

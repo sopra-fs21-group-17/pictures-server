@@ -10,7 +10,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
  * also it is used to store the user guesses for the current game
  * aswell it will store the "screenshots" of the current game
  */
-@Repository("GameSessionRepository")
+@Repository("gameSessionRepository")
 public interface GameSessionRepository extends JpaRepository<GamePlay,Long>{
 
     GamePlay findByGameID(Long gameID);
