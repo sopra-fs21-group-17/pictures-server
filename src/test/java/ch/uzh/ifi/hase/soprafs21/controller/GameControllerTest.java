@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 
 import org.junit.jupiter.api.Test;
@@ -32,27 +34,45 @@ public class GameControllerTest {
     @MockBean
     private GameService gameService;
 
-//    @Test
-//    public void testReturnOfPictureGetDTOsList() throws Exception {
-//        //given
-//        // what the gameService should return when getAllPictures() is called
-//        Picture testPicture = new Picture();
-//        testPicture.setPictureLink("testLink");
+    @Test
+    public void testReturnOfPictureGetDTOsList() throws Exception {
+        //given
+        // what the gameService should return when getAllPictures() is called
+        Picture testPicture = new Picture();
+        testPicture.setPictureLink("testLink");
+
+        // this mocks the GameService
+
+        List<Picture> allPictures = new ArrayList<>();
+        allPictures.add(testPicture);
+
+        given(gameService.getListOfPictures()).willReturn(allPictures);
+
+        //when incoming get request
+        MockHttpServletRequestBuilder getRequest = get("/picture").contentType(MediaType.APPLICATION_JSON);
+
+        //then perform the request
+        mockMvc.perform(getRequest).andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].pictureLink", is(testPicture.getPictureLink())));
+    }
 //
-//        // this mocks the GameService
-//
-//        List<Picture> allPictures = new ArrayList<>();
-//        allPictures.add(testPicture);
-//
-//        given(gameService.getListOfPictures()).willReturn(allPictures);
-//
-//        //when incoming get request
-//        MockHttpServletRequestBuilder getRequest = get("/picture").contentType(MediaType.APPLICATION_JSON);
-//
-//        //then perform the request
-//        mockMvc.perform(getRequest).andExpect(status().isOk())
-//        .andExpect(jsonPath("$", hasSize(1)))
-//        .andExpect(jsonPath("$[0].pictureLink", is(testPicture.getPictureLink())));
-//    }
-//
-//}
+   @Test
+    public void testReturnPictureCorrespondingToUser(){
+         //given
+       Picture testPicture = new Picture();
+       testPicture.setPictureLink("testLink");
+
+       GamePlay testGame = new GamePlay();
+       testGame.addPicture(testPicture,1);
+
+       User testUser = new User();
+       testUser.setUsername("TestUser");
+       testUser.setId(1L);
+       testUser.setAssignedCoordinates(1);
+
+       //mocking gameService
+
+   }
+
+}

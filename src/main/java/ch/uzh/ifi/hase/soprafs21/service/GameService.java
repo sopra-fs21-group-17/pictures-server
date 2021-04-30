@@ -90,9 +90,10 @@ public class GameService {
      * @param token
      * @return returns Picture that has the corresponding token of the User
      */
-    public Picture getCorrespondingToUser(int token){
+    public Picture getCorrespondingToUser(String token){
         GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        return currentGame.getPictureWithToken(token);
+        User corresponding = userRepository.findByToken(token);
+        return currentGame.getPictureWithToken(corresponding.getAssignedCoordinates());
     }
 
     /**

@@ -56,15 +56,15 @@ public class GameController {
 
     }
 
-    @PostMapping(mainGame)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void postUserGuesses() {
-        int[] userGuesses = {0, 15, 4, 5}; // TODO get user guesses from FE
-
-        //gameService.handleGuesses(userGuesses,"Muster");
-
-    }
+//    @PostMapping(mainGame)
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public void postUserGuesses() {
+//        int[] userGuesses = {0, 15, 4, 5}; // TODO get user guesses from FE
+//
+//        //gameService.handleGuesses(userGuesses,"Muster");
+//
+//    }
 
     /**
      * Used to save screenshot URLs to the Back end
@@ -81,7 +81,7 @@ public class GameController {
      *
      * @return Return a List of Screenshots for the guessing screen
      */
-    @GetMapping
+    @GetMapping(screenshot)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<ScreenshotGetDTO> showScreenshots(){
@@ -114,7 +114,7 @@ public class GameController {
         List<Picture> pictures = gameService.getListOfPictures();  // is changed to take from gameplay
         List<PicturesGetDTO> picturesGetDTOs = new ArrayList();
         for(Picture picture : pictures){
-           // picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityTOPicturesGetDTO(picture));
+            picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(picture));
         }
 
         return picturesGetDTOs;
@@ -130,7 +130,7 @@ public class GameController {
     @ResponseBody
     public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO){
         User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
-        int assignedToken = currentUser.getAssignedCoordinates();
+        String assignedToken = currentUser.getToken();
 
         Picture correspondingPicture = gameService.getCorrespondingToUser(assignedToken);
         PicturesGetDTO pictureResult =  DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
