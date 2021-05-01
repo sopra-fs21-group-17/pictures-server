@@ -59,8 +59,8 @@ public class User implements Serializable {
     private Boolean isReady;
 
     //@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Column
     private String lobbyId;
-
 
     @Column
     private UserStatus status;
