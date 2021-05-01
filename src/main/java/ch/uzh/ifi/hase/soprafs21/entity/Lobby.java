@@ -7,11 +7,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
 @Entity
 @Table(name = "LOBBY")
-public class Lobby {
+public class Lobby  implements Serializable {
 
     @Id
     private String lobbyId;

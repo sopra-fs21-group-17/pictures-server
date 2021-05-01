@@ -30,6 +30,9 @@ public class GameService {
     private final GameSessionRepository gameSessionRepository;
     private final LobbyRepository lobbyRepository;
 
+    private GamePlay gamePlay = new GamePlay();
+    private Long gameID = 1L;
+
     // game variables
     private final int NR_OF_PLAYERS = 4;
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS"};// "ICONS", "LACE"};
@@ -69,7 +72,9 @@ public class GameService {
         int maxPictures = 16;
         int randomLimit = 51; //limit will be strictly smaller than
         //TODO depending on storage will may need different implementation for the maximum limit.
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);  //TODO for M4 implement for mulitple lobbies
+        gamePlay.setGameID(1L);
+
+        //TODO for M4 implement for mulitple lobbies
 
 
         ArrayList<Integer> checkID = new ArrayList();
@@ -81,7 +86,7 @@ public class GameService {
             if(!checkID.contains(randomizedID)){
                 checkID.add(randomizedID);
                 Picture current = picturesRepository.findByid((long)randomizedID); //random has problems with long so to avoid, used int and parsed
-                currentGame.addPicture(current,idx);  // adds the picture to the entity
+                gamePlay.addPicture(current,idx);  // adds the picture to the entity
                 idx++;
             }
 
@@ -93,19 +98,19 @@ public class GameService {
      * @return returns all Pictures for the current Round
      */
     public List<Picture> getListOfPictures(){
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        return currentGame.getSelectedPictures();
+        return gamePlay.getSelectedPictures();
     }
 
     /**
      * Takes on token from user and gets the picture that has that coordinate
-     * @param token
+     * @param userId
      * @return returns Picture that has the corresponding token of the User
      */
-    public Picture getCorrespondingToUser(String token){
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        User corresponding = userRepository.findByToken(token);
-        return currentGame.getPictureWithToken(corresponding.getAssignedCoordinates());
+    public Picture getCorrespondingToUser(Long userId){
+
+        GamePlay currentGame = gamePlay;
+        User corresponding = userRepository.findByid(userId);
+        return currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
     }
 
     /**
@@ -113,16 +118,14 @@ public class GameService {
      * @param submittedShot
      */
     public void saveScreenshot(Screenshot submittedShot){
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        currentGame.addScreenshot(submittedShot);
+        gamePlay.addScreenshot(submittedShot);
     }
-
     /**
      *
      */
     public List<Screenshot> getScreenshots(){
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        return currentGame.getListOfScreenshots();
+
+        return gamePlay.getListOfScreenshots();
     }
 
     public ArrayList<ArrayList<String>> getUsersScreenshots(String lobbyId){
@@ -150,7 +153,7 @@ public class GameService {
      *  - Initialize and select pictures for game
      *
      * @return*/
-    public Set<User> initGame(String lobbyId){
+    public Set<User> initGame(String lobbyId) {
 
         Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
         Set<User> usersList = lobby.getUsersList();
@@ -158,14 +161,18 @@ public class GameService {
         assignCoordinates(usersList);
         assignSets(usersList);
 
-        for(User u : usersList){
+        for (User u : usersList) {
             userRepository.save(u);
             userRepository.flush();
         }
 
-        this.gameSessionRepository.save(new GamePlay());   // needed for management fo Pictures
-        gameSessionRepository.flush();
+        if (gamePlay == null) {
+            GamePlay game = new GamePlay();
+            this.gameSessionRepository.save(game);   // needed for management fo Pictures
+            gameSessionRepository.flush();
+            gamePlay = game;
 
+        }
         return usersList;
     }
 //TODO please check if javadoc is correct like this
@@ -338,3 +345,4 @@ public class GameService {
         return result;
     }
 }
+
