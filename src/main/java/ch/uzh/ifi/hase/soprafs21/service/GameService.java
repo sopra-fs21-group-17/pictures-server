@@ -31,6 +31,9 @@ public class GameService {
     private final UserRepository userRepository;
     private final GameSessionRepository gameSessionRepository;
 
+    private GamePlay gamePlay = new GamePlay();
+    private Long gameID = 1L;
+
     // game variables
     private final int NR_OF_PLAYERS = 4;
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS", "LACE"};
@@ -69,7 +72,9 @@ public class GameService {
         int maxPictures = 16;
         int randomLimit = 51; //limit will be strictly smaller than
         //TODO depending on storage will may need different implementation for the maximum limit.
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);  //TODO for M4 implement for mulitple lobbies
+        gamePlay.setGameID(1L);
+
+        //TODO for M4 implement for mulitple lobbies
 
 
         ArrayList<Integer> checkID = new ArrayList();
@@ -81,7 +86,7 @@ public class GameService {
             if(!checkID.contains(randomizedID)){
                 checkID.add(randomizedID);
                 Picture current = picturesRepository.findByid((long)randomizedID); //random has problems with long so to avoid, used int and parsed
-                currentGame.addPicture(current,idx);  // adds the picture to the entity
+                gamePlay.addPicture(current,idx);  // adds the picture to the entity
                 idx++;
             }
 
@@ -93,8 +98,7 @@ public class GameService {
      * @return returns all Pictures for the current Round
      */
     public List<Picture> getListOfPictures(){
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        return currentGame.getSelectedPictures();
+        return gamePlay.getSelectedPictures();
     }
 
     /**
@@ -103,7 +107,8 @@ public class GameService {
      * @return returns Picture that has the corresponding token of the User
      */
     public Picture getCorrespondingToUser(String token){
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
+
+        GamePlay currentGame = gamePlay;
         User corresponding = userRepository.findByToken(token);
         return currentGame.getPictureWithToken(corresponding.getAssignedCoordinates());
     }
@@ -113,16 +118,14 @@ public class GameService {
      * @param submittedShot
      */
     public void saveScreenshot(Screenshot submittedShot){
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        currentGame.addScreenshot(submittedShot);
+        gamePlay.addScreenshot(submittedShot);
     }
-
     /**
      *
      */
     public List<Screenshot> getScreenshots(){
-        GamePlay currentGame = gameSessionRepository.findByGameID(1L);
-        return currentGame.getListOfScreenshots();
+
+        return gamePlay.getListOfScreenshots();
     }
 
     public ArrayList<ArrayList<String>> getUsersScreenshots(){
@@ -161,12 +164,14 @@ public class GameService {
      * */
     public void initGame(String[] userNames){
         createTestUsers();
-
         assignCoordinates(playingUsers);
         assignSets(playingUsers);
 
-        this.gameSessionRepository.save(new GamePlay());   // needed for management fo Pictures
+        if(gamePlay == null){
+        GamePlay game = new GamePlay();
+        this.gameSessionRepository.save(game);   // needed for management fo Pictures
         gameSessionRepository.flush();
+        }
         this.playingUsers = getPlayingUsers(userNames); // for dev use only
 
     }

@@ -42,7 +42,7 @@ public class GameController {
         // TODO get users names list from FE
         String[] userNames = {"USER 0", "USER 1", "USER 2", "USER 3"};
         //List<User> users = userService.getUsers();
-
+        gameService.selectPictures();
         gameService.initGame(userNames);
         ArrayList<User> usersList = gameService.getPlayingUsers(userNames);
 
