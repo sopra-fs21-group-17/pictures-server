@@ -31,11 +31,13 @@ public class Lobby {
     @Column
     private boolean lobbyReady;
 
+    @Column
+    @ElementCollection
+    private Set<User> usersList =  new HashSet<>();
+
     public String getLobbyId() { return lobbyId; }
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
-
-
 
     public long getCreationTime() { return creationTime; }
 
@@ -52,6 +54,14 @@ public class Lobby {
     public int getPlayersCount() { return playersCount; }
 
     public void setPlayersCount(int playersCount) { this.playersCount = playersCount; }
+
+    public Set<User> getUsersList() {
+        return usersList;
+    }
+
+    public void setUsersList(Set<User> usersList) {
+        this.usersList = usersList;
+    }
 }
 
 

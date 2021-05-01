@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class LobbyController {
@@ -53,6 +54,7 @@ public class LobbyController {
         //checks if the lobby Id is correct
         lobbyService.checkLobbyId(lobbyId);
     }
+
     @PutMapping("/lobbies/count/{lobbyId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
@@ -61,6 +63,7 @@ public class LobbyController {
         //updates the lobby count
         lobbyService.updateCount(lobbyId);
     }
+
     @GetMapping("/lobbies/ready/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -75,7 +78,13 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
     }
 
-
+    // neu hinzugefügt
+    @PostMapping("/lobby/ready/{lobbyId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public void lobbyIsReady(@PathVariable String lobbyId){
+        lobbyService.lobbyIsReady(lobbyId);
+    }
 
 
 

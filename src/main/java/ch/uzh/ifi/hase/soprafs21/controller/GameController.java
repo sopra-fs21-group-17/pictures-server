@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * GameController is used to manage incoming REST request coming from the client
@@ -22,13 +23,6 @@ import java.util.Map;
  */
 @RestController
 public class GameController {
-
-    // TODO delete this...
-    private final String mainGame = "/board";
-    private final String pictures = "/pictures";
-    private final String guesses = "/guess";
-    private final String picture = "/picture";
-    private final String screenshot = "/screenshot";
 
     private final GameService gameService;
 
@@ -38,14 +32,9 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<UserGetDTO> initGame() {
-
-        // TODO get users names list from FE
-        String[] userNames = {"USER 0", "USER 1", "USER 2", "USER 3"};
-        //List<User> users = userService.getUsers();
+        String lobbyId = "test";
+        Set<User> usersList = gameService.initGame(lobbyId);
         gameService.selectPictures();
-        gameService.initGame(userNames);
-        ArrayList<User> usersList = gameService.getPlayingUsers(userNames);
-
         List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
 
         // convert each user to the API representation
@@ -66,11 +55,11 @@ public class GameController {
 //
 //    }
 
-    @GetMapping("/screenshots")
+    @GetMapping("/screenshots/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
-    public ArrayList<ArrayList<String>> getScreenshots(){
-        ArrayList<ArrayList<String>> response = gameService.getUsersScreenshots();
-
+    @ResponseBody
+    public ArrayList<ArrayList<String>> getScreenshots(@PathVariable String lobbyId){
+        ArrayList<ArrayList<String>> response = gameService.getUsersScreenshots(lobbyId);
         return response;
     }
 
@@ -78,7 +67,7 @@ public class GameController {
      * Used to save screenshot URLs to the Back end
      * @param screenshotPutDTO
      */
-    @PutMapping(screenshot)
+    @PutMapping("/screenshot")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO){
         Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
@@ -89,7 +78,7 @@ public class GameController {
      *
      * @return Return a List of Screenshots for the guessing screen
      */
-    @GetMapping(screenshot)
+    @GetMapping("/screenshot")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<ScreenshotGetDTO> showScreenshots(){
@@ -115,25 +104,21 @@ public class GameController {
     @ResponseBody
     public String submitGuesses(@RequestBody UserPostDTO userPostDTO){
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-
         return gameService.handleGuesses(user);
     }
 
-    @GetMapping("/correctedGuesses")
+    @GetMapping("/correctedGuesses/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Map<String, String>> returnCorrectedGuesses(){
-        Map<String, Map<String, String>> correctedGuesses = gameService.returnCorrectedGuesses();
-        System.out.println(correctedGuesses.values());
-
-        return correctedGuesses;
+    public Map<String, Map<String, String>> returnCorrectedGuesses(@PathVariable String lobbyId){
+        return gameService.returnCorrectedGuesses(lobbyId);
     }
 
     /**
      * Used to send a List of picture Elements to frontend
      * Pictures are already mapped to a coordinate.
      */
-    @GetMapping(pictures)
+    @GetMapping("/pictures")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<PicturesGetDTO> getPictureURL(){
@@ -151,7 +136,7 @@ public class GameController {
      *
      * @param userGetDTO
      */
-    @GetMapping(picture)
+    @GetMapping("/picture")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
 
