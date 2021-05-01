@@ -83,8 +83,6 @@ public class User implements Serializable {
     @Column
     private int points;
 
-    public User() {
-    }
 
     public Long getId() { return id; }
 
