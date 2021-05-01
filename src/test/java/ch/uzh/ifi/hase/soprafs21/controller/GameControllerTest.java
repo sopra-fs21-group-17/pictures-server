@@ -2,8 +2,11 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
+import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.ScreenshotPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 
@@ -28,8 +31,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import java.util.*;
 
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(GameController.class)
 public class GameControllerTest {
@@ -130,6 +133,53 @@ public class GameControllerTest {
                 }
 
    }
+
+    @Test
+    public void testScreenshotSave() throws Exception {
+    ScreenshotPutDTO screenshotPutDTO = new ScreenshotPutDTO();
+    screenshotPutDTO.setURL("ScreenshotTestURL");
+    screenshotPutDTO.setUserID(1L);
+
+        MockHttpServletRequestBuilder putRequest = put("/screenshot").content(asJsonString(screenshotPutDTO)).contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testGuessHandlePutMethod() throws Exception{
+        UserPutDTO userPutDTO = new UserPutDTO();
+        userPutDTO.setGuesses("Test Guesses");
+        userPutDTO.setUsername("TestUser");
+
+        MockHttpServletRequestBuilder putRequest = put("/guesses").content(asJsonString(userPutDTO)).contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    public void testShowScreenshot() throws Exception{
+        List<Screenshot> screenshots = new ArrayList<>();
+        for(int i = 0; i < 5; i++){
+            Screenshot screenshot = new Screenshot();
+            screenshot.setUserID(((long) (i + 1)));
+            screenshot.setURL("testURL "+ i);
+            screenshots.add(screenshot);
+        }
+        given(gameService.getScreenshots()).willReturn(screenshots);
+
+        MockHttpServletRequestBuilder getRequest = get("/screenshot").contentType(MediaType.APPLICATION_JSON);
+
+        ResultActions actions = mockMvc.perform(getRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(screenshots.size())));
+
+        for(int i = 0; i < screenshots.size();i++ ){
+            actions.andExpect(jsonPath("$["+i+"].userID",is(Math.toIntExact(screenshots.get(i).getUserID()))))
+                    .andExpect(jsonPath("["+i+"].url",is(screenshots.get(i).getURL())));
+        }
+
+    }
+
 
     private String asJsonString(final Object object) {
         try {

@@ -91,6 +91,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.username", is(user.getUsername())));
     }
 
+
+
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
      * Input will look like this: {"name": "Test User", "username": "testUsername"}
