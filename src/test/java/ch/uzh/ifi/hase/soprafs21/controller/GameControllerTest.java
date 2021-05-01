@@ -3,15 +3,21 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -62,11 +68,12 @@ public class GameControllerTest {
     public void testReturnPictureCorrespondingToUser() throws Exception{
          //given
        Picture testPicture = new Picture();
-       testPicture.setPictureLink("testLink");
+       testPicture.setPictureLink("testLink");;
 
-       GamePlay testGame = new GamePlay();
-       testGame.setGameID(1L);
-       testGame.addPicture(testPicture,1);
+
+//       GamePlay testGame = new GamePlay();
+//       testGame.setGameID(1L);
+//       testGame.addPicture(testPicture,1);
 
        User testUser = new User();
        testUser.setUsername("TestUser");
@@ -74,9 +81,13 @@ public class GameControllerTest {
        testUser.setAssignedCoordinates(1);
        testUser.setToken("token");
 
-       given(gameService.getCorrespondingToUser(testUser.getToken())).willReturn(testPicture);
+
+
+       given(gameService.getCorrespondingToUser(testUser.getId())).willReturn(testPicture);
        //when incoming request
-       MockHttpServletRequestBuilder getRequest = get("/picture").contentType(MediaType.APPLICATION_JSON);
+       UserGetDTO userGetDTO = DTOMapper.INSTANCE.convertEntityToUserGetDTO(testUser);
+
+       MockHttpServletRequestBuilder getRequest = get("/picture").content(asJsonString(userGetDTO)).contentType(MediaType.APPLICATION_JSON);
 
        //then perform the request
        mockMvc.perform(getRequest).andExpect(status().isOk())
@@ -86,5 +97,13 @@ public class GameControllerTest {
        //mocking gameService
 
    }
+    private String asJsonString(final Object object) {
+        try {
+            return new ObjectMapper().writeValueAsString(object);
+        }
+        catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
+        }
+    }
 
 }

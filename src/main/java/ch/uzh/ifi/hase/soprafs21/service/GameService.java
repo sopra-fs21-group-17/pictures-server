@@ -103,14 +103,14 @@ public class GameService {
 
     /**
      * Takes on token from user and gets the picture that has that coordinate
-     * @param token
+     * @param userId
      * @return returns Picture that has the corresponding token of the User
      */
-    public Picture getCorrespondingToUser(String token){
+    public Picture getCorrespondingToUser(Long userId){
 
         GamePlay currentGame = gamePlay;
-        User corresponding = userRepository.findByToken(token);
-        return currentGame.getPictureWithToken(corresponding.getAssignedCoordinates());
+        User corresponding = userRepository.findByid(userId);
+        return currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
     }
 
     /**
@@ -170,7 +170,7 @@ public class GameService {
             GamePlay game = new GamePlay();
             this.gameSessionRepository.save(game);   // needed for management fo Pictures
             gameSessionRepository.flush();
-
+            gamePlay = game;
 
         }
         return usersList;

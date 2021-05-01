@@ -58,8 +58,8 @@ public class GamePlay implements Serializable {
         selectedPictures.put(coordinate,picture);
     }
 
-    public Picture getPictureWithToken(int token){
-        return selectedPictures.get(token);
+    public Picture getPictureWithCoordinates(int coordinate){
+        return selectedPictures.get(coordinate);
     }
 
     public Long getGameID(){return gameID;}

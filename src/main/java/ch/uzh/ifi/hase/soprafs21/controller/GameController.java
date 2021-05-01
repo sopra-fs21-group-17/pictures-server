@@ -142,9 +142,9 @@ public class GameController {
 
     public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO) {
         User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
-        String assignedToken = currentUser.getToken();
+        Long userId = currentUser.getId();
 
-        Picture correspondingPicture = gameService.getCorrespondingToUser(assignedToken);
+        Picture correspondingPicture = gameService.getCorrespondingToUser(userId);
         PicturesGetDTO pictureResult =  DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
         return pictureResult;
     }

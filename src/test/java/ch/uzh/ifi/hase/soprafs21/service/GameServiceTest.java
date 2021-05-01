@@ -1,14 +1,17 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.GameSessionRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GameServiceTest {
     @Mock
     private PicturesRepository picturesRepository;
@@ -25,27 +29,31 @@ public class GameServiceTest {
     private GameSessionRepository gameSessionRepository;
     @Mock // mocks an Object
     private UserRepository userRepository;
+    @Mock
+    private LobbyRepository lobbyRepository;
 
     @InjectMocks
     private GameService gameService;
 
     private User testUser = new User();
+    private User testUser2 = new User();
+    private User testUser3 = new User();
     private Picture[] mockPictureURLs = new Picture[50];
 
-    @Spy    // actual testGamePlay is executed with content but is watched
-    private GamePlay testGamePlay = new GamePlay();
 
-    @BeforeAll// initializes this before every test case
+    @BeforeAll
+    // initializes this before every test case
     public void setup(){
         MockitoAnnotations.openMocks(this);
 
         // given
-        testUser.setUsername("TestUser");
-        testUser.setId(1L);
-        testUser.setAssignedCoordinates(5);  // is actually Token  //TODO diskutiere wege bereinigung
-        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
+        testUser.setUsername("Test1");
+        testUser2.setUsername("Test2");
+        testUser3.setUsername("Test3");
 
+        Mockito.when(userRepository.findByUsername("Test1")).thenReturn(testUser);
+        Mockito.when(userRepository.findByUsername("Test2")).thenReturn(testUser2);
+        Mockito.when(userRepository.findByUsername("Test3")).thenReturn(testUser3);
 
 
         int index = 0;
@@ -56,9 +64,6 @@ public class GameServiceTest {
             picturesRepository.saveAndFlush(mockPicture);
         }
 
-        testGamePlay.setGameID(1L);
-        Mockito.when(gameSessionRepository.save(Mockito.any())).thenReturn(testGamePlay);
-        Mockito.when(gameSessionRepository.findByGameID(Mockito.any())).thenReturn(testGamePlay);
 
     }
 
@@ -66,11 +71,10 @@ public class GameServiceTest {
      * tests if selected pictures are saved to the Gameplay entity
      */
     @Test
+
     public void testSelectPictures(){
         gameService.selectPictures();
-        Mockito.verify(gameSessionRepository,Mockito.times(1)).findByGameID(Mockito.any());
         Mockito.verify(picturesRepository,Mockito.times(16)).findByid(Mockito.any());
-        Mockito.verify(testGamePlay,Mockito.times(16)).addPicture(Mockito.any(),Mockito.anyInt());
 
 
     }
@@ -81,7 +85,6 @@ public class GameServiceTest {
     public void testGetSelectedPictures(){
         gameService.selectPictures();
        List<Picture> selected =  gameService.getListOfPictures();
-       Mockito.verify(testGamePlay,Mockito.times(1)).getSelectedPictures();
         assertEquals(selected.size(),16);
     }
 
