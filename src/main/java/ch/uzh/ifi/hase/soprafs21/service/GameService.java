@@ -153,7 +153,7 @@ public class GameService {
      *  - Initialize and select pictures for game
      *
      * @return*/
-    public Set<User> initGame(String lobbyId){
+    public Set<User> initGame(String lobbyId) {
 
         Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
         Set<User> usersList = lobby.getUsersList();
@@ -161,16 +161,18 @@ public class GameService {
         assignCoordinates(usersList);
         assignSets(usersList);
 
-        for(User u : usersList){
+        for (User u : usersList) {
             userRepository.save(u);
             userRepository.flush();
         }
 
-        if(gamePlay == null){
-        GamePlay game = new GamePlay();
-        this.gameSessionRepository.save(game);   // needed for management fo Pictures
-        gameSessionRepository.flush();
+        if (gamePlay == null) {
+            GamePlay game = new GamePlay();
+            this.gameSessionRepository.save(game);   // needed for management fo Pictures
+            gameSessionRepository.flush();
 
+
+        }
         return usersList;
     }
 //TODO please check if javadoc is correct like this
@@ -343,3 +345,4 @@ public class GameService {
         return result;
     }
 }
+
