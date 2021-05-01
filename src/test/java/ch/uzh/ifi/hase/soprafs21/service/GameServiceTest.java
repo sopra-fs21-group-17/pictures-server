@@ -56,6 +56,7 @@ public class GameServiceTest {
         Mockito.when(userRepository.findByUsername("Test3")).thenReturn(testUser3);
 
 
+
         int index = 0;
         for (Picture mockPicture : mockPictureURLs){
             mockPicture = new Picture();

@@ -9,8 +9,10 @@ import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -97,8 +99,13 @@ public class GameService {
      * gets Pictures that are Saved for the Current GameRound in the Gameplay entity
      * @return returns all Pictures for the current Round
      */
-    public List<Picture> getListOfPictures(){
-        return gamePlay.getSelectedPictures();
+    public List<Picture> getListOfPictures() throws ResponseStatusException{
+        List<Picture> selectedPictures = gamePlay.getSelectedPictures();
+        if(selectedPictures.size() > 1){
+        return selectedPictures;
+        } else {
+          throw new  ResponseStatusException(HttpStatus.BAD_REQUEST, ("could not get selected Pictures from GamePlay Entity"));
+        }
     }
 
     /**
@@ -106,11 +113,16 @@ public class GameService {
      * @param userId
      * @return returns Picture that has the corresponding token of the User
      */
-    public Picture getCorrespondingToUser(Long userId){
+    public Picture getCorrespondingToUser(Long userId) throws ResponseStatusException{
 
-        GamePlay currentGame = gamePlay;
-        User corresponding = userRepository.findByid(userId);
-        return currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
+            GamePlay currentGame = gamePlay;
+
+            User corresponding = userRepository.findByid(userId);
+            if(corresponding != null) {
+                return currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
+            } else{
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,("User to get Picture from could not be found"));
+            }
     }
 
     /**
@@ -118,7 +130,11 @@ public class GameService {
      * @param submittedShot
      */
     public void saveScreenshot(Screenshot submittedShot){
-        gamePlay.addScreenshot(submittedShot);
+        if(submittedShot.getURL() != null) {
+            gamePlay.addScreenshot(submittedShot);
+        } else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,("Screnshot URL is null"));
+        }
     }
     /**
      *
