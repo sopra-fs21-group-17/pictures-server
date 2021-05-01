@@ -10,23 +10,22 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -79,7 +78,6 @@ public class GameControllerTest {
        testUser.setUsername("TestUser");
        testUser.setId(1L);
        testUser.setAssignedCoordinates(1);
-       testUser.setToken("token");
 
 
 
@@ -97,6 +95,42 @@ public class GameControllerTest {
        //mocking gameService
 
    }
+
+   @Test
+   public void testInitGame() throws Exception {
+        Set<User> testUsersFromLobby = new HashSet<User>();
+        for(int idx = 0; idx < 5;idx++){
+            User testUser = new User();
+            testUser.setId(((long) (idx + 1)));
+            testUser.setUsername("Test"+ (idx+1));
+            testUser.setAssignedCoordinates(idx);
+            testUsersFromLobby.add(testUser);
+        }
+        //changed to arraylist to get single elements from collection (is not possible with set but set is required)
+        ArrayList<User> testUsers = new ArrayList<>(testUsersFromLobby);
+
+        given(gameService.initGame(Mockito.any())).willReturn(testUsersFromLobby);
+
+        ArrayList<UserGetDTO> userGetDTOs = new ArrayList<>();
+        for(User testUser : testUsers){
+            UserGetDTO userGetDTO = DTOMapper.INSTANCE.convertEntityToUserGetDTO(testUser);
+            userGetDTOs.add(userGetDTO);
+        }
+
+       MockHttpServletRequestBuilder getRequest = get("/board").contentType(MediaType.APPLICATION_JSON);
+
+       ResultActions actions = mockMvc.perform(getRequest).andExpect(status().isOk())
+               .andExpect(jsonPath("$", instanceOf(List.class)))
+               .andExpect(jsonPath("$",hasSize(5)));
+                // tests content for every element
+                for(int idx = 0; idx < testUsersFromLobby.size();idx++){
+                   actions.andExpect(jsonPath("$.["+idx+"].username",is(userGetDTOs.get(idx).getUsername())))
+                           .andExpect(jsonPath("$["+idx+"].id",is(Math.toIntExact(userGetDTOs.get(idx).getId())))) // had to conver to integer
+                           .andExpect(jsonPath("$["+idx+"].assignedCoordinates", is(userGetDTOs.get(idx).getAssignedCoordinates())));
+                }
+
+   }
+
     private String asJsonString(final Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
