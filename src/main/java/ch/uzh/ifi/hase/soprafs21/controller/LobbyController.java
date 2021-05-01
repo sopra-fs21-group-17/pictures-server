@@ -70,7 +70,9 @@ public class LobbyController {
     public LobbyGetDTO checkIsLobbyReady(@PathVariable String lobbyId) {
 
         //gets the current Lobby
-        Lobby lobby = lobbyService.checkReadyAndGetCount(lobbyId);
+        // TODO auskommentiert zum testen
+        Lobby lobby = lobbyService.getTestLobby(lobbyId);
+        //Lobby lobby = lobbyService.checkReadyAndGetCount(lobbyId);
 
         // convert lobby to the API representation
 
@@ -79,12 +81,12 @@ public class LobbyController {
     }
 
     // neu hinzugefügt
-    @PostMapping("/lobby/ready/{lobbyId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public void lobbyIsReady(@PathVariable String lobbyId){
-        lobbyService.lobbyIsReady(lobbyId);
-    }
+//    @PostMapping("/lobbies/users/")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @ResponseBody
+//    public void lobbyIsReady(@PathVariable String lobbyId){
+//        lobbyService.lobbyIsReady(lobbyId);
+//    }
 
 
 

@@ -7,6 +7,8 @@ import ch.uzh.ifi.hase.soprafs21.repository.GameSessionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -116,9 +118,23 @@ public class GameService {
     /**
      * Saves screenshot from Controller to the corresponding Gameplay Entity
      * @param submittedShot
+     * @param userId
      */
-    public void saveScreenshot(Screenshot submittedShot){
-        gamePlay.addScreenshot(submittedShot);
+//    public void saveScreenshot(Screenshot submittedShot, Long userId){
+//        User user = userRepository.findByid(userId);
+//
+//
+//        user.setScreenshotURL(submittedShot.getURL());
+//        userRepository.save(user);
+//        userRepository.flush();
+//    } // TODO auskommentiert zum testen
+
+
+    public void saveScreenshot(Screenshot submittedShot, String username){
+        User user = userRepository.findByUsername(username);
+        user.setScreenshotURL(submittedShot.getURL());
+        userRepository.save(user);
+        userRepository.flush();
     }
     /**
      *
@@ -154,7 +170,6 @@ public class GameService {
      *
      * @return*/
     public Set<User> initGame(String lobbyId) {
-
         Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
         Set<User> usersList = lobby.getUsersList();
 

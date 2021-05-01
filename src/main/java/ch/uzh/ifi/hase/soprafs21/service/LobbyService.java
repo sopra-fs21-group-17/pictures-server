@@ -2,7 +2,9 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.repository.GameSessionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
@@ -23,8 +25,7 @@ public class LobbyService {
     private final LobbyRepository lobbyRepository;
 
     @Autowired
-    public LobbyService(@Qualifier ("lobbyRepository")LobbyRepository lobbyRepository, @Qualifier("userRepository") UserRepository userRepository){
-
+    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("userRepository") UserRepository userRepository){
         this.lobbyRepository = lobbyRepository;
         this.userRepository = userRepository;
     }
@@ -141,8 +142,46 @@ public class LobbyService {
         }
     }
 
-    public void lobbyIsReady(String lobbyId){
+    public Set<User> lobbyIsReady(String lobbyId){
 
+//        Lobby createdLobby;
+//        // für testzwecke lobby erzeugen
+//        if(lobbyRepository.findByLobbyId(lobbyId) == null) {
+//            LobbyPostDTO testInput = new LobbyPostDTO();
+//            testInput.setLobbyId(lobbyId);
+//            Lobby lobbyInput = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(testInput);
+//            createdLobby = createLobby(lobbyInput);
+//            lobbyRepository.save(createdLobby);
+//            lobbyRepository.flush();
+//
+//            // Users manuell erzeugen für Testzwecke
+//            String[] userNames = {"JULIA", "DOMINIK", "OLIVER", "SHINO", "VIKTOR"};
+//            Set<User> testUsersList =   new HashSet<>();
+//            int NR_OF_PLAYERS = 4;
+//            for(int i = 0; i < NR_OF_PLAYERS; i++){
+//                User user = new User();
+//                user.setUsername(userNames[i]);
+//                user.setAssignedCoordinates(i);
+//                user.setPoints(0); // init all points to 0
+//                user.setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
+//
+//                userRepository.save(user);
+//                userRepository.flush();
+//
+//                testUsersList.add(user);
+//            }
+//            createdLobby.setUsersList(testUsersList);
+//            lobbyRepository.flush();
+//        }
+
+
+        // uncomment to use real repo
+        Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
+        return lobby.getUsersList();
+    }
+
+
+    public Lobby getTestLobby(String lobbyId) {
         Lobby createdLobby;
         // für testzwecke lobby erzeugen
         if(lobbyRepository.findByLobbyId(lobbyId) == null) {
@@ -175,11 +214,6 @@ public class LobbyService {
 
 
 
-//        // uncomment to use real repo
-//        Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
-//        return lobby.getUsersList();
+        return lobbyRepository.findByLobbyId(lobbyId);
     }
-
-
-
 }

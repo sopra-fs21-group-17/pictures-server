@@ -16,6 +16,8 @@ public class LobbyGetDTO {
 
     private int playersCount;
 
+    private Set<User> usersList;
+
     public String getLobbyId() { return lobbyId; }
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
@@ -35,4 +37,12 @@ public class LobbyGetDTO {
     public int getPlayersCount() { return playersCount; }
 
     public void setPlayersCount(int playersCount) { this.playersCount = playersCount; }
+
+    public Set<User> getUsersList() {
+        return usersList;
+    }
+
+    public void setUsersList(Set<User> usersList) {
+        this.usersList = usersList;
+    }
 }

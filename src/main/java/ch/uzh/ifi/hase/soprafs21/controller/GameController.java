@@ -28,11 +28,28 @@ public class GameController {
 
     GameController(GameService gameService){ this.gameService = gameService; }
 
-    @GetMapping("/board")
+    // alte funktion
+//    @GetMapping("/board")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ResponseBody
+//    public List<UserGetDTO> initGame() {
+//        String lobbyId = "test";
+//        Set<User> usersList = gameService.initGame(lobbyId);
+//        gameService.selectPictures();
+//        List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
+//
+//        // convert each user to the API representation
+//        for (User user : usersList) {
+//            initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
+//        }
+//
+//        return initedUsersDTOs;
+//    }
+
+    @GetMapping("/board/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<UserGetDTO> initGame() {
-        String lobbyId = "test";
+    public List<UserGetDTO> initGame(@PathVariable String lobbyId) {
         Set<User> usersList = gameService.initGame(lobbyId);
         gameService.selectPictures();
         List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
@@ -67,11 +84,19 @@ public class GameController {
      * Used to save screenshot URLs to the Back end
      * @param screenshotPutDTO
      */
-    @PutMapping("/screenshot")
+//    @PutMapping("/screenshot/{id}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String userId){
+//        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
+//        gameService.saveScreenshot(submittedShot, Long.valueOf(userId));
+//    }
+
+
+    @PutMapping("/screenshot/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO){
+    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String username){
         Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
-        gameService.saveScreenshot(submittedShot);
+        gameService.saveScreenshot(submittedShot, username);
     }
 
     /**
