@@ -34,7 +34,7 @@ public class GameService {
     private final GameSessionRepository gameSessionRepository;
     private final LobbyRepository lobbyRepository;
 
-    private GamePlay gamePlay = new GamePlay();
+    private GamePlay gamePlay;
     private Long gameID = 1L;
 
     // game variables
@@ -88,10 +88,13 @@ public class GameService {
         while(idx < maxPictures){
             int randomizedID =random.nextInt(randomLimit);
             if(!checkID.contains(randomizedID)){
-                checkID.add(randomizedID);
-                Picture current = picturesRepository.findByid((long)randomizedID); //random has problems with long so to avoid, used int and parsed
+                Picture current = picturesRepository.findByid((long)randomizedID);
+                if(current.getPictureLink() != null){
+                    checkID.add(randomizedID);
+                    //random has problems with long so to avoid, used int and parsed
                 gamePlay.addPicture(current,idx);  // adds the picture to the entity
                 idx++;
+                }
             }
 
         }
@@ -101,7 +104,7 @@ public class GameService {
      * gets Pictures that are Saved for the Current GameRound in the Gameplay entity
      * @return returns all Pictures for the current Round
      */
-    public List<Picture> getListOfPictures(){
+    public Picture[] getListOfPictures(){
         return gamePlay.getSelectedPictures();
     }
 

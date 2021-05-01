@@ -148,7 +148,7 @@ public class GameController {
     @ResponseBody
     public List<PicturesGetDTO> getPictureURL(){
 
-        List<Picture> pictures = gameService.getListOfPictures();  // is changed to take from gameplay
+        Picture[] pictures = gameService.getListOfPictures();  // is changed to take from gameplay
         List<PicturesGetDTO> picturesGetDTOs = new ArrayList();
         for(Picture picture : pictures){
             picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(picture));
@@ -161,15 +161,12 @@ public class GameController {
      *
      * @param userGetDTO
      */
-    @GetMapping("/picture")
+    @GetMapping("/picture/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
 
-    public PicturesGetDTO getCorrespondingPicture(@RequestBody UserGetDTO userGetDTO) {
-        User currentUser = DTOMapper.INSTANCE.convertUserGetDTOtoEntity(userGetDTO);
-        Long userId = currentUser.getId();
-
-        Picture correspondingPicture = gameService.getCorrespondingToUser(userId);
+    public PicturesGetDTO getCorrespondingPicture(@PathVariable String id) {
+        Picture correspondingPicture = gameService.getCorrespondingToUser(Long.valueOf(id));
         PicturesGetDTO pictureResult =  DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
         return pictureResult;
     }

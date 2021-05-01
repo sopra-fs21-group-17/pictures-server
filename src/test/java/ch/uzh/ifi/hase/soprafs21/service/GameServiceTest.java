@@ -84,8 +84,8 @@ public class GameServiceTest {
      */
     public void testGetSelectedPictures(){
         gameService.selectPictures();
-       List<Picture> selected =  gameService.getListOfPictures();
-        assertEquals(selected.size(),16);
+       Picture[] selected =  gameService.getListOfPictures();
+        assertEquals(selected.length,16);
     }
 
 

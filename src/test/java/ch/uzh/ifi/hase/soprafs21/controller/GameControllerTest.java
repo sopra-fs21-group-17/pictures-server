@@ -49,8 +49,8 @@ public class GameControllerTest {
 
         // this mocks the GameService
 
-        List<Picture> allPictures = new ArrayList<>();
-        allPictures.add(testPicture);
+        Picture allPictures[] = new Picture[0];
+        allPictures[0] = (testPicture);
 
         given(gameService.getListOfPictures()).willReturn(allPictures);
 

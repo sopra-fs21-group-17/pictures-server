@@ -64,9 +64,15 @@ public class GamePlay implements Serializable {
 
     public Long getGameID(){return gameID;}
 
-    public ArrayList<Picture> getSelectedPictures(){
-        ArrayList<Picture> pictureArraylist = new ArrayList<>(selectedPictures.values());
-        return pictureArraylist;}
+    public Picture[] getSelectedPictures(){
+        ArrayList<Picture> pictureArraylist;
+        Picture picturesArray[] = new Picture[16];
+        for(int i = 0; i < 16;i++){
+            picturesArray[i] = selectedPictures.get(i);
+        }
+
+
+        return picturesArray;}
 
     public void addScreenshot(Screenshot screenshot){
         screenshots.add(screenshot);
