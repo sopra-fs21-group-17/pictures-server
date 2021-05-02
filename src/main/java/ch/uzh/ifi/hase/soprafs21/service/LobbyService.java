@@ -82,7 +82,7 @@ public class LobbyService {
         userToAdd.setIsReady(false);
 
         // neu hinzugefügt von Julia & Oli ...
-        lobbyRepository.findByLobbyId(lobbyId).getUsersList().add(userToAdd);
+        //lobbyRepository.findByLobbyId(lobbyId).getUsersList().add(userToAdd);
 
         userRepository.flush();
         lobbyRepository.flush();
@@ -90,7 +90,7 @@ public class LobbyService {
 
     public void removeUserFromLobby(String username, String lobbyId){
         User userToRemove = userRepository.findByUsername(username);
-        lobbyRepository.findByLobbyId(lobbyId).getUsersList().remove(userToRemove);
+        //lobbyRepository.findByLobbyId(lobbyId).getUsersList().remove(userToRemove);
 
         userRepository.flush();
         lobbyRepository.flush();
