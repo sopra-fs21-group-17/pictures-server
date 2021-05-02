@@ -203,12 +203,12 @@ public class GameService {
             userRepository.flush();
         }
 
-//        if (gamePlay == null) {
-//            GamePlay game = new GamePlay();
-//            this.gameSessionRepository.save(game);   // needed for management fo Pictures in the future
-//            gameSessionRepository.flush();
-//            gamePlay = game;
-//        }
+        if (gamePlay == null) {
+            GamePlay game = new GamePlay();
+            this.gameSessionRepository.save(game);   // needed for management fo Pictures in the future
+            gameSessionRepository.flush();
+            gamePlay = game;
+        }
         return usersList;
     }
 
