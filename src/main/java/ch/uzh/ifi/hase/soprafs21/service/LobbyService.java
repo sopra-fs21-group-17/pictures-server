@@ -87,9 +87,6 @@ public class LobbyService {
             userToAdd.setIsReady(false);
         }
 
-        // neu hinzugefügt von Julia & Oli ...
-        //lobbyRepository.findByLobbyId(lobbyId).getUsersList().add(userToAdd);
-
         userRepository.flush();
         lobbyRepository.flush();
     }
@@ -101,7 +98,6 @@ public class LobbyService {
 //        userRepository.flush();
 //        lobbyRepository.flush();
 //    }
-
 
     //checks if the User are ready and gets the Players count in the lobby
     public Lobby checkReadyAndGetCount(String lobbyId){

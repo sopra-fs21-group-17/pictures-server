@@ -57,7 +57,6 @@ public class UserService {
         List<User> usersInLobby = new ArrayList<>();
         List<User> allUsers = getUsers();
 
-
         for (User user : allUsers) {
             if(user.getLobbyId() != null){
                 if (user.getLobbyId().equals(lobbyId)) {
@@ -91,7 +90,6 @@ public class UserService {
      */
     public User createUser(User newUser) throws ParseException {
         newUser.setToken(UUID.randomUUID().toString());
-
 
         checkIfUserExists(newUser);
         String birthdate = changeDateFormat(newUser.getBirthdate());

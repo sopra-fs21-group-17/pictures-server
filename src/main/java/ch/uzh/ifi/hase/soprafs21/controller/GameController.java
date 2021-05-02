@@ -1,15 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-//TODO see if class game should exist as entity like user
-// TODO frage was braucht die Scoreboard klasse?
-
 import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,52 +24,20 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    // alte funktion
-//    @GetMapping("/board")
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public List<UserGetDTO> initGame() {
-//        String lobbyId = "test";
-//        Set<User> usersList = gameService.initGame(lobbyId);
-//        gameService.selectPictures();
-//        List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
-//
-//        // convert each user to the API representation
-//        for (User user : usersList) {
-//            initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
-//        }
-//
-//        return initedUsersDTOs;
-//    }
-
     @GetMapping("/board/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<UserGetDTO> initGame(@PathVariable String lobbyId) {
         List<User> usersList = gameService.initGame(lobbyId);
-        gameService.selectPictures();
         List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
 
         // convert each user to the API representation
         for (User user : usersList) {
-            //System.out.println("USERS IN LOBBY: "+user.getUsername());
             initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
-//        if (gameService.getListOfPictures() == null) {
-//            gameService.selectPictures();
-//        }
+
         return initedUsersDTOs;
     }
-
-//    @PostMapping(mainGame)
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public void postUserGuesses() {
-//        int[] userGuesses = {0, 15, 4, 5}; // TODO get user guesses from FE
-//
-//        //gameService.handleGuesses(userGuesses,"Muster");
-//
-//    }
 
     @GetMapping("/screenshots/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
@@ -94,6 +58,7 @@ public class GameController {
 //        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
 //        gameService.saveScreenshot(submittedShot, Long.valueOf(userId));
 //    }
+
     @PutMapping("/screenshot/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String username) {
@@ -116,21 +81,20 @@ public class GameController {
         return screenshotGetDTOs;
     }
 
-    @PutMapping("/guesses/{lobbyid}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void submitGuesses(@RequestBody UserPutDTO userPutDTO, @PathVariable String lobbyid) {
-        User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-        gameService.handleGuesses(lobbyid, user.getUsername());
-    }
+//    @PutMapping("/guesses/{lobbyid}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public void submitGuesses(@RequestBody UserPutDTO userPutDTO, @PathVariable String lobbyid) {
+//        User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+//        gameService.handleGuesses(lobbyid, user);
+//    }
 
-    // since get/correctedGuesses not returning anything at the moment, using this instead
-    // when it works use @PutMapping("/guesses") again...
     @PostMapping("/guesses/{lobbyid}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String submitGuesses(@RequestBody UserPostDTO userPostDTO, @PathVariable String lobbyid) {
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-        return gameService.handleGuesses(lobbyid, user.getUsername());
+        System.out.println("username for guesses: "+user.getUsername());
+        return gameService.handleGuesses(lobbyid, user);
     }
 
     @GetMapping("/score/{lobbyId}")
