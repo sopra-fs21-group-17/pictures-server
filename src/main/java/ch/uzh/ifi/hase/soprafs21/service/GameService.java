@@ -75,11 +75,11 @@ public class GameService {
      * So there are 16 chosen and saved into the corresponding GamePlay entity.
      */
     public void selectPictures(){
+        if(gamePlay.getSelectedPictures() == null){
         //goes from 0 to 15 for easier mapping
         int maxPictures = 16;
         int randomLimit = 51; //limit will be strictly smaller than
         //TODO depending on storage will may need different implementation for the maximum limit.
-        gamePlay.setGameID(1L);
 
         //TODO for M4 implement for mulitple lobbies
 
@@ -100,6 +100,7 @@ public class GameService {
                 }
             }
 
+            }
         }
     }
 
@@ -205,6 +206,7 @@ public class GameService {
 
         if (gamePlay == null) {
             GamePlay game = new GamePlay();
+            game.setGameID(1L);
             this.gameSessionRepository.save(game);   // needed for management fo Pictures in the future
             gameSessionRepository.flush();
             gamePlay = game;
