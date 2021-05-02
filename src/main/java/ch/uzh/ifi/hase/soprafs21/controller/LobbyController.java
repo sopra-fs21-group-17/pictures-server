@@ -46,12 +46,14 @@ public class LobbyController {
         lobbyService.addUserToLobby(userInput, lobbyId);
 
     }
-    @PutMapping("/lobbies/{username}/{lobbyId}")
+
+    /**
+     * This second function is for removing users from the list.
+     * */
+    @PutMapping("/lobby/{username}/{lobbyId}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public void removeUserFromLobby(@PathVariable String username, @PathVariable String lobbyId){
-
-
         //removes user from lobbyArray
         lobbyService.removeUserFromLobby(username, lobbyId);
     }
@@ -82,8 +84,8 @@ public class LobbyController {
 
         //gets the current Lobby
         // TODO auskommentiert zum testen
-        Lobby lobby = lobbyService.getTestLobby(lobbyId);
-        //Lobby lobby = lobbyService.checkReadyAndGetCount(lobbyId);
+       // Lobby lobby = lobbyService.getTestLobby(lobbyId);
+        Lobby lobby = lobbyService.checkReadyAndGetCount(lobbyId);
 
         // convert lobby to the API representation
 

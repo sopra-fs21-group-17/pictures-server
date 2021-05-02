@@ -50,7 +50,7 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<UserGetDTO> initGame(@PathVariable String lobbyId) {
-        System.out.println("******called init game******");
+        //System.out.println("******called init game******");
 
         Set<User> usersList = gameService.initGame(lobbyId);
         //gameService.selectPictures();
@@ -60,9 +60,9 @@ public class GameController {
         for (User user : usersList) {
             initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
-        if (gameService.getListOfPictures() == null) {
-            gameService.selectPictures();
-        }
+//        if (gameService.getListOfPictures() == null) {
+//            gameService.selectPictures();
+//        }
         return initedUsersDTOs;
     }
 

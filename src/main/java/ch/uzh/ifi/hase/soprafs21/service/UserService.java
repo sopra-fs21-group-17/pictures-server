@@ -51,6 +51,7 @@ public class UserService {
         User user = userRepository.findByUsername(username);
         return user;
     }
+
     public List<User> getUsersInLobby(String lobbyId) {
 
         List<User> usersInLobby = new ArrayList<>();
