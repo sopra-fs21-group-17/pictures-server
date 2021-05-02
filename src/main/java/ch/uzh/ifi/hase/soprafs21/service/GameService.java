@@ -187,22 +187,18 @@ public class GameService {
      * Initializes the game:
      *  - Assign random coordinates to each user
      *  - Assign random sets to each user
-     *
-     * @return*/
+     * @return
+     * */
     public List<User> initGame(String lobbyId) {
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
-         if(!this.gameInited){
-             assignCoordinates(usersList);
-             assignSets(usersList);
+         assignCoordinates(usersList);
+         assignSets(usersList);
 
-             for (User u : usersList) {
-                 userRepository.save(u);
-                 userRepository.flush();
-             }
-
-             this.gameInited = true; // should only be set once
+         for (User u : usersList) {
+             userRepository.save(u);
+             userRepository.flush();
          }
 
         return usersList;
