@@ -119,6 +119,7 @@ public class GameServiceTest {
 
     }
 
+    //Matches style of integration test more
     @Test
     public void testInitGameHandlesCoordinatesHandlesSetsAssignment()
     {
@@ -144,8 +145,6 @@ public class GameServiceTest {
        Set<User> testUserAfterCall =  gameService.initGame(testLobby.getLobbyId());
        ArrayList<User> testUsersAfter = new ArrayList<>(testUserAfterCall);
        for(int i = 0;i < 3; i++){
-           assertEquals(testUsersAfter.get(i).getUsername(),users[i].getUsername());
-           assertEquals(testUsersAfter.get(i).getId(),users[i].getId());
            assertTrue(testUsersAfter.get(i).getAssignedCoordinates()>=0);
            assertNotNull(testUsersAfter.get(i).getAssignedSet());
        }
