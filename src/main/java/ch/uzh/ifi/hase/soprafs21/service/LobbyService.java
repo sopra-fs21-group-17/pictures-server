@@ -25,7 +25,7 @@ public class LobbyService {
     private final LobbyRepository lobbyRepository;
 
     @Autowired
-    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, UserRepository userRepository){
+    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("userRepository") UserRepository userRepository){
         this.lobbyRepository = lobbyRepository;
         this.userRepository = userRepository;
     }
