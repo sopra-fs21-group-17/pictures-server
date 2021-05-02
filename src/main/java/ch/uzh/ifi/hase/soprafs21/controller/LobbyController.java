@@ -44,7 +44,18 @@ public class LobbyController {
         //posts user to lobbyArray
 
         lobbyService.addUserToLobby(userInput, lobbyId);
+
     }
+    @PutMapping("/lobbies/{username}/{lobbyId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public void removeUserFromLobby(@PathVariable String username, @PathVariable String lobbyId){
+
+
+        //removes user from lobbyArray
+        lobbyService.removeUserFromLobby(username, lobbyId);
+    }
+
 
     @PutMapping("/lobbies/{lobbyId}/users")
     @ResponseStatus(HttpStatus.CREATED)

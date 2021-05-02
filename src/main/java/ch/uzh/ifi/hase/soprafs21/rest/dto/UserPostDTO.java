@@ -8,7 +8,7 @@ public class UserPostDTO {
     private String assignedSet;
     private String password;
     private String guesses;
-    private String name; // wieder hinzugefügt da in Tests gebraucht
+    //private String name; // wieder hinzugefügt da in Tests gebraucht
 
 
     public String getUsername() {

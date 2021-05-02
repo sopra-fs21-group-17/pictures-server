@@ -25,7 +25,7 @@ public class LobbyService {
     private final LobbyRepository lobbyRepository;
 
     @Autowired
-    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("userRepository") UserRepository userRepository){
+    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, UserRepository userRepository){
         this.lobbyRepository = lobbyRepository;
         this.userRepository = userRepository;
     }
@@ -83,6 +83,13 @@ public class LobbyService {
 
         // neu hinzugefügt von Julia & Oli ...
         lobbyRepository.findByLobbyId(lobbyId).getUsersList().add(userToAdd);
+
+        userRepository.flush();
+        lobbyRepository.flush();
+    }
+    public void removeUserFromLobby(String username, String lobbyId){
+        User userToRemove = userRepository.findByUsername(username);
+        lobbyRepository.findByLobbyId(lobbyId).getUsersList().remove(userToRemove);
 
         userRepository.flush();
         lobbyRepository.flush();
