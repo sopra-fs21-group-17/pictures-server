@@ -51,6 +51,7 @@ public class UserService {
         User user = userRepository.findByUsername(username);
         return user;
     }
+
     public List<User> getUsersInLobby(String lobbyId) {
 
         List<User> usersInLobby = new ArrayList<>();
@@ -58,8 +59,10 @@ public class UserService {
 
 
         for (User user : allUsers) {
-            if (user.getLobbyId().equals(lobbyId)) {
-                usersInLobby.add(user);
+            if(user.getLobbyId() != null){
+                if (user.getLobbyId().equals(lobbyId)) {
+                    usersInLobby.add(user);
+                }
             }
         }
 
@@ -86,11 +89,13 @@ public class UserService {
      * @param newUser
      * @return newUser
      */
-    public User createUser(User newUser)  {
+    public User createUser(User newUser) throws ParseException {
         newUser.setToken(UUID.randomUUID().toString());
 
 
         checkIfUserExists(newUser);
+        String birthdate = changeDateFormat(newUser.getBirthdate());
+        newUser.setBirthdate(birthdate);
         newUser.setIsReady(false);
 
         // saves the given entity but data is only persisted in the database once flush() is called

@@ -26,6 +26,7 @@ public interface DTOMapper {
     // USER DTOs //
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
+    @Mapping(source = "birthdate", target = "birthdate")
     @Mapping(source = "id", target = "id")
     @Mapping(source = "assignedCoordinates", target = "assignedCoordinates")
     @Mapping(source = "assignedSet", target = "assignedSet")

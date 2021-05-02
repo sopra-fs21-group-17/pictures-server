@@ -155,6 +155,7 @@ public class GameService {
         user.setScreenshotURL(submittedShot.getURL());
         userRepository.save(user);
         userRepository.flush();
+        System.out.println(user.getScreenshotURL());
     }
     /**
      *
@@ -188,9 +189,12 @@ public class GameService {
      *  - Assign random sets to each user
      *
      * @return*/
-    public Set<User> initGame(String lobbyId) {
-        Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
-        Set<User> usersList = lobby.getUsersList();
+    public List<User> initGame(String lobbyId) {
+       // Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+
+        //Set<User> usersList = lobby.getUsersList();
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         assignCoordinates(usersList);
         assignSets(usersList);
@@ -302,7 +306,7 @@ public class GameService {
      * Method is used to assigned a random set to every User
      * @param usersList
      */
-    public void assignSets(Set<User> usersList) {
+    public void assignSets(List<User> usersList) {
         // make shuffled array with indices to randomly assign sets
         Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
         int i = 0;
@@ -316,7 +320,7 @@ public class GameService {
     // coordinates represented in code like this:
     // A1 = 0, A2 = 1, D4 = 15 ...
     // so just pick random nr between 0-15x3
-    public void assignCoordinates(Set<User> usersList) {
+    public void assignCoordinates(List<User> usersList) {
         int repetitions = 3;
         int nrOfCoordinates = 16;
         int totalCoordinates = repetitions * nrOfCoordinates; // 16 cards on board, 3x same coordinate

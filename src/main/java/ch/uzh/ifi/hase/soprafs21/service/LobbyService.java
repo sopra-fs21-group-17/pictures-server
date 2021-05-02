@@ -34,11 +34,13 @@ public class LobbyService {
     public List<User> getUsersInLobby(String lobbyId) {
         List<User> usersInLobby= new ArrayList<>();
         List<User> allUsers = this.userRepository.findAll();
-        System.out.println(allUsers);
+       // System.out.println(allUsers);
 
         for(User user: allUsers){
-            if (user.getLobbyId().equals(lobbyId)){
-                usersInLobby.add(user);
+            if(user.getLobbyId() != null){
+                if (user.getLobbyId().equals(lobbyId)){
+                    usersInLobby.add(user);
+                }
             }
         }
 
@@ -63,11 +65,13 @@ public class LobbyService {
     public void updateCount(String lobbyId){
         Lobby foundByLobbyId = lobbyRepository.findByLobbyId(lobbyId);
 
-        long currentTime = System.nanoTime();
+        if(foundByLobbyId != null){
+            long currentTime = System.nanoTime();
 
-        long timeDifference = foundByLobbyId.getCreationTime() - currentTime;
+            long timeDifference = foundByLobbyId.getCreationTime() - currentTime;
 
-        foundByLobbyId.setTimeDifference((double) timeDifference /1_000_000_000);
+            foundByLobbyId.setTimeDifference((double) timeDifference /1_000_000_000);
+        }
 
         lobbyRepository.flush();
 
@@ -82,7 +86,15 @@ public class LobbyService {
         userToAdd.setIsReady(false);
 
         // neu hinzugefügt von Julia & Oli ...
-        lobbyRepository.findByLobbyId(lobbyId).getUsersList().add(userToAdd);
+        //lobbyRepository.findByLobbyId(lobbyId).getUsersList().add(userToAdd);
+
+        userRepository.flush();
+        lobbyRepository.flush();
+    }
+
+    public void removeUserFromLobby(String username, String lobbyId){
+        User userToRemove = userRepository.findByUsername(username);
+        //lobbyRepository.findByLobbyId(lobbyId).getUsersList().remove(userToRemove);
 
         userRepository.flush();
         lobbyRepository.flush();
@@ -95,23 +107,26 @@ public class LobbyService {
         int countUsers = 0;
 
         Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
-        List<User> usersInLobby = getUsersInLobby(lobbyId);
 
-        for(User user : usersInLobby){
-            countUsers += 1;
-            if (user.getIsReady()){
-                countReady += 1;
+        if(currentLobby != null){List<User> usersInLobby = getUsersInLobby(lobbyId);
+
+            for(User user : usersInLobby){
+                countUsers += 1;
+                if (user.getIsReady()){
+                    countReady += 1;
+                }
+            }
+            currentLobby.setPlayersCount(countUsers);
+            if (countReady >= 3 && countReady == countUsers){
+                currentLobby.setLobbyReady(true);
+            }else if (countReady == 5){
+                currentLobby.setLobbyReady(true);
+
+            }else{
+                currentLobby.setLobbyReady(false);
             }
         }
-        currentLobby.setPlayersCount(countUsers);
-        if (countReady >= 3 && countReady == countUsers){
-            currentLobby.setLobbyReady(true);
-        }else if (countReady == 5){
-            currentLobby.setLobbyReady(true);
 
-        }else{
-            currentLobby.setLobbyReady(false);
-        }
         lobbyRepository.flush();
 
         return currentLobby;
@@ -201,7 +216,7 @@ public class LobbyService {
                 user.setUsername(userNames[i]);
                 user.setAssignedCoordinates(i);
                 user.setPoints(0); // init all points to 0
-                user.setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
+                //user.setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
 
                 userRepository.save(user);
                 userRepository.flush();

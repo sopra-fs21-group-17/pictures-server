@@ -3,12 +3,13 @@ package ch.uzh.ifi.hase.soprafs21.rest.dto;
 public class UserPostDTO {
 
     private Long id;
+    private String birthdate;
     private String username;
     private int assignedCoordinates;
     private String assignedSet;
     private String password;
     private String guesses;
-    private String name; // wieder hinzugefügt da in Tests gebraucht
+    //private String name; // wieder hinzugefügt da in Tests gebraucht
 
 
     public String getUsername() {
@@ -18,6 +19,10 @@ public class UserPostDTO {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public String getBirthdate() { return birthdate; }
+
+    public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
 
     public int getAssignedCoordinates() {
         return assignedCoordinates;

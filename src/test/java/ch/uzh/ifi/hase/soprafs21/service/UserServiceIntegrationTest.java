@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -35,12 +37,14 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void createUser_validInputs_success() {
+    public void createUser_validInputs_success() throws ParseException {
         // given
         assertNull(userRepository.findByUsername("testUsername"));
 
         User testUser = new User();
         testUser.setUsername("testUsername");
+        testUser.setPassword("testPassword");
+        testUser.setBirthdate("01-01-2000");
 
         // when
         User createdUser = userService.createUser(testUser);
@@ -50,15 +54,16 @@ public class UserServiceIntegrationTest {
 
         assertEquals(testUser.getUsername(), createdUser.getUsername());
         assertNotNull(createdUser.getToken());
-        //assertEquals(UserStatus.OFFLINE, createdUser.getStatus());
     }
 
     @Test
-    public void createUser_duplicateUsername_throwsException() {
+    public void createUser_duplicateUsername_throwsException() throws ParseException {
         assertNull(userRepository.findByUsername("testUsername"));
 
         User testUser = new User();
         testUser.setUsername("testUsername");
+        testUser.setPassword("testPassword");
+        testUser.setBirthdate("01-01-2000");
         User createdUser = userService.createUser(testUser);
 
         // attempt to create second user with same username
@@ -67,6 +72,9 @@ public class UserServiceIntegrationTest {
         // change the name but forget about the username
 
         testUser2.setUsername("testUsername");
+        testUser2.setPassword("testPassword");
+        testUser2.setBirthdate("01-01-2000");
+
 
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2));

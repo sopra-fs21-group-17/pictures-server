@@ -100,7 +100,7 @@ public class GameControllerTest {
 
    @Test
    public void testInitGame() throws Exception {
-        Set<User> testUsersFromLobby = new HashSet<User>();
+        List<User> testUsersFromLobby = new ArrayList<>();
         for(int idx = 0; idx < 5;idx++){
             User testUser = new User();
             testUser.setId(((long) (idx + 1)));

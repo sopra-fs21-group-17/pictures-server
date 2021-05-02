@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
@@ -31,13 +33,15 @@ public class UserServiceTest {
         testUser = new User();
         testUser.setId(1L);
         testUser.setUsername("testUsername");
+        testUser.setPassword("testPassword");
+        testUser.setBirthdate("01-01-2000");
 
         // when -> any object is being save in the userRepository -> return the dummy testUser
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
     }
 
     @Test
-    public void createUser_validInputs_success() {
+    public void createUser_validInputs_success() throws ParseException {
         // when -> any object is being save in the userRepository -> return the dummy testUser
         User createdUser = userService.createUser(testUser);
 
@@ -46,12 +50,13 @@ public class UserServiceTest {
 
         assertEquals(testUser.getId(), createdUser.getId());
         assertEquals(testUser.getUsername(), createdUser.getUsername());
+        assertEquals(testUser.getPassword(), createdUser.getPassword());
+        assertEquals(testUser.getBirthdate(), createdUser.getBirthdate());
         assertNotNull(createdUser.getToken());
-        //assertEquals(UserStatus.OFFLINE, createdUser.getStatus());
     }
 
     @Test
-    public void createUser_duplicateName_throwsException() {
+    public void createUser_duplicateName_throwsException() throws ParseException {
         // given -> a first user has already been created
         userService.createUser(testUser);
 
@@ -63,7 +68,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void createUser_duplicateInputs_throwsException() {
+    public void createUser_duplicateInputs_throwsException() throws ParseException {
         // given -> a first user has already been created
         userService.createUser(testUser);
 
