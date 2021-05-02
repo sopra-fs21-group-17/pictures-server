@@ -16,7 +16,7 @@ public class UserGetDTO {
     private String assignedSet;
     private String correctedGuesses;
     private String password;
-    private Date birthdate;
+    private String birthdate;
     private String model;
     private int totalScore;
     private boolean isReady;
@@ -43,9 +43,9 @@ public class UserGetDTO {
 
     public void setPassword(String password) { this.password = password; }
 
-    public Date getBirthdate() { return birthdate; }
+    public String getBirthdate() { return birthdate; }
 
-    public void setBirthdate(Date birthdate) { this.birthdate = birthdate; }
+    public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
 
     public String getModel() { return model; }
 

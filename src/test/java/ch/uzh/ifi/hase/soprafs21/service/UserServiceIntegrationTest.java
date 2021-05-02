@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -35,7 +37,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void createUser_validInputs_success() {
+    public void createUser_validInputs_success() throws ParseException {
         // given
         assertNull(userRepository.findByUsername("testUsername"));
 
@@ -53,7 +55,7 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void createUser_duplicateUsername_throwsException() {
+    public void createUser_duplicateUsername_throwsException() throws ParseException {
         assertNull(userRepository.findByUsername("testUsername"));
 
         User testUser = new User();

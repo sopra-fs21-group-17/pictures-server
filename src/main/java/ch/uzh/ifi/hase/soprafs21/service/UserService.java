@@ -86,11 +86,13 @@ public class UserService {
      * @param newUser
      * @return newUser
      */
-    public User createUser(User newUser)  {
+    public User createUser(User newUser) throws ParseException {
         newUser.setToken(UUID.randomUUID().toString());
 
 
         checkIfUserExists(newUser);
+        String birthdate = changeDateFormat(newUser.getBirthdate());
+        newUser.setBirthdate(birthdate);
         newUser.setIsReady(false);
 
         // saves the given entity but data is only persisted in the database once flush() is called
