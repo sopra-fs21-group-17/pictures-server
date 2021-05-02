@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
@@ -10,6 +11,7 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -49,7 +51,7 @@ public class GameControllerTest {
 
         // this mocks the GameService
 
-        Picture allPictures[] = new Picture[0];
+        Picture allPictures[] = new Picture[1];
         allPictures[0] = (testPicture);
 
         given(gameService.getListOfPictures()).willReturn(allPictures);
@@ -85,7 +87,7 @@ public class GameControllerTest {
        //when incoming request
        UserGetDTO userGetDTO = DTOMapper.INSTANCE.convertEntityToUserGetDTO(testUser);
 
-       MockHttpServletRequestBuilder getRequest = get("/picture").content(asJsonString(userGetDTO)).contentType(MediaType.APPLICATION_JSON);
+       MockHttpServletRequestBuilder getRequest = get("/picture/"+testUser.getId()).content(asJsonString(userGetDTO)).contentType(MediaType.APPLICATION_JSON);
 
        //then perform the request
        mockMvc.perform(getRequest).andExpect(status().isOk())
@@ -108,8 +110,10 @@ public class GameControllerTest {
         }
         //changed to arraylist to get single elements from collection (is not possible with set but set is required)
         ArrayList<User> testUsers = new ArrayList<>(testUsersFromLobby);
+       Lobby lobby = new Lobby();
+       lobby.setLobbyId("test");
+        given(gameService.initGame(lobby.getLobbyId())).willReturn(testUsersFromLobby);
 
-        given(gameService.initGame(Mockito.any())).willReturn(testUsersFromLobby);
 
         ArrayList<UserGetDTO> userGetDTOs = new ArrayList<>();
         for(User testUser : testUsers){
@@ -117,7 +121,7 @@ public class GameControllerTest {
             userGetDTOs.add(userGetDTO);
         }
 
-       MockHttpServletRequestBuilder getRequest = get("/board").contentType(MediaType.APPLICATION_JSON);
+       MockHttpServletRequestBuilder getRequest = get("/board/"+lobby.getLobbyId()).contentType(MediaType.APPLICATION_JSON);
 
        ResultActions actions = mockMvc.perform(getRequest).andExpect(status().isOk())
                .andExpect(jsonPath("$", instanceOf(List.class)))

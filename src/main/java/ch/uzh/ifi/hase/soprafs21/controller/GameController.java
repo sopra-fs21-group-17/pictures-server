@@ -9,13 +9,11 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.entity.Picture;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * GameController is used to manage incoming REST request coming from the client
@@ -26,7 +24,9 @@ public class GameController {
 
     private final GameService gameService;
 
-    GameController(GameService gameService){ this.gameService = gameService; }
+    GameController(GameService gameService) {
+        this.gameService = gameService;
+    }
 
     // alte funktion
 //    @GetMapping("/board")
@@ -50,15 +50,19 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<UserGetDTO> initGame(@PathVariable String lobbyId) {
+        System.out.println("******called init game******");
+
         Set<User> usersList = gameService.initGame(lobbyId);
-        gameService.selectPictures();
+
         List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
 
         // convert each user to the API representation
         for (User user : usersList) {
             initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
-
+        if (gameService.getListOfPictures() == null) {
+            gameService.selectPictures();
+        }
         return initedUsersDTOs;
     }
 
@@ -75,13 +79,14 @@ public class GameController {
     @GetMapping("/screenshots/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ArrayList<ArrayList<String>> getScreenshots(@PathVariable String lobbyId){
+    public ArrayList<ArrayList<String>> getScreenshots(@PathVariable String lobbyId) {
         ArrayList<ArrayList<String>> response = gameService.getUsersScreenshots(lobbyId);
         return response;
     }
 
     /**
      * Used to save screenshot URLs to the Back end
+     *
      * @param screenshotPutDTO
      */
 //    @PutMapping("/screenshot/{id}")
@@ -90,26 +95,23 @@ public class GameController {
 //        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
 //        gameService.saveScreenshot(submittedShot, Long.valueOf(userId));
 //    }
-
-
     @PutMapping("/screenshot/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String username){
+    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String username) {
         Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
         gameService.saveScreenshot(submittedShot, username);
     }
 
     /**
-     *
      * @return Return a List of Screenshots for the guessing screen
      */
     @GetMapping("/screenshot")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<ScreenshotGetDTO> showScreenshots(){
+    public List<ScreenshotGetDTO> showScreenshots() {
         List<Screenshot> screenshots = gameService.getScreenshots();
         List<ScreenshotGetDTO> screenshotGetDTOs = new ArrayList<>();
-        for(Screenshot shot : screenshots){
+        for (Screenshot shot : screenshots) {
             screenshotGetDTOs.add(DTOMapper.INSTANCE.convertEntityToScreenshotGetDTO(shot));
         }
         return screenshotGetDTOs;
@@ -117,17 +119,17 @@ public class GameController {
 
     @PutMapping("/guesses")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void submitGuesses(@RequestBody UserPutDTO userPutDTO){
+    public void submitGuesses(@RequestBody UserPutDTO userPutDTO) {
         User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
         gameService.handleGuesses(user);
     }
 
-    // since get/correcteddGuesses not returning anything at the moment, using this instead
+    // since get/correctedGuesses not returning anything at the moment, using this instead
     // when it works use @PutMapping("/guesses") again...
     @PostMapping("/guesses")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String submitGuesses(@RequestBody UserPostDTO userPostDTO){
+    public String submitGuesses(@RequestBody UserPostDTO userPostDTO) {
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
         return gameService.handleGuesses(user);
     }
@@ -135,7 +137,7 @@ public class GameController {
     @GetMapping("/correctedGuesses/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Map<String, String>> returnCorrectedGuesses(@PathVariable String lobbyId){
+    public Map<String, Map<String, String>> returnCorrectedGuesses(@PathVariable String lobbyId) {
         return gameService.returnCorrectedGuesses(lobbyId);
     }
 
@@ -146,11 +148,11 @@ public class GameController {
     @GetMapping("/pictures")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<PicturesGetDTO> getPictureURL(){
+    public List<PicturesGetDTO> getPictureURL() {
 
         Picture[] pictures = gameService.getListOfPictures();  // is changed to take from gameplay
         List<PicturesGetDTO> picturesGetDTOs = new ArrayList();
-        for(Picture picture : pictures){
+        for (Picture picture : pictures) {
             picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(picture));
         }
 
@@ -158,8 +160,7 @@ public class GameController {
     }
 
     /**
-     *
-     * @param userGetDTO
+     * gets the picture corresponding to the correct user id
      */
     @GetMapping("/picture/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -167,7 +168,7 @@ public class GameController {
 
     public PicturesGetDTO getCorrespondingPicture(@PathVariable String id) {
         Picture correspondingPicture = gameService.getCorrespondingToUser(Long.valueOf(id));
-        PicturesGetDTO pictureResult =  DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
+        PicturesGetDTO pictureResult = DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
         return pictureResult;
     }
 

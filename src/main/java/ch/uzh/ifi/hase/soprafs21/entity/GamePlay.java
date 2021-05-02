@@ -65,6 +65,9 @@ public class GamePlay implements Serializable {
     public Long getGameID(){return gameID;}
 
     public Picture[] getSelectedPictures(){
+        if(selectedPictures == null || selectedPictures.size() < 1){
+            return null;
+        }
         ArrayList<Picture> pictureArraylist;
         Picture picturesArray[] = new Picture[16];
         for(int i = 0; i < 16;i++){

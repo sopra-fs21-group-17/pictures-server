@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 // TEST MESSAGE
@@ -89,7 +90,7 @@ public class GameService {
             int randomizedID =random.nextInt(randomLimit);
             if(!checkID.contains(randomizedID)){
                 Picture current = picturesRepository.findByid((long)randomizedID);
-                if(current.getPictureLink() != null){
+                if(current != null && current.getPictureLink() != null){
                     checkID.add(randomizedID);
                     //random has problems with long so to avoid, used int and parsed
                 gamePlay.addPicture(current,idx);  // adds the picture to the entity
@@ -105,7 +106,8 @@ public class GameService {
      * @return returns all Pictures for the current Round
      */
     public Picture[] getListOfPictures(){
-        return gamePlay.getSelectedPictures();
+
+        return gamePlay != null ? gamePlay.getSelectedPictures() :null;
     }
 
     /**
@@ -188,14 +190,14 @@ public class GameService {
 
         if (gamePlay == null) {
             GamePlay game = new GamePlay();
-            this.gameSessionRepository.save(game);   // needed for management fo Pictures
+            this.gameSessionRepository.save(game);   // needed for management fo Pictures in the future
             gameSessionRepository.flush();
             gamePlay = game;
 
         }
         return usersList;
     }
-//TODO please check if javadoc is correct like this
+
     /**
      * used to get the playing users from the Lobby
      * @param userNames
@@ -363,6 +365,11 @@ public class GameService {
         }
 
         return result;
+    }
+
+    //only for testing
+    public void setGamePlay(GamePlay gamePlay){
+        this.gamePlay = gamePlay;
     }
 }
 
