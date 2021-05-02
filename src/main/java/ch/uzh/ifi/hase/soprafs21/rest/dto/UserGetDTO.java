@@ -21,6 +21,7 @@ public class UserGetDTO {
     private int totalScore;
     private boolean isReady;
     private String lobbyId;
+    private int points;
 
     private UserStatus status;
 
@@ -100,5 +101,13 @@ public class UserGetDTO {
 
     public void setCorrectedGuesses(String correctedGuesses) {
         this.correctedGuesses = correctedGuesses;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 }

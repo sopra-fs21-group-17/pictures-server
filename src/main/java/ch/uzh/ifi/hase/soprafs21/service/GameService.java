@@ -125,7 +125,7 @@ public class GameService {
     /**
      * Saves screenshot from Controller to the corresponding Gameplay Entity
      * @param submittedShot
-     * @param userId
+     * @param //userId
      */
 //    public void saveScreenshot(Screenshot submittedShot, Long userId){
 //        User user = userRepository.findByid(userId);
@@ -193,7 +193,6 @@ public class GameService {
             this.gameSessionRepository.save(game);   // needed for management fo Pictures in the future
             gameSessionRepository.flush();
             gamePlay = game;
-
         }
         return usersList;
     }
@@ -359,7 +358,7 @@ public class GameService {
                     temp.put(username, answer);
                     username = answer = ""; // reset
                 }
-
+                temp.put("points", String.valueOf(usr.getPoints()));
                 result.put(usr.getUsername(), temp);
             }
         }

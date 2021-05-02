@@ -134,7 +134,7 @@ public class GameController {
         return gameService.handleGuesses(user);
     }
 
-    @GetMapping("/correctedGuesses/{lobbyId}")
+    @GetMapping("/score/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Map<String, Map<String, String>> returnCorrectedGuesses(@PathVariable String lobbyId) {
