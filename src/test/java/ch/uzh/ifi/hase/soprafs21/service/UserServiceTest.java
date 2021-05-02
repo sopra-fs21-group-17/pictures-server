@@ -34,6 +34,7 @@ public class UserServiceTest {
         testUser.setId(1L);
         testUser.setUsername("testUsername");
         testUser.setPassword("testPassword");
+        testUser.setBirthdate("01-01-2000");
 
         // when -> any object is being save in the userRepository -> return the dummy testUser
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
@@ -50,6 +51,7 @@ public class UserServiceTest {
         assertEquals(testUser.getId(), createdUser.getId());
         assertEquals(testUser.getUsername(), createdUser.getUsername());
         assertEquals(testUser.getPassword(), createdUser.getPassword());
+        assertEquals(testUser.getBirthdate(), createdUser.getBirthdate());
         assertNotNull(createdUser.getToken());
     }
 
