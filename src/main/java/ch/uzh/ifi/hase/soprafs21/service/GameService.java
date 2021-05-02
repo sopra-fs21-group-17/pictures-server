@@ -36,6 +36,7 @@ public class GameService {
     private final UserRepository userRepository;
     private final GameSessionRepository gameSessionRepository;
     private final LobbyRepository lobbyRepository;
+    private Boolean gameInited = false;
 
     private GamePlay gamePlay;
     private Long gameID = 1L;
@@ -147,8 +148,7 @@ public class GameService {
 //        user.setScreenshotURL(submittedShot.getURL());
 //        userRepository.save(user);
 //        userRepository.flush();
-//    } // TODO auskommentiert zum testen
-
+//    }
 
     public void saveScreenshot(Screenshot submittedShot, String username){
         User user = userRepository.findByUsername(username);
@@ -170,7 +170,6 @@ public class GameService {
         ArrayList<ArrayList<String>> response = new ArrayList<>();
         ArrayList<String> temp = new ArrayList<>();
 
-
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
@@ -191,24 +190,21 @@ public class GameService {
      *
      * @return*/
     public List<User> initGame(String lobbyId) {
-
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
-        assignCoordinates(usersList);
-        assignSets(usersList);
+         if(!this.gameInited){
+             assignCoordinates(usersList);
+             assignSets(usersList);
 
-        for (User u : usersList) {
-            userRepository.save(u);
-            userRepository.flush();
-        }
+             for (User u : usersList) {
+                 userRepository.save(u);
+                 userRepository.flush();
+             }
 
-        if (gamePlay == null) {
-            GamePlay game = new GamePlay();
-            this.gameSessionRepository.save(game);   // needed for management fo Pictures in the future
-            gameSessionRepository.flush();
-            gamePlay = game;
-        }
+             this.gameInited = true; // should only be set once
+         }
+
         return usersList;
     }
 
@@ -251,13 +247,13 @@ public class GameService {
         return result;
     }
 
-    public String handleGuesses(String lobbyId, String username){
+    public String handleGuesses(String lobbyId, User user){
         User player = null;
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
         for(User u : usersList){
             if(u != null){
-                if(u.getUsername().equals(username)){
+                if(u.getUsername().equals(user.getUsername())){
                     player = u;
                     break;
                 }
@@ -267,8 +263,8 @@ public class GameService {
         // convert String(guesses) to hashmap with username and coordinate
         String result = "";
         if(player != null) {
-
-            Map<String, String> guesses = getGuessesHashMap(player.getGuesses());
+            //System.out.println("USERS GUESSES: "+user.getGuesses());
+            Map<String, String> guesses = getGuessesHashMap(user.getGuesses());
 
             // correct guesses
             String[] coordinateNames = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "D1", "D2", "D3", "D4"};
@@ -277,14 +273,16 @@ public class GameService {
             for (Map.Entry<String, String> entry : guesses.entrySet()) {
                 tempUsr = userRepository.findByUsername(entry.getKey());
                 // check if coordinates match
-                if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
-                    tempUsr.setPoints(tempUsr.getPoints() + 1); // give user a point
-                    result += "y" + entry.getKey();
+                if(tempUsr != null){
+                    if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
+                        tempUsr.setPoints(tempUsr.getPoints() + 1); // give user a point
+                        result += "y" + entry.getKey();
+                    }
+                    else {
+                        result += "n" + entry.getKey();
+                    }
+                    result += "-";
                 }
-                else {
-                    result += "n" + entry.getKey();
-                }
-                result += "-";
             }
             player.setCorrectedGuesses(result);
             userRepository.save(player);
@@ -365,7 +363,7 @@ public class GameService {
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
-        String correctedGuesses = "";
+        String correctedGuesses;
         Map<String, String> temp = new HashMap<>();
         String username = "";
         String answer = "";
