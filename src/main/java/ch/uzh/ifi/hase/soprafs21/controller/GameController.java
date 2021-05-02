@@ -50,14 +50,13 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<UserGetDTO> initGame(@PathVariable String lobbyId) {
-        //System.out.println("******called init game******");
-
-        Set<User> usersList = gameService.initGame(lobbyId);
+        List<User> usersList = gameService.initGame(lobbyId);
         //gameService.selectPictures();
         List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
 
         // convert each user to the API representation
         for (User user : usersList) {
+            System.out.println("USERS IN LOBBY: "+user.getUsername());
             initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
 //        if (gameService.getListOfPictures() == null) {

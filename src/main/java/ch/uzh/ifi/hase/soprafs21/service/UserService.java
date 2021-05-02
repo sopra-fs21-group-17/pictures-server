@@ -59,8 +59,10 @@ public class UserService {
 
 
         for (User user : allUsers) {
-            if (user.getLobbyId().equals(lobbyId)) {
-                usersInLobby.add(user);
+            if(user.getLobbyId() != null){
+                if (user.getLobbyId().equals(lobbyId)) {
+                    usersInLobby.add(user);
+                }
             }
         }
 

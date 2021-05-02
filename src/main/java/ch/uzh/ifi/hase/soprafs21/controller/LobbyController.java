@@ -84,8 +84,8 @@ public class LobbyController {
 
         //gets the current Lobby
         // TODO auskommentiert zum testen
-       // Lobby lobby = lobbyService.getTestLobby(lobbyId);
-        Lobby lobby = lobbyService.checkReadyAndGetCount(lobbyId);
+        //Lobby lobby = lobbyService.getTestLobby(lobbyId);
+       Lobby lobby = lobbyService.checkReadyAndGetCount(lobbyId);
 
         // convert lobby to the API representation
 
