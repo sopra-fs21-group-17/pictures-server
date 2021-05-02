@@ -140,6 +140,7 @@ public class GameService {
         user.setScreenshotURL(submittedShot.getURL());
         userRepository.save(user);
         userRepository.flush();
+        System.out.println(user.getScreenshotURL());
     }
     /**
      *
