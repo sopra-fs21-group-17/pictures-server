@@ -82,8 +82,10 @@ public class LobbyService {
         String username = user.getUsername();
 
         User userToAdd = userRepository.findByUsername(username);
-        userToAdd.setLobbyId(lobbyId);
-        userToAdd.setIsReady(false);
+        if(userToAdd != null){
+            userToAdd.setLobbyId(lobbyId);
+            userToAdd.setIsReady(false);
+        }
 
         // neu hinzugefügt von Julia & Oli ...
         //lobbyRepository.findByLobbyId(lobbyId).getUsersList().add(userToAdd);

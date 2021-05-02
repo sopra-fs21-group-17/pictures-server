@@ -56,7 +56,7 @@ public class GameController {
 
         // convert each user to the API representation
         for (User user : usersList) {
-            System.out.println("USERS IN LOBBY: "+user.getUsername());
+            //System.out.println("USERS IN LOBBY: "+user.getUsername());
             initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
 //        if (gameService.getListOfPictures() == null) {
@@ -116,21 +116,21 @@ public class GameController {
         return screenshotGetDTOs;
     }
 
-    @PutMapping("/guesses")
+    @PutMapping("/guesses/{lobbyid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void submitGuesses(@RequestBody UserPutDTO userPutDTO) {
+    public void submitGuesses(@RequestBody UserPutDTO userPutDTO, @PathVariable String lobbyid) {
         User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-        gameService.handleGuesses(user);
+        gameService.handleGuesses(lobbyid, user.getUsername());
     }
 
     // since get/correctedGuesses not returning anything at the moment, using this instead
     // when it works use @PutMapping("/guesses") again...
-    @PostMapping("/guesses")
+    @PostMapping("/guesses/{lobbyid}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String submitGuesses(@RequestBody UserPostDTO userPostDTO) {
+    public String submitGuesses(@RequestBody UserPostDTO userPostDTO, @PathVariable String lobbyid) {
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-        return gameService.handleGuesses(user);
+        return gameService.handleGuesses(lobbyid, user.getUsername());
     }
 
     @GetMapping("/score/{lobbyId}")

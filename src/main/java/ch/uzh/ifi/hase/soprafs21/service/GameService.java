@@ -170,8 +170,9 @@ public class GameService {
         ArrayList<ArrayList<String>> response = new ArrayList<>();
         ArrayList<String> temp = new ArrayList<>();
 
-        Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
-        Set<User> usersList = lobby.getUsersList();
+
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         for(User u : usersList){
             temp.add(u.getUsername());
@@ -190,10 +191,8 @@ public class GameService {
      *
      * @return*/
     public List<User> initGame(String lobbyId) {
-       // Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
-        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
 
-        //Set<User> usersList = lobby.getUsersList();
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         assignCoordinates(usersList);
@@ -204,12 +203,12 @@ public class GameService {
             userRepository.flush();
         }
 
-        if (gamePlay == null) {
-            GamePlay game = new GamePlay();
-            this.gameSessionRepository.save(game);   // needed for management fo Pictures in the future
-            gameSessionRepository.flush();
-            gamePlay = game;
-        }
+//        if (gamePlay == null) {
+//            GamePlay game = new GamePlay();
+//            this.gameSessionRepository.save(game);   // needed for management fo Pictures in the future
+//            gameSessionRepository.flush();
+//            gamePlay = game;
+//        }
         return usersList;
     }
 
@@ -252,33 +251,46 @@ public class GameService {
         return result;
     }
 
-    public String handleGuesses(User user){
-        User player = userRepository.findByUsername(user.getUsername());
-
-        // convert String(guesses) to hashmap with username and coordinate
-        Map<String, String> guesses = getGuessesHashMap(user.getGuesses());
-
-        // correct guesses
-        String[] coordinateNames = { "A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "D1", "D2", "D3", "D4" };
-        User tempUsr;
-        Map<String, String> correctedGuesses = new HashMap<String, String>();
-        String result = "";
-        for( Map.Entry<String, String> entry : guesses.entrySet() ){
-            tempUsr = userRepository.findByUsername(entry.getKey());
-            // check if coordinates match
-            if( coordinateNames[tempUsr.getAssignedCoordinates()].equals( entry.getValue().toUpperCase() ) ){
-                tempUsr.setPoints(tempUsr.getPoints()+1); // give user a point
-                result += "y" + entry.getKey();
+    public String handleGuesses(String lobbyId, String username){
+        User player = null;
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
+        for(User u : usersList){
+            if(u != null){
+                if(u.getUsername().equals(username)){
+                    player = u;
+                    break;
+                }
             }
-            else{
-                result += "n" + entry.getKey();
-            }
-            result += "-";
         }
 
-        player.setCorrectedGuesses(result);
-        userRepository.save(player);
-        userRepository.flush();
+        // convert String(guesses) to hashmap with username and coordinate
+        String result = "";
+        if(player != null) {
+
+            Map<String, String> guesses = getGuessesHashMap(player.getGuesses());
+
+            // correct guesses
+            String[] coordinateNames = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "D1", "D2", "D3", "D4"};
+            User tempUsr;
+            Map<String, String> correctedGuesses = new HashMap<String, String>();
+            for (Map.Entry<String, String> entry : guesses.entrySet()) {
+                tempUsr = userRepository.findByUsername(entry.getKey());
+                // check if coordinates match
+                if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
+                    tempUsr.setPoints(tempUsr.getPoints() + 1); // give user a point
+                    result += "y" + entry.getKey();
+                }
+                else {
+                    result += "n" + entry.getKey();
+                }
+                result += "-";
+            }
+            player.setCorrectedGuesses(result);
+            userRepository.save(player);
+            userRepository.flush();
+
+        }
 
         return result;
 
@@ -350,8 +362,8 @@ public class GameService {
 
     public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) {
 
-        Lobby lobby = lobbyRepository.findByLobbyId(lobbyId);
-        Set<User> usersList = lobby.getUsersList();
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         String correctedGuesses = "";
         Map<String, String> temp = new HashMap<>();
@@ -375,6 +387,7 @@ public class GameService {
                     username = answer = ""; // reset
                 }
                 temp.put("points", String.valueOf(usr.getPoints()));
+                System.out.println("points: "+ String.valueOf(usr.getPoints()));
                 result.put(usr.getUsername(), temp);
             }
         }
@@ -386,5 +399,6 @@ public class GameService {
     public void setGamePlay(GamePlay gamePlay){
         this.gamePlay = gamePlay;
     }
+
 }
 
