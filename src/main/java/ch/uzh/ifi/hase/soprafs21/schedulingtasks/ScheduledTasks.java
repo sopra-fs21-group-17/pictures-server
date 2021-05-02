@@ -64,22 +64,27 @@ public class ScheduledTasks {
             Object[] objects2 = response2.getBody();
 
             //creates a picture entity and adds it to the picturesrepository for every picture in the objectlist
-            for (int i = 0; i < objects1.length; i++) {
+            if(objects1 != null){
+                for (int i = 0; i < objects1.length; i++) {
 
-                String test = objects1[i].toString();
-                Picture newPicture = new Picture();
-                newPicture.setPictureLink(test.substring(test.indexOf("regular=") + 8, test.indexOf(",", test.indexOf("regular="))));
-                createPicture(newPicture);
+                    String test = objects1[i].toString();
+                    Picture newPicture = new Picture();
+                    newPicture.setPictureLink(test.substring(test.indexOf("regular=") + 8, test.indexOf(",", test.indexOf("regular="))));
+                    createPicture(newPicture);
+                }
             }
 
             //creates a picture entity and adds it to the picturesrepository for every picture in the objectlist
-            for (int i = 0; i < objects2.length; i++) {
+            if(objects2 != null){
+                for (int i = 0; i < objects2.length; i++) {
 
-                String test = objects2[i].toString();
-                Picture newPicture = new Picture();
-                newPicture.setPictureLink(test.substring(test.indexOf("regular=") + 8, test.indexOf(",", test.indexOf("regular="))));
-                createPicture(newPicture);
+                    String test = objects2[i].toString();
+                    Picture newPicture = new Picture();
+                    newPicture.setPictureLink(test.substring(test.indexOf("regular=") + 8, test.indexOf(",", test.indexOf("regular="))));
+                    createPicture(newPicture);
+                }
             }
+
 
             //created for testing purposes
             log.info("Pictures Fetched");

@@ -13,7 +13,10 @@ import org.mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,9 +25,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameServiceTest {
     @Mock
     private PicturesRepository picturesRepository;
+
     @Mock
     private GameSessionRepository gameSessionRepository;
-    @Mock // mocks an Object
+
+    @Mock
     private UserRepository userRepository;
     @Mock
     private LobbyRepository lobbyRepository;
@@ -39,6 +44,8 @@ public class GameServiceTest {
     @Spy
     private GamePlay testGameplay = new GamePlay();
 
+    private LobbyService testLobbyService = new LobbyService(lobbyRepository,userRepository);
+
     Screenshot testScreenshot = new Screenshot();
 
     @BeforeAll
@@ -51,6 +58,7 @@ public class GameServiceTest {
 
         Mockito.when(userRepository.findByUsername("Test1")).thenReturn(testUser);
         Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
+
 
         testLobby.setLobbyId("test");
         Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
@@ -121,7 +129,7 @@ public class GameServiceTest {
 
     }
 
-    //Matches style of integration test more
+    //Matches style of integration test more may move there
     @Test
     public void testInitGameHandlesCoordinatesHandlesSetsAssignment()
     {
@@ -131,25 +139,27 @@ public class GameServiceTest {
         User testUser2 = new User();
         User testUser3 = new User();
         User testUser4 = new User();
-        User[] users = {testUser2,testUser3,testUser4};
+        ArrayList<User> users= new ArrayList<>();
+        users.add(testUser2);
+        users.add(testUser3);
+        users.add(testUser4);
 
         for(int i = 0; i < 3; i++){
 
-            users[i].setUsername("Test" + (i+2));
-            users[i].setId((long) (i+2));
-            users[i].setLobbyId(testLobby.getLobbyId());
-            assertTrue(users[i].getAssignedCoordinates() == 0);
-            assertNull(users[i].getAssignedSet());
-            testUsers.add(users[i]);
+            users.get(i).setUsername("Test" + (i+2));
+            users.get(i).setId((long) (i+2));
+            users.get(i).setLobbyId(testLobby.getLobbyId());
+            assertTrue(users.get(i).getAssignedCoordinates() == 0);
+            assertNull(users.get(i).getAssignedSet());
+            testUsers.add(users.get(i));
         }
-        testLobby.setUsersList(testUsers);
+       testLobby.setUsersList(testUsers);
+       List<User> testUsersAfter = gameService.initGame(testLobby.getLobbyId());
 
-//       Set<User> testUserAfterCall =  gameService.initGame(testLobby.getLobbyId());
-//       ArrayList<User> testUsersAfter = new ArrayList<>(testUserAfterCall);
-//       for(int i = 0;i < 3; i++){
-//           assertTrue(testUsersAfter.get(i).getAssignedCoordinates()>=0);
-//           assertNotNull(testUsersAfter.get(i).getAssignedSet());
-//       }
+      for(User user : testUsersAfter){
+           assertTrue(user.getAssignedCoordinates()>=0);
+           assertNotNull(user.getAssignedSet());
+       }
 
 
 
