@@ -53,7 +53,7 @@ public class GameServiceIntegrationTest {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
-         //initialize testUser add to Userrepository
+         //initialize testUser add to UserRepository
         User testUser = new User();
         testUser.setUsername("TestUser");
         testUser.setAssignedCoordinates(1);

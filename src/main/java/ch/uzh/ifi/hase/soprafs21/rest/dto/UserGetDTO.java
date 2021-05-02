@@ -10,7 +10,7 @@ import java.util.Dictionary;
 public class UserGetDTO {
 
     private Long id;
-    private String name;
+
     private String username;
     private int assignedCoordinates;
     private String assignedSet;
@@ -62,14 +62,6 @@ public class UserGetDTO {
     public String getLobbyId() { return lobbyId; }
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public int getAssignedCoordinates() {
         return assignedCoordinates;

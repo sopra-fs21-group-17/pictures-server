@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
@@ -176,9 +175,6 @@ public class UserControllerTest {
         user.setBirthdate("01.01.2000");
 
 
-
-
-
         // this mocks the UserService -> we define above what the userService should return when getUserByUserID() is called
         given(userService.getUser(user.getUsername())).willReturn(user);
 
@@ -202,7 +198,7 @@ public class UserControllerTest {
         userLogin.setUsername("firstname@lastname");
 
         User user = new User();
-        user.setId(1L);
+        user.setId(1l);
         user.setUsername("firstname@lastname");
         user.setPassword("Firstname Lastname");
         user.setBirthdate("01.01.2000");
@@ -212,7 +208,7 @@ public class UserControllerTest {
         given(userService.getUser(Mockito.any())).willReturn(user);
 
         // when/then -> do the request + validate the result
-        MockHttpServletRequestBuilder postRequest = post("/users/names")
+        MockHttpServletRequestBuilder postRequest = get("/users/"+user.getUsername())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userLogin));
 

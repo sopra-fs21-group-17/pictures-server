@@ -14,7 +14,7 @@ import java.util.*;
 @Table(name = "LOBBY")
 public class Lobby  implements Serializable {
 
-    @Id
+    @Id()
     private String lobbyId;
 
 //    @Column

@@ -36,7 +36,7 @@ public class LobbyController {
     }
 
     @PutMapping("/lobbies/users/{lobbyId}")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void addUserToLobby(@RequestBody UserPostDTO userPostDTO, @PathVariable String lobbyId){
 
@@ -47,20 +47,20 @@ public class LobbyController {
 
     }
 
-    /**
-     * This second function is for removing users from the list.
-     * */
-    @PutMapping("/lobby/{username}/{lobbyId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public void removeUserFromLobby(@PathVariable String username, @PathVariable String lobbyId){
-        //removes user from lobbyArray
-        lobbyService.removeUserFromLobby(username, lobbyId);
-    }
+//    /**
+//     * This second function is for removing users from the list.
+//     * */
+//    @PutMapping("/lobby/{username}/{lobbyId}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @ResponseBody
+//    public void removeUserFromLobby(@PathVariable String username, @PathVariable String lobbyId){
+//        //removes user from lobbyArray
+//        lobbyService.removeUserFromLobby(username, lobbyId);
+//    }
 
 
     @PutMapping("/lobbies/{lobbyId}/users")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void checkLobbyById(@PathVariable String lobbyId){
 

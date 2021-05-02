@@ -30,16 +30,12 @@ public class User implements Serializable {
     @GeneratedValue
     private Long id;
 
-    //@Column(nullable = false, unique = true)
-    @Column(unique = true) // commented out for testing
-    private String name;
-
-    //@Column(nullable = false, unique = true)
-    @Column // for testing
+    @Column(nullable = false, unique = true)
+    //@Column // for testing
     private String username;
 
-    //@Column(nullable = false)
-    @Column // for testing
+    @Column(nullable = false)
+    //@Column // for testing
     private String password;
 
     @Column
@@ -150,14 +146,6 @@ public class User implements Serializable {
 
     public UserStatus getStatus() {
         return status;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getScreenshotURL() {

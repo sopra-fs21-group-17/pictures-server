@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository("userRepository")
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByName(String name);
+
     User findByUsername(String username);
 
     //List<User>findDistinctUserBy(String lobbyId);

@@ -1,10 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
-import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -56,16 +55,16 @@ class LobbyServiceTest {
 
     }
 
-    @Test
-    public void createLobby_duplicateLobby_throwsException() {
-        // given -> a first user has already been created
-        lobbyService.createLobby(testLobby);
-
-        // when -> setup additional mocks for UserRepository
-        Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
-
-
-        // then -> attempt to create second user with same user -> check that an error is thrown
-        assertThrows(ResponseStatusException.class, () -> lobbyService.createLobby(testLobby));
-    }
+//    @Test
+//    public void createLobby_duplicateLobby_throwsException() {
+//        // given -> a first user has already been created
+//        lobbyService.createLobby(testLobby);
+//
+//        // when -> setup additional mocks for UserRepository
+//        Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
+//
+//
+//        // then -> attempt to create second user with same user -> check that an error is thrown
+//        assertThrows(ResponseStatusException.class, () -> lobbyService.createLobby(testLobby));
+//    }
 }

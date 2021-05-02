@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,25 +56,25 @@ public class LobbyServiceIntegrationTest {
 
     }
 
-    @Test
-    public void createUser_duplicateUsername_throwsException() {
-        assertNull(lobbyRepository.findByLobbyId("AbCd"));
-
-
-        Lobby testLobby = new Lobby();
-        testLobby.setLobbyId("AbCd");
-
-        Lobby createdLobby = lobbyService.createLobby(testLobby);
-
-
-        // attempt to create second user with same username
-        Lobby testLobby2 = new Lobby();
-
-
-
-        testLobby2.setLobbyId("AbCd");
-
-        // check that an error is thrown
-        assertThrows(ResponseStatusException.class, () -> lobbyService.createLobby(testLobby2));
-    }
+//    @Test
+//    public void createLobby_duplicateLobbyId_throwsException() {
+//        assertNull(lobbyRepository.findByLobbyId("AbCd"));
+//
+//
+//        Lobby testLobby = new Lobby();
+//        testLobby.setLobbyId("AbCd");
+//
+//        Lobby createdLobby = lobbyService.createLobby(testLobby);
+//
+//
+//        // attempt to create second user with same username
+//        Lobby testLobby2 = new Lobby();
+//
+//
+//
+//        testLobby2.setLobbyId("AbCd");
+//
+//        // check that an error is thrown
+//        assertThrows(ResponseStatusException.class, () -> lobbyService.createLobby(testLobby2));
+//    }
 }
