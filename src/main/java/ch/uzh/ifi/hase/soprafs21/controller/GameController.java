@@ -51,7 +51,7 @@ public class GameController {
     @ResponseBody
     public List<UserGetDTO> initGame(@PathVariable String lobbyId) {
         List<User> usersList = gameService.initGame(lobbyId);
-        //gameService.selectPictures();
+        gameService.selectPictures();
         List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
 
         // convert each user to the API representation
