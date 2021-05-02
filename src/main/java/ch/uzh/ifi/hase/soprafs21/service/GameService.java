@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Array;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 
 // TEST MESSAGE
@@ -47,7 +49,7 @@ public class GameService {
     private final int NR_OF_SETS = SET_NAMES.length;
 
     @Autowired
-    public GameService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) {
+    public GameService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) throws NoSuchAlgorithmException {
         this.picturesRepository = picturesRepository;
         this.userRepository = userRepository;
         this.gameSessionRepository = gameSessionRepository;
@@ -71,6 +73,8 @@ public class GameService {
         
     }
 
+    private Random rand = SecureRandom.getInstanceStrong();
+
     /**
      * selects Pictures from the external API according to their ID randomly
      * So there are 16 chosen and saved into the corresponding GamePlay entity.
@@ -87,10 +91,10 @@ public class GameService {
 
         ArrayList<Integer> checkID = new ArrayList();
 
-        Random random = new Random();
+        //Random random = new Random();
         int idx = 0;
         while(idx < maxPictures){
-            int randomizedID =random.nextInt(randomLimit);
+            int randomizedID =rand.nextInt(randomLimit);
             if(!checkID.contains(randomizedID)){
                 Picture current = picturesRepository.findByid((long)randomizedID);
                 if(current != null && current.getPictureLink() != null){
