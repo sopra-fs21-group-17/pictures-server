@@ -73,7 +73,9 @@ public class GameServiceTest {
     @Test
 
     public void testSelectPictures(){
+
         assertNull(gameService.getListOfPictures());
+        gameService.setGamePlay(testGameplay);
         gameService.initGame("test");
         gameService.selectPictures();
         Mockito.verify(picturesRepository,Mockito.times(16)).findByid(Mockito.any());

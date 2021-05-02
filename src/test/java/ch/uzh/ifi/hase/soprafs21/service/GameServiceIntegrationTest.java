@@ -58,6 +58,7 @@ public class GameServiceIntegrationTest {
         testUser.setUsername("TestUser");
         testUser.setAssignedCoordinates(1);
         testUser.setLobbyId("testLobby");
+        testUser.setPassword("Test");
         userRepository.save(testUser);
         userRepository.flush();
 
@@ -86,6 +87,7 @@ public class GameServiceIntegrationTest {
         //initialize User for failure intentionally missing userRepository.save and flush()
         User testUser1 = new User();
         testUser1.setUsername("TestUser1");
+        testUser1.setPassword("Test");
         testUser1.setAssignedCoordinates(1);
         testUser1.setLobbyId("testLobby");
         testUser1.setId(3L);
@@ -93,8 +95,10 @@ public class GameServiceIntegrationTest {
         //initialize User for successful user find
         User testUser2 = new User();
         testUser2.setUsername("TestUser2");
+        testUser2.setPassword("Test2");
         testUser2.setAssignedCoordinates(2);
         testUser2.setLobbyId("testLobby");
+
         userRepository.save(testUser2);
         userRepository.flush();
 
