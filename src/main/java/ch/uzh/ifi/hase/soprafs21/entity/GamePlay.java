@@ -84,6 +84,7 @@ public class GamePlay implements Serializable {
     public ArrayList<Screenshot> getListOfScreenshots(){
         return new ArrayList<>(screenshots);
     }
+
     public void clearScreenshots(){
         screenshots.clear();
     }

@@ -11,8 +11,10 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -119,7 +121,18 @@ public class GameService {
 
         GamePlay currentGame = gamePlay;
         User corresponding = userRepository.findByid(userId);
-        return currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
+        if(corresponding != null && corresponding.getAssignedCoordinates() >= 0) {
+            Picture picture = currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
+            if (picture != null) {
+                return picture;
+            }
+            else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, ("Picture corresponding to user was not found"));
+            }
+
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,("User to find corresponding picutures does not exist"));
+        }
     }
 
     /**
@@ -174,7 +187,6 @@ public class GameService {
      * Initializes the game:
      *  - Assign random coordinates to each user
      *  - Assign random sets to each user
-     *  - Initialize and select pictures for game
      *
      * @return*/
     public Set<User> initGame(String lobbyId) {
