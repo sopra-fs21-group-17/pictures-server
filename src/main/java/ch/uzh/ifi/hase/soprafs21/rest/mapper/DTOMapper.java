@@ -1,10 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.Picture;
-import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.game.Guesses;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.*;
@@ -53,6 +50,7 @@ public interface DTOMapper {
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
 
+    //LOBBY DTOs
     @Mapping(source = "lobbyId", target = "lobbyId")
     Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
 
@@ -70,6 +68,22 @@ public interface DTOMapper {
     @Mapping(source = "lobbyReady", target = "lobbyReady")
     @Mapping(source = "playersCount", target = "playersCount")
     Lobby convertLobbyPutDTOtoEntity(LobbyPutDTO lobbyPutDTO);
+
+    //BuildRoom DTOs
+    @Mapping(source = "roomId", target = "roomId")
+    BuildRoom convertBuildRoomPostDTOtoEntity(BuildRoomPostDTO buildRoomPostDTO);
+
+    @Mapping(source = "roomId", target = "roomId")
+    @Mapping(source = "creationTime", target = "creationTime")
+    @Mapping(source = "timeDifference", target = "timeDifference")
+    BuildRoomGetDTO convertEntityToBuildRoomGetDTO(BuildRoom buildRoom);
+
+    @Mapping(source = "roomId", target = "roomId")
+    @Mapping(source = "creationTime", target = "creationTime")
+    @Mapping(source = "timeDifference", target = "timeDifference")
+    BuildRoom convertBuildRoomPutDTOtoEntity(BuildRoomPutDTO buildRoomPutDTO);
+
+
 
     // PICTURES DTOs //
     @Mapping(source = "pictureLink", target="pictureLink")
