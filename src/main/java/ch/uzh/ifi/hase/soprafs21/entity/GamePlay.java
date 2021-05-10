@@ -24,7 +24,7 @@ public class GamePlay implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-
+    //will be set to correspond to the lobby ID
     @Id
     @GeneratedValue
     @Column
@@ -45,24 +45,21 @@ public class GamePlay implements Serializable {
     @Column
     private Map<Integer,Picture> selectedPictures = new HashMap<>();
 
+    //TODO see if this and its methods needs to be deleted
     @Column
     @ElementCollection
     private Set<Screenshot> screenshots = new HashSet<>();
 
-
+    //TODO see if this and its methods need to be deleted
     public Map<Long, ArrayList<Integer>> getGuesses() {
         return guesses;
     }
 
+
+    //*****PICTURE SELECTION handlers
     public void addPicture(Picture picture, int coordinate){
         selectedPictures.put(coordinate,picture);
     }
-
-    public Picture getPictureWithCoordinates(int coordinate){
-        return selectedPictures.get(coordinate);
-    }
-
-    public Long getGameID(){return gameID;}
 
     public Picture[] getSelectedPictures(){
         if(selectedPictures == null || selectedPictures.size() < 1){
@@ -77,6 +74,25 @@ public class GamePlay implements Serializable {
 
         return picturesArray;}
 
+    public Picture getPictureWithCoordinates(int coordinate){
+        return selectedPictures.get(coordinate);
+    }
+
+    public void clearSelectedPictures(){
+        selectedPictures.clear();
+    }
+
+
+    //*****GAME ID handlers
+    public Long getGameID(){return gameID;}
+
+
+    public void setGameID(Long gameID) {
+        this.gameID = gameID;
+    }
+
+
+    //**** SCREENSHOT handlers currently not used may be deleted
     public void addScreenshot(Screenshot screenshot){
         screenshots.add(screenshot);
     }
@@ -88,12 +104,7 @@ public class GamePlay implements Serializable {
     public void clearScreenshots(){
         screenshots.clear();
     }
-    public void clearSelectedPictures(){
-        selectedPictures.clear();
-    }
 
-    // currently for testing only
-    public void setGameID(Long gameID) {
-        this.gameID = gameID;
-    }
+
+
 }

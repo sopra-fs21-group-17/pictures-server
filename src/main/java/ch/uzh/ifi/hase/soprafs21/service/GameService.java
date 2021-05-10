@@ -87,8 +87,7 @@ public class GameService {
         gamePlay.setGameID(1L);
 
         //TODO for M4 implement for mulitple lobbies
-
-
+        
         ArrayList<Integer> checkID = new ArrayList();
 
         //Random random = new Random();
