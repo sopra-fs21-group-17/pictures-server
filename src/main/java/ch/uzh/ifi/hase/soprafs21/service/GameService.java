@@ -39,6 +39,7 @@ public class GameService {
     private final GameSessionRepository gameSessionRepository;
     private final LobbyRepository lobbyRepository;
     private Boolean gameInited = false;
+    private Random rand = SecureRandom.getInstanceStrong();
 
     private GamePlay gamePlay;
     private Long gameID = 1L;
@@ -55,6 +56,93 @@ public class GameService {
         this.gameSessionRepository = gameSessionRepository;
         this.lobbyRepository = lobbyRepository;
     }
+
+//*****START OF THE ROUND/GAME
+    /**
+     * Initializes the game:
+     *  - Assign random coordinates to each user
+     *  - Assign random sets to each user
+     * @return
+     * */
+    public List<User> initGame(String lobbyId) {
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
+
+        assignCoordinates(usersList);
+        assignSets(usersList);
+
+        for (User u : usersList) {
+            userRepository.save(u);
+            userRepository.flush();
+        }
+
+        return usersList;
+    }
+
+
+    /**
+     * used to get the playing users from the Lobby
+     * @param userNames
+     * @return returns a list of the playing users
+     */
+    public ArrayList<User> getPlayingUsers(String[] userNames){
+
+        ArrayList<User> usersList = new ArrayList<>();
+
+        for(int i = 0; i < NR_OF_PLAYERS; i++){
+            usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
+        }
+
+        return usersList;
+    }
+
+
+    /**
+     * Method is used to assigned a random set to every User
+     * @param usersList
+     */
+    public void assignSets(List<User> usersList) {
+        // make shuffled array with indices to randomly assign sets
+        Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
+        int i = 0;
+        // assign random sets
+        for(User user : usersList){
+            user.setAssignedSet(SET_NAMES[idxList[i % SET_NAMES.length]]);
+            i++;
+        }
+    }
+
+    // coordinates represented in code like this:
+    // A1 = 0, A2 = 1, D4 = 15 ...
+    // so just pick random nr between 0-15x3
+    public void assignCoordinates(List<User> usersList) {
+        int repetitions = 3;
+        int nrOfCoordinates = 16;
+        int totalCoordinates = repetitions * nrOfCoordinates; // 16 cards on board, 3x same coordinate
+
+        // make array with indices to randomly assign sets
+        Integer[] idxList = new Integer[totalCoordinates];
+        int idx = 0;
+        for(int i = 0; i < repetitions; i++){
+            for(int j = 0; j < nrOfCoordinates; j++){
+                idxList[idx] = j;
+                idx++;
+            }
+        }
+
+        // shuffle array/list to make random
+        List<Integer> tempList = Arrays.asList(idxList);
+        Collections.shuffle(tempList);
+        tempList.toArray(idxList);
+
+        // assign coordinates to players
+        int i = 0;
+        for(User user : usersList){
+            user.setAssignedCoordinates(idxList[i%totalCoordinates]);
+            i++;
+        }
+    }
+
 
     public void createTestUsers(){
 
@@ -73,8 +161,9 @@ public class GameService {
         
     }
 
-    private Random rand = SecureRandom.getInstanceStrong();
 
+
+//*****PICTURE HANDLING
     /**
      * selects Pictures from the external API according to their ID randomly
      * So there are 16 chosen and saved into the corresponding GamePlay entity.
@@ -91,7 +180,6 @@ public class GameService {
 
         ArrayList<Integer> checkID = new ArrayList();
 
-        //Random random = new Random();
         int idx = 0;
         while(idx < maxPictures){
             int randomizedID =rand.nextInt(randomLimit);
@@ -140,6 +228,7 @@ public class GameService {
         }
     }
 
+//****SCREENSHOT HANDLING
     /**
      * Saves screenshot from Controller to the corresponding Gameplay Entity
      * @param submittedShot
@@ -161,13 +250,12 @@ public class GameService {
         userRepository.flush();
         System.out.println(user.getScreenshotURL());
     }
-    /**
-     *
-     */
-    public List<Screenshot> getScreenshots(){
 
-        return gamePlay.getListOfScreenshots();
-    }
+    // Currently unused
+//    public List<Screenshot> getScreenshots(){
+//
+//        return gamePlay.getListOfScreenshots();
+//    }
 
     public ArrayList<ArrayList<String>> getUsersScreenshots(String lobbyId){
 
@@ -187,42 +275,7 @@ public class GameService {
         return response;
     }
 
-    /**
-     * Initializes the game:
-     *  - Assign random coordinates to each user
-     *  - Assign random sets to each user
-     * @return
-     * */
-    public List<User> initGame(String lobbyId) {
-        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
-        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
-
-         assignCoordinates(usersList);
-         assignSets(usersList);
-
-         for (User u : usersList) {
-             userRepository.save(u);
-             userRepository.flush();
-         }
-
-        return usersList;
-    }
-
-    /**
-     * used to get the playing users from the Lobby
-     * @param userNames
-     * @return returns a list of the playing users
-     */
-    public ArrayList<User> getPlayingUsers(String[] userNames){
-
-        ArrayList<User> usersList = new ArrayList<>();
-
-        for(int i = 0; i < NR_OF_PLAYERS; i++){
-            usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
-        }
-
-        return usersList;
-    }
+//*****GUESSING handlers
 
     public Map<String, String> getGuessesHashMap(String guesses){
         // convert string and save values into hashmap ////////
@@ -294,69 +347,7 @@ public class GameService {
 
     }
 
-    /**
-     * Helper method used to shuffle lists for random assignment
-     * @param listLength
-     * @return returns an Array of shuffled indices
-     */
-    public Integer[] getShuffledIdxList(int listLength){
-        // make array with indices to randomly assign sets
-        Integer[] idxList = new Integer[listLength];
-        for(int i = 0; i < listLength; i++){ idxList[i] = i; }
 
-        // shuffle array/list to make random
-        List<Integer> tempList = Arrays.asList(idxList);
-        Collections.shuffle(tempList);
-        tempList.toArray(idxList);
-
-        return idxList;
-    }
-
-    /**
-     * Method is used to assigned a random set to every User
-     * @param usersList
-     */
-    public void assignSets(List<User> usersList) {
-        // make shuffled array with indices to randomly assign sets
-        Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
-        int i = 0;
-        // assign random sets
-        for(User user : usersList){
-            user.setAssignedSet(SET_NAMES[idxList[i % SET_NAMES.length]]);
-            i++;
-        }
-    }
-
-    // coordinates represented in code like this:
-    // A1 = 0, A2 = 1, D4 = 15 ...
-    // so just pick random nr between 0-15x3
-    public void assignCoordinates(List<User> usersList) {
-        int repetitions = 3;
-        int nrOfCoordinates = 16;
-        int totalCoordinates = repetitions * nrOfCoordinates; // 16 cards on board, 3x same coordinate
-
-        // make array with indices to randomly assign sets
-        Integer[] idxList = new Integer[totalCoordinates];
-        int idx = 0;
-        for(int i = 0; i < repetitions; i++){
-            for(int j = 0; j < nrOfCoordinates; j++){
-                idxList[idx] = j;
-                idx++;
-            }
-        }
-
-        // shuffle array/list to make random
-        List<Integer> tempList = Arrays.asList(idxList);
-        Collections.shuffle(tempList);
-        tempList.toArray(idxList);
-
-        // assign coordinates to players
-        int i = 0;
-        for(User user : usersList){
-            user.setAssignedCoordinates(idxList[i%totalCoordinates]);
-            i++;
-        }
-    }
 
     public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) {
 
@@ -391,6 +382,26 @@ public class GameService {
         }
 
         return result;
+    }
+
+//*****HELPER METHODS
+
+    /**
+     * Helper method used to shuffle lists for random assignment
+     * @param listLength
+     * @return returns an Array of shuffled indices
+     */
+    public Integer[] getShuffledIdxList(int listLength){
+        // make array with indices to randomly assign sets
+        Integer[] idxList = new Integer[listLength];
+        for(int i = 0; i < listLength; i++){ idxList[i] = i; }
+
+        // shuffle array/list to make random
+        List<Integer> tempList = Arrays.asList(idxList);
+        Collections.shuffle(tempList);
+        tempList.toArray(idxList);
+
+        return idxList;
     }
 
     //only for testing
