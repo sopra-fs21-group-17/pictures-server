@@ -69,11 +69,11 @@ public class GameController {
     /**
      * @return Return a List of Screenshots for the guessing screen
      */
-    @GetMapping("/screenshot")
+    @GetMapping("/screenshot/{lobbyID}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<ScreenshotGetDTO> showScreenshots() {
-        List<Screenshot> screenshots = gameService.getScreenshots();
+    public List<ScreenshotGetDTO> showScreenshots(@PathVariable String lobbyId) {
+        List<Screenshot> screenshots = gameService.getScreenshots(lobbyId);
         List<ScreenshotGetDTO> screenshotGetDTOs = new ArrayList<>();
         for (Screenshot shot : screenshots) {
             screenshotGetDTOs.add(DTOMapper.INSTANCE.convertEntityToScreenshotGetDTO(shot));
@@ -108,12 +108,12 @@ public class GameController {
      * Used to send a List of picture Elements to frontend
      * Pictures are already mapped to a coordinate.
      */
-    @GetMapping("/pictures")
+    @GetMapping("/pictures/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<PicturesGetDTO> getPictureURL() {
+    public List<PicturesGetDTO> getPictureURL(@PathVariable String lobbyId) {
 
-        Picture[] pictures = gameService.getListOfPictures();  // is changed to take from gameplay
+        Picture[] pictures = gameService.getListOfPictures(lobbyId);  // is changed to take from gameplay Entity
         List<PicturesGetDTO> picturesGetDTOs = new ArrayList();
         for (Picture picture : pictures) {
             picturesGetDTOs.add(DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(picture));

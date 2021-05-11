@@ -54,7 +54,7 @@ public class GameControllerTest {
         Picture allPictures[] = new Picture[1];
         allPictures[0] = (testPicture);
 
-        given(gameService.getListOfPictures()).willReturn(allPictures);
+        given(gameService.getListOfPictures("test")).willReturn(allPictures);
 
         //when incoming get request
         MockHttpServletRequestBuilder getRequest = get("/pictures").contentType(MediaType.APPLICATION_JSON);

@@ -23,13 +23,15 @@ public class GamePlay implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // TODO see if still needed and remove otherwise
 
-    //will be set to correspond to the lobby ID
-    @Id
+
     @GeneratedValue
-    @Column
     private Long gameID;
 
+
+    @Id()
+    private String correspondingLobbyID;
 
 
     // key UserID value GuessCoordinate
@@ -41,7 +43,6 @@ public class GamePlay implements Serializable {
 
     // key PictureID, value Coordinate
     @ElementCollection
-    @CollectionTable
     @Column
     private Map<Integer,Picture> selectedPictures = new HashMap<>();
 
@@ -91,6 +92,14 @@ public class GamePlay implements Serializable {
         this.gameID = gameID;
     }
 
+    //****CORRESPONDING LOBBY ID to GAME handlers
+    public String getCorrespondingLobbyID() {
+        return correspondingLobbyID;
+    }
+
+    public void setCorrespondingLobbyID(String correspondingLobbyID) {
+        this.correspondingLobbyID = correspondingLobbyID;
+    }
 
     //**** SCREENSHOT handlers currently not used may be deleted
     public void addScreenshot(Screenshot screenshot){

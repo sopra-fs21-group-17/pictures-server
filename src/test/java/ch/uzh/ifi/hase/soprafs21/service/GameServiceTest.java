@@ -64,6 +64,7 @@ public class GameServiceTest {
         Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
 
         testGameplay.setGameID(1L);
+        testGameplay.setCorrespondingLobbyID("test");
         Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture);
 
         testScreenshot.setURL("ScreenShotTest");
@@ -82,20 +83,19 @@ public class GameServiceTest {
 
     public void testSelectPictures(){
 
-        assertNull(gameService.getListOfPictures());
-        gameService.setGamePlay(testGameplay);
+        assertNull(gameService.getListOfPictures("Test"));
         gameService.initGame("test");
-        gameService.selectPictures();
+        gameService.selectPictures("test");
         Mockito.verify(picturesRepository,Mockito.times(16)).findByid(Mockito.any());
-        assertNotNull(gameService.getListOfPictures());
+        assertNotNull(gameService.getListOfPictures("test"));
     }
     @Test
     /**
      * tests if list of pictures is returned from the Gameplay entity
      */
     public void testGetSelectedPictures(){
-        gameService.selectPictures();
-       Picture[] selected =  gameService.getListOfPictures();
+        gameService.selectPictures("test");
+       Picture[] selected =  gameService.getListOfPictures("test");
         assertEquals(selected.length,16);
     }
 
@@ -105,7 +105,7 @@ public class GameServiceTest {
     @Test
     public void testGetCorrespondingToUser()
     {
-        gameService.setGamePlay(testGameplay);
+        
         gameService.initGame(testLobby.getLobbyId());
         testUser.setAssignedCoordinates(1);
         Picture picture = gameService.getCorrespondingToUser(testUser.getId());
