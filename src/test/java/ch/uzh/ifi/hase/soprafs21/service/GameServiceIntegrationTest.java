@@ -17,6 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//TODO test GameService corresponding to GameSessionRepository --> mulitple  Lobbies correctly fetched?
+//TODO test that an instance has not been entered at the wrong time when initializing game
+
 @WebAppConfiguration
 @SpringBootTest
 public class GameServiceIntegrationTest {

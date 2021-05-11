@@ -70,10 +70,11 @@ public class GameService {
 
         //add new GamePlay entity
         GamePlay game = new GamePlay();
-        game.setCorrespondingLobbyID(lobbyId);
-        gameSessionRepository.save(game);
-        gameSessionRepository.flush();
-
+        if(gameSessionRepository.findByCorrespondingLobbyID(lobbyId)==null) {
+            game.setCorrespondingLobbyID(lobbyId);
+            gameSessionRepository.save(game);
+            gameSessionRepository.flush();
+        }
         //select pictures to corresponding gameplay entity
         selectPictures(lobbyId);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
@@ -184,6 +185,7 @@ public class GameService {
         //goes from 0 to 15 for easier mapping
         GamePlay gamePlay = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
         if(gamePlay.getSelectedPictures() == null){
+        System.out.println("Entered to get new Pictures");
         int maxPictures = 16;
         int randomLimit = 51; //limit will be strictly smaller than
 

@@ -66,7 +66,7 @@ public class GamePlay implements Serializable {
         if(selectedPictures == null || selectedPictures.size() < 1){
             return null;
         }
-        ArrayList<Picture> pictureArraylist;
+
         Picture picturesArray[] = new Picture[16];
         for(int i = 0; i < 16;i++){
             picturesArray[i] = selectedPictures.get(i);
