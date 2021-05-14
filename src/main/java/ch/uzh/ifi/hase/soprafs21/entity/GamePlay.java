@@ -30,7 +30,8 @@ public class GamePlay implements Serializable {
     private Long gameID;
 
 
-    @Id()
+    @Id
+    @Column(unique = true)
     private String correspondingLobbyID;
 
 
@@ -58,6 +59,7 @@ public class GamePlay implements Serializable {
 
 
     //*****PICTURE SELECTION handlers
+
     public void addPicture(Picture picture, int coordinate){
         selectedPictures.put(coordinate,picture);
     }

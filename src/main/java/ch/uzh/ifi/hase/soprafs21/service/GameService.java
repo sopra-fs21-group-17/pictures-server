@@ -54,7 +54,7 @@ public class GameService {
         this.lobbyRepository = lobbyRepository;
     }
 
-//*****START OF THE ROUND/GAME
+//*****START OF THE NEW ROUND/GAME
 
     /**
      * Initializes the game:
@@ -65,12 +65,14 @@ public class GameService {
      *
      * @return the list of playing users
      */
-    public List<User> initGame(String lobbyId) {
+    public List<User> initGame(String lobbyId) throws ResponseStatusException {
+        checkLobbyExists(lobbyId);
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
 
         //add new GamePlay entity
-        GamePlay game = new GamePlay();
+
         if(gameSessionRepository.findByCorrespondingLobbyID(lobbyId)==null) {
+            GamePlay game = new GamePlay();
             game.setCorrespondingLobbyID(lobbyId);
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
@@ -88,6 +90,13 @@ public class GameService {
         }
 
         return usersList;
+    }
+
+    public void prepareNewRound(String lobbyID) throws ResponseStatusException{
+        checkLobbyExists(lobbyID);
+        GamePlay current = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
+        current.clearSelectedPictures();
+
     }
 
 
@@ -181,11 +190,11 @@ public class GameService {
      * selects Pictures from the external API according to their ID randomly
      * So there are 16 chosen and saved into the corresponding GamePlay entity.
      */
-    public void selectPictures(String lobbyID) {
+    public void selectPictures(String lobbyID) throws ResponseStatusException {
         //goes from 0 to 15 for easier mapping
+        checkLobbyExists(lobbyID); // throws ResponseStatus Exception
         GamePlay gamePlay = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
         if(gamePlay.getSelectedPictures() == null){
-        System.out.println("Entered to get new Pictures");
         int maxPictures = 16;
         int randomLimit = 51; //limit will be strictly smaller than
 
@@ -219,7 +228,8 @@ public class GameService {
      *
      * @return returns all Pictures for the current Round
      */
-    public Picture[] getListOfPictures(String lobbyID) {
+    public Picture[] getListOfPictures(String lobbyID) throws ResponseStatusException {
+        checkLobbyExists(lobbyID); // throws ResponseStatus Exception
         GamePlay gamePlay = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
         return gamePlay != null ? gamePlay.getSelectedPictures() : null;
     }
@@ -230,11 +240,11 @@ public class GameService {
      * @param userId
      * @return returns Picture that has the corresponding token of the User
      */
-    public Picture getCorrespondingToUser(Long userId) {
-
-
+    public Picture getCorrespondingToUser(Long userId) throws ResponseStatusException{
         User corresponding = userRepository.findByid(userId);
+        checkLobbyExists(corresponding.getLobbyId()); // Throws responsestatus exeption
         GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(corresponding.getLobbyId());
+
         if (corresponding != null && corresponding.getAssignedCoordinates() >= 0) {
             Picture picture = currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
             if (picture != null) {
@@ -275,13 +285,14 @@ public class GameService {
     }
 
     // Currently unused
-    public List<Screenshot> getScreenshots(String lobbyID) {
+    public List<Screenshot> getScreenshots(String lobbyID) throws ResponseStatusException{
+        checkLobbyExists(lobbyID); // throws ResponseStatusException
         GamePlay gamePlay = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
         return gamePlay.getListOfScreenshots();
     }
 
-    public ArrayList<ArrayList<String>> getUsersScreenshots(String lobbyId) {
-
+    public ArrayList<ArrayList<String>> getUsersScreenshots(String lobbyId) throws ResponseStatusException {
+        checkLobbyExists(lobbyId); //throws ResponseStatusException
         ArrayList<ArrayList<String>> response = new ArrayList<>();
         ArrayList<String> temp = new ArrayList<>();
 
@@ -364,6 +375,8 @@ public class GameService {
             userRepository.save(player);
             userRepository.flush();
 
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Guesses could not be assigned to users");
         }
 
         return result;
@@ -371,8 +384,8 @@ public class GameService {
     }
 
 
-    public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) {
-
+    public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) throws ResponseStatusException {
+        checkLobbyExists(lobbyId); //throws Runtime Exception
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
@@ -405,6 +418,20 @@ public class GameService {
 
         return result;
     }
+
+//*****INPUT CHECK METHODS
+
+    /**
+     * Used to check that Lobby ID received is in the Repository
+     * @param lobbyID
+     * @throws ResponseStatusException
+     */
+    private void checkLobbyExists(String lobbyID) throws ResponseStatusException{
+        Lobby lobby = lobbyRepository.findByLobbyId(lobbyID);
+        if(lobby == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Lobby with " +lobbyID +" does not exist in repository");
+        }
+}
 
 //*****HELPER METHODS
 
