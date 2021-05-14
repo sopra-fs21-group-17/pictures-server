@@ -45,6 +45,7 @@ public class GameService {
     private final int NR_OF_PLAYERS = 4;
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS"};// "ICONS", "LACE"};
     private final int NR_OF_SETS = SET_NAMES.length;
+    private final int MAX_GAME_ROUNDS = 5;
 
     @Autowired
     public GameService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) throws NoSuchAlgorithmException {
@@ -54,7 +55,7 @@ public class GameService {
         this.lobbyRepository = lobbyRepository;
     }
 
-//*****START OF THE NEW ROUND/GAME
+//*****START OF THE NEW ROUND/GAME - ROUND HANDLES
 
     /**
      * Initializes the game:
@@ -69,17 +70,20 @@ public class GameService {
         checkLobbyExists(lobbyId);
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
 
-        //add new GamePlay entity
+
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         if(gameSessionRepository.findByCorrespondingLobbyID(lobbyId)==null) {
+            //add new GamePlay entity
             GamePlay game = new GamePlay();
             game.setCorrespondingLobbyID(lobbyId);
+            game.setNumberOfPlayers(usersList.size());  // needed for round counting
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
+
         }
         //select pictures to corresponding gameplay entity
         selectPictures(lobbyId);
-        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         assignCoordinates(usersList);
         assignSets(usersList);
@@ -92,11 +96,32 @@ public class GameService {
         return usersList;
     }
 
+    /**
+     * used to mainly delete content that is temporary and to count the rounds
+     * for pictures to be newly selected again the list has to be empty first otherwise
+     * the selection will fail
+     *
+     * @param lobbyID
+     * @throws ResponseStatusException
+     */
     public void prepareNewRound(String lobbyID) throws ResponseStatusException{
         checkLobbyExists(lobbyID);
         GamePlay current = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
-        current.clearSelectedPictures();
 
+        // if the pictures list wasn't already null
+        if(current != null) {
+            current.clearSelectedPictures();
+        }
+        //count until all players have finished the round if
+        //if the all players are done increment the current round number (max should be 5)
+        current.setAllUsersFinishedRound(current.getAllUsersFinishedRound()+1);
+        if(current.getAllUsersFinishedRound() == current.getNumberOfPlayers()){
+            current.setRoundsFinished(current.getRoundsFinished()+1);
+            current.setAllUsersFinishedRound(0);
+        }
+
+        gameSessionRepository.save(current);
+        gameSessionRepository.flush();
     }
 
 
@@ -163,6 +188,15 @@ public class GameService {
             user.setAssignedCoordinates(idxList[i % totalCoordinates]);
             i++;
         }
+    }
+
+    public GamePlay getGamePlay(String lobbyId) throws ResponseStatusException{
+        checkLobbyExists(lobbyId);
+       GamePlay game =  gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
+       if(game == null){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND,("the current GamePlay entity was not found"));
+       }
+       return game;
     }
 
 

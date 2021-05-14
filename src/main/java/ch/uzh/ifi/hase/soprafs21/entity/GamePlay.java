@@ -34,6 +34,16 @@ public class GamePlay implements Serializable {
     @Column(unique = true)
     private String correspondingLobbyID;
 
+    // counts all users that have finished the round
+    @Column
+    private int  allUsersFinishedRound = 0;
+
+    @Column
+    private int roundsFinished = 0;
+
+    @Column
+    private int numberOfPlayers = 0;
+
 
     // key UserID value GuessCoordinate
     @ElementCollection
@@ -116,6 +126,30 @@ public class GamePlay implements Serializable {
         screenshots.clear();
     }
 
+    //***** ROUND HANDLERs
 
 
+    public int getAllUsersFinishedRound() {
+        return allUsersFinishedRound;
+    }
+
+    public void setAllUsersFinishedRound(int allUsersFinishedRound) {
+        this.allUsersFinishedRound = allUsersFinishedRound;
+    }
+
+    public int getRoundsFinished() {
+        return roundsFinished;
+    }
+
+    public void setRoundsFinished(int roundsFinished) {
+        this.roundsFinished = roundsFinished;
+    }
+
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    public void setNumberOfPlayers(int numberOfPlayers) {
+        this.numberOfPlayers = numberOfPlayers;
+    }
 }

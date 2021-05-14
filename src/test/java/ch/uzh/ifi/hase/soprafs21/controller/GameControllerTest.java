@@ -57,7 +57,7 @@ public class GameControllerTest {
         given(gameService.getListOfPictures("test")).willReturn(allPictures);
 
         //when incoming get request
-        MockHttpServletRequestBuilder getRequest = get("/pictures").contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/pictures/"+"test").contentType(MediaType.APPLICATION_JSON);
 
         //then perform the request
         mockMvc.perform(getRequest).andExpect(status().isOk())
@@ -134,6 +134,8 @@ public class GameControllerTest {
                 }
 
    }
+
+
 
     private String asJsonString(final Object object) {
         try {

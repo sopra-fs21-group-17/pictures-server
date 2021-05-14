@@ -24,19 +24,34 @@ public class GameController {
         this.gameService = gameService;
     }
 
+    /**
+     * call the gameService for initailizing the game Round
+     * @param lobbyId
+     * @return
+     */
     @GetMapping("/board/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<UserGetDTO> initGame(@PathVariable String lobbyId) {
         List<User> usersList = gameService.initGame(lobbyId);
-        List<UserGetDTO> initedUsersDTOs = new ArrayList<>();
+        List<UserGetDTO> initializedUsersDTOs = new ArrayList<>();
 
         // convert each user to the API representation
         for (User user : usersList) {
-            initedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
+            initializedUsersDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
 
-        return initedUsersDTOs;
+        return initializedUsersDTOs;
+    }
+
+    /**
+     * used to reset temporary fields such as pictures for the grid
+     * @param lobbyId
+     */
+    @PutMapping("/board/{lobbyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void setupNextRound(@PathVariable String lobbyId){
+        gameService.prepareNewRound(lobbyId);
     }
 
     @GetMapping("/screenshots/{lobbyId}")
@@ -133,6 +148,19 @@ public class GameController {
         Picture correspondingPicture = gameService.getCorrespondingToUser(Long.valueOf(id));
         PicturesGetDTO pictureResult = DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
         return pictureResult;
+    }
+
+    /**
+     * used to return the current Round of a game
+     * @param lobbyId
+     * @return gamePlayGetDTO containing the current round
+     */
+    @GetMapping("/rounds/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public GamePlayGetDTO getCurrentRound(@PathVariable String lobbyId){
+       GamePlayGetDTO gamePlayGetDTO = DTOMapper.INSTANCE.convertEntityToGamePlayGetDTO(gameService.getGamePlay(lobbyId));
+       return gamePlayGetDTO;
     }
 
 //    @GetMapping(mainGame)

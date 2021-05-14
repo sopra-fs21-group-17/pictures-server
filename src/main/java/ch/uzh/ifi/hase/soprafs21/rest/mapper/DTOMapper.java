@@ -1,10 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.Picture;
-import ch.uzh.ifi.hase.soprafs21.entity.Screenshot;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.game.Guesses;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.*;
@@ -82,6 +79,9 @@ public interface DTOMapper {
     @Mapping(source = "URL", target = "URL")
     @Mapping(source = "userID", target = "userID")
     ScreenshotGetDTO convertEntityToScreenshotGetDTO(Screenshot screenshot);
+
+    @Mapping(source = "roundsFinished", target = "rounds")
+    GamePlayGetDTO convertEntityToGamePlayGetDTO(GamePlay gamePlay);
 
 //@Mapping(source = "pictureLink", target = "pictureLink")
 //@Mapping(source = "coordinate", target = "coordinate")

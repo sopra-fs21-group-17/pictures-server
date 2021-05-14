@@ -19,6 +19,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 //TODO test GameService corresponding to GameSessionRepository --> mulitple  Lobbies correctly fetched?
@@ -144,8 +149,147 @@ public class GameServiceIntegrationTest {
         assertThrows(ResponseStatusException.class,() ->gameService.getCorrespondingToUser(userRepository.findByUsername("TestUser2").getId()));
     }
 
+    /**
+     * checks if users are assigned the coordiantes and sets
+     * checks if gameSession repository has a new Entity
+     * checkts if pictures were assigned to said Entity
+     */
     @Test
-    public void testInitGameWithLobbyID(){
+    public void testInitGameWithLobbyIDFirstTime(){
+        //init lobby
+        Lobby lobby = new Lobby();
+        lobby.setLobbyId("testLobby_2");
+
+        //init Test users for user Repository and lobby
+        Set<User> testUsers = new HashSet<>();
+        for(int i = 1; i <= 5; i++){
+            User user = new User();
+            user.setUsername("TestUser" + i);
+            user.setPassword("Test");
+            testUsers.add(user);
+            userRepository.save(user);
+            userRepository.flush();
+        }
+        lobby.setUsersList(testUsers);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
+
+        //initialize Picture for pictures repository --> select pictures is called in the method
+        for(int i = 1; i <= 50;i++) {
+            Picture testPicture = new Picture();
+            testPicture.setPictureLink("testLink " + i);
+            picturesRepository.save(testPicture);
+            picturesRepository.flush();
+        }
+
+        //assertions before InitGame:
+        assertTrue(gameSessionRepository.count() == 0);
+
+        for(User testUser : testUsers) {
+            assertTrue(testUser.getAssignedCoordinates() == 0);// maybe change with null if test fails since empty
+            assertTrue(testUser.getAssignedSet() == null);
+        }
+       List<User> testUsersAfterInit = gameService.initGame(lobby.getLobbyId());
+        for(User testUser : testUsersAfterInit){
+            assertNotNull(testUser.getAssignedSet());
+            assertNotNull(testUser.getAssignedCoordinates());
+        }
+        assertTrue(gameSessionRepository.count() > 0);
+        assertNotNull(gameSessionRepository.findByCorrespondingLobbyID(lobby.getLobbyId()));
+        assertNotNull(gameSessionRepository.findByCorrespondingLobbyID(lobby.getLobbyId()).getSelectedPictures());
+
+    }
+
+    @Test
+    public void testInitGameAfterSecondCall(){
+        //init lobby
+        Lobby lobby = new Lobby();
+        lobby.setLobbyId("testLobby_2");
+
+        //init Test users for user Repository and lobby
+        Set<User> testUsers = new HashSet<>();
+        for(int i = 1; i <= 5; i++){
+            User user = new User();
+            user.setUsername("TestUser" + i);
+            user.setPassword("Test");
+            testUsers.add(user);
+            userRepository.save(user);
+            userRepository.flush();
+        }
+        lobby.setUsersList(testUsers);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
+
+        //initialize Picture for pictures repository --> select pictures is called in the method
+        for(int i = 1; i <= 50;i++) {
+            Picture testPicture = new Picture();
+            testPicture.setPictureLink("testLink " + i);
+            picturesRepository.save(testPicture);
+            picturesRepository.flush();
+        }
+        // call initGame for the first time to setup everything
+        // current variables
+        List<User> testUsersAfterInit = gameService.initGame(lobby.getLobbyId());
+        Long gamePlayEntities = gameSessionRepository.count();
+        Picture[] receivedPictures = gameSessionRepository.findByCorrespondingLobbyID(lobby.getLobbyId()).getSelectedPictures();
+
+        // second call
+        List<User> testUsersAfterInit2 = gameService.initGame(lobby.getLobbyId());
+        Picture[] receivedPictures2 = gameSessionRepository.findByCorrespondingLobbyID(lobby.getLobbyId()).getSelectedPictures();
+        assertEquals(gamePlayEntities, gameSessionRepository.count());
+        assertArrayEquals(receivedPictures,receivedPictures2);
+        assertEquals(testUsersAfterInit,testUsersAfterInit2);
+
+    }
+    @Test
+    public void testInitGameForMultipleLobbies(){
+        //init lobbies
+        Lobby lobby_1 = new Lobby();
+        lobby_1.setLobbyId("testLobby_1");
+
+        Lobby lobby_2 = new Lobby();
+        lobby_2.setLobbyId("testLobby_2");
+
+        //init Test users for user Repository and lobbies
+        Set<User> testUsers_1 = new HashSet<>();
+        for(int i = 1; i <= 5; i++){
+            User user = new User();
+            user.setUsername("TestUser1 " + i);
+            user.setPassword("Test");
+            testUsers_1.add(user);
+            userRepository.save(user);
+            userRepository.flush();
+        }
+
+        Set<User> testUsers_2 = new HashSet<>();
+        for(int i = 1; i <= 5; i++){
+            User user = new User();
+            user.setUsername("TestUser 2 " + i);
+            user.setPassword("Test");
+            testUsers_2.add(user);
+            userRepository.save(user);
+            userRepository.flush();
+        }
+        lobby_1.setUsersList(testUsers_1);
+        lobby_2.setUsersList(testUsers_2);
+        lobbyRepository.save(lobby_1);
+        lobbyRepository.save(lobby_2);
+        lobbyRepository.flush();
+
+        //initialize Picture for pictures repository --> select pictures is called in the method
+        for(int i = 1; i <= 50;i++) {
+            Picture testPicture = new Picture();
+            testPicture.setPictureLink("testLink " + i);
+            picturesRepository.save(testPicture);
+            picturesRepository.flush();
+        }
+
+        List<User> testUsersAfterInit_1 = gameService.initGame(lobby_1.getLobbyId());
+        List<User> testUsersAfterInit_2 = gameService.initGame(lobby_2.getLobbyId());
+
+        assertEquals(2,gameSessionRepository.count());
+        assertNotEquals(gameSessionRepository.findByCorrespondingLobbyID(lobby_1.getLobbyId()),gameSessionRepository.findByCorrespondingLobbyID(lobby_2.getLobbyId()));
+
 
     }
 
