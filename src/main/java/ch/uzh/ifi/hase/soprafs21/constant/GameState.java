@@ -11,5 +11,5 @@ package ch.uzh.ifi.hase.soprafs21.constant;
  * ...
  */
 public enum GameState {
-    START,SETUP,PLAYING,GUESSING,RANKING,END,EXIT;
+    START,SETUP,PLAYING,GUESSING,RANKING,END,EXIT
 }

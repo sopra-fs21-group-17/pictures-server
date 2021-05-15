@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.lang.reflect.Array;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
@@ -41,13 +40,11 @@ public class GameService {
     private Boolean gameInited = false;
     private Random rand = SecureRandom.getInstanceStrong();
 
-    private GamePlay gamePlay;
-    private Long gameID = 1L;
-
     // game variables
     private final int NR_OF_PLAYERS = 4;
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS"};// "ICONS", "LACE"};
     private final int NR_OF_SETS = SET_NAMES.length;
+    private final int MAX_GAME_ROUNDS = 5;
 
     @Autowired
     public GameService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) throws NoSuchAlgorithmException {
@@ -57,16 +54,36 @@ public class GameService {
         this.lobbyRepository = lobbyRepository;
     }
 
-//*****START OF THE ROUND/GAME
+//*****START OF THE NEW ROUND/GAME - ROUND HANDLES
+
     /**
      * Initializes the game:
-     *  - Assign random coordinates to each user
-     *  - Assign random sets to each user
-     * @return
-     * */
-    public List<User> initGame(String lobbyId) {
+     * - Assign random coordinates to each user
+     * - Assign random sets to each user
+     * - Instanciate new GamePlayEntity
+     * - select Pictures for the first time
+     *
+     * @return the list of playing users
+     */
+    public List<User> initGame(String lobbyId) throws ResponseStatusException {
+        checkLobbyExists(lobbyId);
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+
+
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
+
+        if (gameSessionRepository.findByCorrespondingLobbyID(lobbyId) == null) {
+            //add new GamePlay entity
+            GamePlay game = new GamePlay();
+           // game.setLobby(this.lobbyRepository.findByLobbyId(lobbyId));
+            game.setCorrespondingLobbyID(lobbyId);
+            game.setNumberOfPlayers(usersList.size());  // needed for round counting
+            gameSessionRepository.save(game);
+            gameSessionRepository.flush();
+
+        }
+        //select pictures to corresponding gameplay entity
+        selectPictures(lobbyId);
 
         assignCoordinates(usersList);
         assignSets(usersList);
@@ -79,17 +96,46 @@ public class GameService {
         return usersList;
     }
 
+    /**
+     * used to mainly delete content that is temporary and to count the rounds
+     * for pictures to be newly selected again the list has to be empty first otherwise
+     * the selection will fail
+     *
+     * @param lobbyID
+     * @throws ResponseStatusException
+     */
+    public void prepareNewRound(String lobbyID) throws ResponseStatusException {
+        checkLobbyExists(lobbyID);
+        GamePlay current = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
+
+        // if the pictures list wasn't already null
+        if (current != null) {
+            current.clearSelectedPictures();
+        }
+        //count until all players have finished the round if
+        //if the all players are done increment the current round number (max should be 5)
+        current.setAllUsersFinishedRound(current.getAllUsersFinishedRound() + 1);
+        if (current.getAllUsersFinishedRound() == current.getNumberOfPlayers()) {
+            current.setRoundsFinished(current.getRoundsFinished() + 1);
+            current.setAllUsersFinishedRound(0);
+        }
+
+        gameSessionRepository.save(current);
+        gameSessionRepository.flush();
+    }
+
 
     /**
      * used to get the playing users from the Lobby
+     *
      * @param userNames
      * @return returns a list of the playing users
      */
-    public ArrayList<User> getPlayingUsers(String[] userNames){
+    public ArrayList<User> getPlayingUsers(String[] userNames) {
 
         ArrayList<User> usersList = new ArrayList<>();
 
-        for(int i = 0; i < NR_OF_PLAYERS; i++){
+        for (int i = 0; i < NR_OF_PLAYERS; i++) {
             usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
         }
 
@@ -99,6 +145,7 @@ public class GameService {
 
     /**
      * Method is used to assigned a random set to every User
+     *
      * @param usersList
      */
     public void assignSets(List<User> usersList) {
@@ -106,7 +153,7 @@ public class GameService {
         Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
         int i = 0;
         // assign random sets
-        for(User user : usersList){
+        for (User user : usersList) {
             user.setAssignedSet(SET_NAMES[idxList[i % SET_NAMES.length]]);
             i++;
         }
@@ -123,8 +170,8 @@ public class GameService {
         // make array with indices to randomly assign sets
         Integer[] idxList = new Integer[totalCoordinates];
         int idx = 0;
-        for(int i = 0; i < repetitions; i++){
-            for(int j = 0; j < nrOfCoordinates; j++){
+        for (int i = 0; i < repetitions; i++) {
+            for (int j = 0; j < nrOfCoordinates; j++) {
                 idxList[idx] = j;
                 idx++;
             }
@@ -137,59 +184,72 @@ public class GameService {
 
         // assign coordinates to players
         int i = 0;
-        for(User user : usersList){
-            user.setAssignedCoordinates(idxList[i%totalCoordinates]);
+        for (User user : usersList) {
+            user.setAssignedCoordinates(idxList[i % totalCoordinates]);
             i++;
         }
     }
 
+    public GamePlay getGamePlay(String lobbyId) throws ResponseStatusException {
+        checkLobbyExists(lobbyId);
+        GamePlay game = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
+        if (game == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ("the current GamePlay entity was not found"));
+        }
+        return game;
+    }
 
-    public void createTestUsers(){
 
-        for(int i = 0; i < NR_OF_PLAYERS; i++){
+    public void createTestUsers() {
+
+        for (int i = 0; i < NR_OF_PLAYERS; i++) {
             User user = new User();
             user.setUsername("USER " + String.valueOf(i));
             user.setAssignedCoordinates(i);
             user.setPoints(0); // init all points to 0
             user.setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
-            
+
             userRepository.save(user);
             userRepository.flush();
 
             playingUsers.add(user);
         }
-        
+
     }
 
 
-
 //*****PICTURE HANDLING
+
     /**
      * selects Pictures from the external API according to their ID randomly
      * So there are 16 chosen and saved into the corresponding GamePlay entity.
      */
-    public void selectPictures(){
+    public void selectPictures(String lobbyID) throws ResponseStatusException {
         //goes from 0 to 15 for easier mapping
-        int maxPictures = 16;
-        int randomLimit = 51; //limit will be strictly smaller than
-        //TODO depending on storage will may need different implementation for the maximum limit.
-        gamePlay.setGameID(1L);
+        checkLobbyExists(lobbyID); // throws ResponseStatus Exception
+        GamePlay gamePlay = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
+        if (gamePlay.getSelectedPictures() == null) {
+            int maxPictures = 16;
+            int randomLimit = 51; //limit will be strictly smaller than
 
-        //TODO for M4 implement for mulitple lobbies
 
+            ArrayList<Integer> checkID = new ArrayList();
 
-        ArrayList<Integer> checkID = new ArrayList();
-
-        int idx = 0;
-        while(idx < maxPictures){
-            int randomizedID =rand.nextInt(randomLimit);
-            if(!checkID.contains(randomizedID)){
-                Picture current = picturesRepository.findByid((long)randomizedID);
-                if(current != null && current.getPictureLink() != null){
-                    checkID.add(randomizedID);
+            int idx = 0;
+            while (idx < maxPictures) {
+                int randomizedID = rand.nextInt(randomLimit);
+                if (!checkID.contains(randomizedID)) {
+                    Picture current = picturesRepository.findByid(Long.valueOf(randomizedID));
                     //random has problems with long so to avoid, used int and parsed
-                gamePlay.addPicture(current,idx);  // adds the picture to the entity
-                idx++;
+                    if (current != null && current.getPictureLink() != null) {
+                        checkID.add(randomizedID);
+
+                        // adds the picture to the entity
+                        gamePlay.addPicture(current.getPictureLink(), idx);
+                        gameSessionRepository.save(gamePlay);
+                        gameSessionRepository.flush();
+                        idx++;
+                    }
                 }
             }
 
@@ -198,39 +258,54 @@ public class GameService {
 
     /**
      * gets Pictures that are Saved for the Current GameRound in the Gameplay entity
+     *
      * @return returns all Pictures for the current Round
      */
-    public Picture[] getListOfPictures(){
-
-        return gamePlay != null ? gamePlay.getSelectedPictures() :null;
+    public Picture[] getListOfPictures(String lobbyID) throws ResponseStatusException {
+        checkLobbyExists(lobbyID); // throws ResponseStatus Exception
+        GamePlay gamePlay = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
+        String[] pictureURLs = gamePlay.getSelectedPictures();
+        Picture[] pictures = new Picture[16];
+        for(int i = 0; i < pictureURLs.length; i++){
+            pictures[i].setPictureLink(pictureURLs[i]);
+        }
+        return gamePlay != null ? pictures : null;
     }
 
     /**
      * Takes on token from user and gets the picture that has that coordinate
+     *
      * @param userId
      * @return returns Picture that has the corresponding token of the User
      */
-    public Picture getCorrespondingToUser(Long userId){
-
-        GamePlay currentGame = gamePlay;
+    public Picture getCorrespondingToUser(Long userId) throws ResponseStatusException {
         User corresponding = userRepository.findByid(userId);
-        if(corresponding != null && corresponding.getAssignedCoordinates() >= 0) {
-            Picture picture = currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
-            if (picture != null) {
+
+
+        if (corresponding != null && corresponding.getAssignedCoordinates() >= 0) {
+            checkLobbyExists(corresponding.getLobbyId()); // Throws responsestatus exeption
+            GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(corresponding.getLobbyId());
+            String pictureURL = currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
+            if (pictureURL != null) {
+                Picture picture = new Picture();
+                picture.setPictureLink(pictureURL);
                 return picture;
             }
             else {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, ("Picture corresponding to user was not found"));
             }
 
-        }else{
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,("User to find corresponding picutures does not exist"));
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ("User to find corresponding picutures does not exist"));
         }
     }
 
 //****SCREENSHOT HANDLING
+
     /**
      * Saves screenshot from Controller to the corresponding Gameplay Entity
+     *
      * @param submittedShot
      * @param //userId
      */
@@ -242,8 +317,7 @@ public class GameService {
 //        userRepository.save(user);
 //        userRepository.flush();
 //    }
-
-    public void saveScreenshot(Screenshot submittedShot, String username){
+    public void saveScreenshot(Screenshot submittedShot, String username) {
         User user = userRepository.findByUsername(username);
         user.setScreenshotURL(submittedShot.getURL());
         userRepository.save(user);
@@ -252,20 +326,21 @@ public class GameService {
     }
 
     // Currently unused
-//    public List<Screenshot> getScreenshots(){
-//
-//        return gamePlay.getListOfScreenshots();
-//    }
+    public List<Screenshot> getScreenshots(String lobbyID) throws ResponseStatusException {
+        checkLobbyExists(lobbyID); // throws ResponseStatusException
+        GamePlay gamePlay = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
+        return gamePlay.getListOfScreenshots();
+    }
 
-    public ArrayList<ArrayList<String>> getUsersScreenshots(String lobbyId){
-
+    public ArrayList<ArrayList<String>> getUsersScreenshots(String lobbyId) throws ResponseStatusException {
+        checkLobbyExists(lobbyId); //throws ResponseStatusException
         ArrayList<ArrayList<String>> response = new ArrayList<>();
         ArrayList<String> temp = new ArrayList<>();
 
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
-        for(User u : usersList){
+        for (User u : usersList) {
             temp.add(u.getUsername());
             temp.add(u.getScreenshotURL());
             response.add(temp);
@@ -277,19 +352,19 @@ public class GameService {
 
 //*****GUESSING handlers
 
-    public Map<String, String> getGuessesHashMap(String guesses){
+    public Map<String, String> getGuessesHashMap(String guesses) {
         // convert string and save values into hashmap ////////
         String tempUsername = "";
         String tempCoordinates = "";
         Map<String, String> result = new HashMap<String, String>();
 
-        for(int i = 0; i < guesses.length(); i++){
-            for(int j = 0; j < 2; j++){ // first 2 letters are coordinates
-                tempCoordinates += guesses.charAt(i+j);
+        for (int i = 0; i < guesses.length(); i++) {
+            for (int j = 0; j < 2; j++) { // first 2 letters are coordinates
+                tempCoordinates += guesses.charAt(i + j);
             }
-            i+=2; // skip coordinates, goto username
+            i += 2; // skip coordinates, goto username
 
-            while(i < guesses.length()-1 && guesses.charAt(i) != '-'){
+            while (i < guesses.length() - 1 && guesses.charAt(i) != '-') {
                 tempUsername += guesses.charAt(i);
                 i++;
             }
@@ -300,13 +375,13 @@ public class GameService {
         return result;
     }
 
-    public String handleGuesses(String lobbyId, User user){
+    public String handleGuesses(String lobbyId, User user) {
         User player = null;
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
-        for(User u : usersList){
-            if(u != null){
-                if(u.getUsername().equals(user.getUsername())){
+        for (User u : usersList) {
+            if (u != null) {
+                if (u.getUsername().equals(user.getUsername())) {
                     player = u;
                     break;
                 }
@@ -315,7 +390,7 @@ public class GameService {
 
         // convert String(guesses) to hashmap with username and coordinate
         String result = "";
-        if(player != null) {
+        if (player != null) {
             //System.out.println("USERS GUESSES: "+user.getGuesses());
             Map<String, String> guesses = getGuessesHashMap(user.getGuesses());
 
@@ -326,7 +401,7 @@ public class GameService {
             for (Map.Entry<String, String> entry : guesses.entrySet()) {
                 tempUsr = userRepository.findByUsername(entry.getKey());
                 // check if coordinates match
-                if(tempUsr != null){
+                if (tempUsr != null) {
                     if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
                         tempUsr.setPoints(tempUsr.getPoints() + 1); // give user a point
                         result += "y" + entry.getKey();
@@ -342,15 +417,17 @@ public class GameService {
             userRepository.flush();
 
         }
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Guesses could not be assigned to users");
+        }
 
         return result;
 
     }
 
 
-
-    public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) {
-
+    public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) throws ResponseStatusException {
+        checkLobbyExists(lobbyId); //throws Runtime Exception
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
@@ -360,15 +437,15 @@ public class GameService {
         String answer = "";
         Map<String, Map<String, String>> result = new HashMap<>(); // { username:{max:y,eva:n}, username:{max:y,eva:n}}
 
-        for(User usr : usersList){
+        for (User usr : usersList) {
             correctedGuesses = usr.getCorrectedGuesses();
-            if(correctedGuesses != null){
+            if (correctedGuesses != null) {
                 // convert
-                for(int i = 0; i < correctedGuesses.length(); i++){
+                for (int i = 0; i < correctedGuesses.length(); i++) {
                     answer += correctedGuesses.charAt(i);
                     i++; // skip answer "y"/"n"
                     // parse username
-                    while(i < correctedGuesses.length()-1 && correctedGuesses.charAt(i) != '-'){
+                    while (i < correctedGuesses.length() - 1 && correctedGuesses.charAt(i) != '-') {
                         username += correctedGuesses.charAt(i);
                         i++;
                     }
@@ -376,7 +453,7 @@ public class GameService {
                     username = answer = ""; // reset
                 }
                 temp.put("points", String.valueOf(usr.getPoints()));
-                System.out.println("points: "+ String.valueOf(usr.getPoints()));
+                System.out.println("points: " + String.valueOf(usr.getPoints()));
                 result.put(usr.getUsername(), temp);
             }
         }
@@ -384,17 +461,35 @@ public class GameService {
         return result;
     }
 
+//*****INPUT CHECK METHODS
+
+    /**
+     * Used to check that Lobby ID received is in the Repository
+     *
+     * @param lobbyID
+     * @throws ResponseStatusException
+     */
+    private void checkLobbyExists(String lobbyID) throws ResponseStatusException {
+        Lobby lobby = lobbyRepository.findByLobbyId(lobbyID);
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lobby with " + lobbyID + " does not exist in repository");
+        }
+    }
+
 //*****HELPER METHODS
 
     /**
      * Helper method used to shuffle lists for random assignment
+     *
      * @param listLength
      * @return returns an Array of shuffled indices
      */
-    public Integer[] getShuffledIdxList(int listLength){
+    public Integer[] getShuffledIdxList(int listLength) {
         // make array with indices to randomly assign sets
         Integer[] idxList = new Integer[listLength];
-        for(int i = 0; i < listLength; i++){ idxList[i] = i; }
+        for (int i = 0; i < listLength; i++) {
+            idxList[i] = i;
+        }
 
         // shuffle array/list to make random
         List<Integer> tempList = Arrays.asList(idxList);
@@ -402,11 +497,6 @@ public class GameService {
         tempList.toArray(idxList);
 
         return idxList;
-    }
-
-    //only for testing
-    public void setGamePlay(GamePlay gamePlay){
-        this.gamePlay = gamePlay;
     }
 
 }

@@ -51,13 +51,13 @@ public class GameControllerTest {
 
         // this mocks the GameService
 
-        Picture allPictures[] = new Picture[1];
+        Picture[] allPictures = new Picture[1];
         allPictures[0] = (testPicture);
 
-        given(gameService.getListOfPictures()).willReturn(allPictures);
+        given(gameService.getListOfPictures("test")).willReturn(allPictures);
 
         //when incoming get request
-        MockHttpServletRequestBuilder getRequest = get("/pictures").contentType(MediaType.APPLICATION_JSON);
+        MockHttpServletRequestBuilder getRequest = get("/pictures/"+"test").contentType(MediaType.APPLICATION_JSON);
 
         //then perform the request
         mockMvc.perform(getRequest).andExpect(status().isOk())
@@ -69,7 +69,7 @@ public class GameControllerTest {
     public void testReturnPictureCorrespondingToUser() throws Exception{
          //given
        Picture testPicture = new Picture();
-       testPicture.setPictureLink("testLink");;
+       testPicture.setPictureLink("testLink");
 
 
 //       GamePlay testGame = new GamePlay();
@@ -134,6 +134,8 @@ public class GameControllerTest {
                 }
 
    }
+
+
 
     private String asJsonString(final Object object) {
         try {
