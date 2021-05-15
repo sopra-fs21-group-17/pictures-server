@@ -6,17 +6,12 @@ import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.PicturesRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,14 +32,14 @@ public class GameServiceTest {
     @InjectMocks
     private GameService gameService;
 
-    private User testUser = new User();
+    private final User testUser = new User();
 
     Picture mockPicture = new Picture();
-    private Lobby testLobby = new Lobby();
+    private final Lobby testLobby = new Lobby();
     @Spy
-    private GamePlay testGameplay = new GamePlay();
+    private final GamePlay testGameplay = new GamePlay();
 
-    private LobbyService testLobbyService = new LobbyService(lobbyRepository,userRepository);
+    private final LobbyService testLobbyService = new LobbyService(lobbyRepository,userRepository);
 
     Screenshot testScreenshot = new Screenshot();
 
@@ -63,9 +58,9 @@ public class GameServiceTest {
         testLobby.setLobbyId("test");
         Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
 
-        testGameplay.setGameID(1L);
+
         testGameplay.setCorrespondingLobbyID("test");
-        Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture);
+        Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture.getPictureLink());
 
         testScreenshot.setURL("ScreenShotTest");
         testScreenshot.setUserID(testUser.getId());

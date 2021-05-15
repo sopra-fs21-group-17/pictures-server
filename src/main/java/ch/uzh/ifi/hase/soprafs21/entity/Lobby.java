@@ -15,6 +15,7 @@ import java.util.*;
 public class Lobby  implements Serializable {
 
     @Id()
+    @Column(name = "ID_lobby")
     private String lobbyId;
 
 //    @Column

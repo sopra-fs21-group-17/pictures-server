@@ -126,7 +126,7 @@ public class GameController {
     @GetMapping("/pictures/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<PicturesGetDTO> getPictureURL(@PathVariable String lobbyId) {
+    public List<PicturesGetDTO> getPictures(@PathVariable String lobbyId) {
 
         Picture[] pictures = gameService.getListOfPictures(lobbyId);  // is changed to take from gameplay Entity
         List<PicturesGetDTO> picturesGetDTOs = new ArrayList();

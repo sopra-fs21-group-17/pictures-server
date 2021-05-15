@@ -94,7 +94,7 @@ public class ScheduledTasks {
         catch (Exception e){
             throw new Exception ("Failed to fetch Images)");
         }
-    };
+    }
 
     public void createPicture(Picture newPicture)  {
 

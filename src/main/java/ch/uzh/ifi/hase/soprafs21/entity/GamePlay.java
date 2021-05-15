@@ -11,7 +11,6 @@ import java.util.*;
 /**
  * GamePlay will be used to handle incoming changes to the game from the client like UserGuesses
  * Maybe will need a Repository for the games which will change depending if the games are still active or not
- *
  */
 
 
@@ -19,24 +18,25 @@ import java.util.*;
 @Table(name = "GAME")
 public class GamePlay implements Serializable {
 
-    public GamePlay(){}
+    public GamePlay() {
+    }
 
     private static final long serialVersionUID = 1L;
 
     // TODO see if still needed and remove otherwise
 
 
-    @GeneratedValue
-    private Long gameID;
-
-
     @Id
-    @Column(unique = true)
     private String correspondingLobbyID;
+
+//    @OneToOne(fetch = FetchType.LAZY, targetEntity = Lobby.class)
+//    @JoinColumn(name = "ID_lobby")
+//    @MapsId
+//    private Lobby lobby;
 
     // counts all users that have finished the round
     @Column
-    private int  allUsersFinishedRound = 0;
+    private int allUsersFinishedRound = 0;
 
     @Column
     private int roundsFinished = 0;
@@ -48,19 +48,18 @@ public class GamePlay implements Serializable {
     // key UserID value GuessCoordinate
     @ElementCollection
     @CollectionTable
-    private Map<Long, ArrayList<Integer>> guesses= new HashMap<>();
+    private final Map<Long, ArrayList<Integer>> guesses = new HashMap<>();
 
 
-
-    // key PictureID, value Coordinate
+    // key coordinate, value Picture
     @ElementCollection
-    @Column
-    private Map<Integer,Picture> selectedPictures = new HashMap<>();
+    @CollectionTable
+    private final Map<Integer, String> selectedPicturesURLs = new HashMap<>();
 
     //TODO see if this and its methods needs to be deleted
     @Column
     @ElementCollection
-    private Set<Screenshot> screenshots = new HashSet<>();
+    private final Set<Screenshot> screenshots = new HashSet<>();
 
     //TODO see if this and its methods need to be deleted
     public Map<Long, ArrayList<Integer>> getGuesses() {
@@ -70,41 +69,42 @@ public class GamePlay implements Serializable {
 
     //*****PICTURE SELECTION handlers
 
-    public void addPicture(Picture picture, int coordinate){
-        selectedPictures.put(coordinate,picture);
+    public void addPicture(String pictureURL, int coordinate) {
+        selectedPicturesURLs.put(coordinate, pictureURL);
     }
 
-    public Picture[] getSelectedPictures(){
-        if(selectedPictures == null || selectedPictures.size() < 1){
+    public String[] getSelectedPictures() {
+        if (selectedPicturesURLs == null || selectedPicturesURLs.size() < 1) {
             return null;
         }
 
-        Picture picturesArray[] = new Picture[16];
-        for(int i = 0; i < 16;i++){
-            picturesArray[i] = selectedPictures.get(i);
+        String[] PictureURLs = new String[16];
+        for (int i = 0; i < 16; i++) {
+            PictureURLs[i] = selectedPicturesURLs.get(i);
         }
 
-
-        return picturesArray;}
-
-    public Picture getPictureWithCoordinates(int coordinate){
-        return selectedPictures.get(coordinate);
+        return PictureURLs;
     }
 
-    public void clearSelectedPictures(){
-        selectedPictures.clear();
+    public String getPictureWithCoordinates(int coordinate) {
+        return selectedPicturesURLs.get(coordinate);
+    }
+
+    public void clearSelectedPictures() {
+        selectedPicturesURLs.clear();
     }
 
 
-    //*****GAME ID handlers
-    public Long getGameID(){return gameID;}
+    //****CORRESPONDING LOBBY to GAME handlers
 
+//    public Lobby getLobby() {
+//        return lobby;
+//    }
+//
+//    public void setLobby(Lobby lobby) {
+//        this.lobby = lobby;
+//    }
 
-    public void setGameID(Long gameID) {
-        this.gameID = gameID;
-    }
-
-    //****CORRESPONDING LOBBY ID to GAME handlers
     public String getCorrespondingLobbyID() {
         return correspondingLobbyID;
     }
@@ -113,16 +113,17 @@ public class GamePlay implements Serializable {
         this.correspondingLobbyID = correspondingLobbyID;
     }
 
+
     //**** SCREENSHOT handlers currently not used may be deleted
-    public void addScreenshot(Screenshot screenshot){
+    public void addScreenshot(Screenshot screenshot) {
         screenshots.add(screenshot);
     }
 
-    public ArrayList<Screenshot> getListOfScreenshots(){
+    public ArrayList<Screenshot> getListOfScreenshots() {
         return new ArrayList<>(screenshots);
     }
 
-    public void clearScreenshots(){
+    public void clearScreenshots() {
         screenshots.clear();
     }
 

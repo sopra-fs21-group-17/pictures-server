@@ -13,13 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,10 +55,13 @@ public class GameServiceIntegrationTest {
     @BeforeEach
     public void setup(){
         picturesRepository.deleteAll();
+        picturesRepository.flush();
         userRepository.deleteAll();
+        userRepository.flush();
         lobbyRepository.deleteAll();
+        lobbyRepository.flush();
         gameSessionRepository.deleteAll();
-
+        gameSessionRepository.flush();
     }
     @Test
     public void testGetPictureUsingUserIDSuccess(){
@@ -91,7 +92,7 @@ public class GameServiceIntegrationTest {
         Picture testPicture = new Picture();
         testPicture.setPictureLink("testLink");
         testPicture.setId(1L);
-        gameSessionRepository.findByCorrespondingLobbyID("testLobby_1").addPicture(testPicture,1);
+        gameSessionRepository.findByCorrespondingLobbyID("testLobby_1").addPicture(testPicture.getPictureLink(),1);
 
 
 
@@ -100,7 +101,6 @@ public class GameServiceIntegrationTest {
 
         //then
         assertEquals(testUser.getLobbyId(),lobby.getLobbyId());
-        assertEquals(testPicture.getCoordinates(),result.getCoordinates());
         assertEquals(testPicture.getPictureLink(),result.getPictureLink());
 
 
@@ -113,6 +113,7 @@ public class GameServiceIntegrationTest {
         lobbyRepository.save(lobby);
         lobbyRepository.flush();
 
+        Set<User> testUsers = new HashSet<>();
         //initialize User for failure intentionally missing userRepository.save and flush()
         User testUser1 = new User();
         testUser1.setUsername("TestUser1");
@@ -127,9 +128,14 @@ public class GameServiceIntegrationTest {
         testUser2.setPassword("Test2");
         testUser2.setAssignedCoordinates(2);
         testUser2.setLobbyId("testLobby_1");
+        testUser2.setId(4L);
 
         userRepository.save(testUser2);
         userRepository.flush();
+
+        testUsers.add(testUser1);
+        testUsers.add(testUser2);
+        lobby.setUsersList(testUsers);
 
         //initialize Gameplay
         GamePlay testGameplay = new GamePlay();
@@ -139,7 +145,7 @@ public class GameServiceIntegrationTest {
         Picture testPicture = new Picture();
         testPicture.setPictureLink("testLink");
         testPicture.setId(1L);
-        testGameplay.addPicture(testPicture,1);
+        testGameplay.addPicture(testPicture.getPictureLink(),1);
 
         //add GamePlay to gameSession repository
         gameSessionRepository.save(testGameplay);
@@ -231,11 +237,11 @@ public class GameServiceIntegrationTest {
         // current variables
         List<User> testUsersAfterInit = gameService.initGame(lobby.getLobbyId());
         Long gamePlayEntities = gameSessionRepository.count();
-        Picture[] receivedPictures = gameSessionRepository.findByCorrespondingLobbyID(lobby.getLobbyId()).getSelectedPictures();
+        String[] receivedPictures = gameSessionRepository.findByCorrespondingLobbyID(lobby.getLobbyId()).getSelectedPictures();
 
         // second call
         List<User> testUsersAfterInit2 = gameService.initGame(lobby.getLobbyId());
-        Picture[] receivedPictures2 = gameSessionRepository.findByCorrespondingLobbyID(lobby.getLobbyId()).getSelectedPictures();
+        String[] receivedPictures2 = gameSessionRepository.findByCorrespondingLobbyID(lobby.getLobbyId()).getSelectedPictures();
         assertEquals(gamePlayEntities, gameSessionRepository.count());
         assertArrayEquals(receivedPictures,receivedPictures2);
         assertEquals(testUsersAfterInit,testUsersAfterInit2);

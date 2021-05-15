@@ -16,8 +16,6 @@ import org.springframework.stereotype.Repository;
 public interface PicturesRepository extends JpaRepository<Picture, Long> {
 
     Picture findByid(Long id);
-    Picture findByuserID(Long userID);
-    Picture findByPictureLink(String pictureLink);
-    Picture findByCoordinates(int coordinates);
+
 
 }

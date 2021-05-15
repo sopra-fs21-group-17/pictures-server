@@ -117,12 +117,7 @@ public class LobbyService {
             currentLobby.setPlayersCount(countUsers);
             if (countReady >= 3 && countReady == countUsers){
                 currentLobby.setLobbyReady(true);
-            }else if (countReady == 5){
-                currentLobby.setLobbyReady(true);
-
-            }else{
-                currentLobby.setLobbyReady(false);
-            }
+            }else currentLobby.setLobbyReady(countReady == 5);
         }
 
         lobbyRepository.flush();

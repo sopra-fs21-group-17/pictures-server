@@ -1,15 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 
-
 import javax.persistence.*;
 import java.io.Serializable;
+
 @Embeddable
 @Entity
 @Table(name = "PICTURE")
 public class Picture implements Serializable {
-
-    public Picture(){}
 
     private static final long serialVersionUID = 1L;
 
@@ -20,11 +18,6 @@ public class Picture implements Serializable {
     @Column
     private String pictureLink;
 
-    @Column
-    private int coordinates;
-
-    @Column
-    private Long userID;
 
     public String getPictureLink() {
         return pictureLink;
@@ -42,19 +35,6 @@ public class Picture implements Serializable {
         this.id = id;
     }
 
-    public Long getUserID() {
-        return userID;
-    }
 
-    public void setUserID(Long userID) {
-        this.userID = userID;
-    }
 
-    public int getCoordinates() {
-        return coordinates;
-    }
-
-    public void setCoordinates(int coordinates) {
-        this.coordinates = coordinates;
-    }
 }
