@@ -69,7 +69,6 @@ public class GameService {
         checkLobbyExists(lobbyId);
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
 
-
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         if (gameSessionRepository.findByCorrespondingLobbyID(lobbyId) == null) {
@@ -353,7 +352,7 @@ public class GameService {
 //*****GUESSING handlers
 
     public Map<String, String> getGuessesHashMap(String guesses) {
-        // convert string and save values into hashmap ////////
+        // convert string and save values into hashmap
         String tempUsername = "";
         String tempCoordinates = "";
         Map<String, String> result = new HashMap<String, String>();
@@ -403,7 +402,8 @@ public class GameService {
                 // check if coordinates match
                 if (tempUsr != null) {
                     if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
-                        tempUsr.setPoints(tempUsr.getPoints() + 1); // give user a point
+                        player.setPoints(player.getPoints() + 1);   // give player a point
+                        tempUsr.setPoints(tempUsr.getPoints() + 1); // also give to other player a point
                         result += "y" + entry.getKey();
                     }
                     else {
