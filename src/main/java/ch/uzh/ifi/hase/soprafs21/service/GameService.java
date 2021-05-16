@@ -76,7 +76,7 @@ public class GameService {
             //add new GamePlay entity
             GamePlay game = new GamePlay();
            // game.setLobby(this.lobbyRepository.findByLobbyId(lobbyId));
-            game.setCorrespondingLobbyID(lobbyId);
+            game.setLobbyForGamePlay(lobbyRepository.findByLobbyId(lobbyId));
             game.setNumberOfPlayers(usersList.size());  // needed for round counting
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
@@ -267,6 +267,7 @@ public class GameService {
         String[] pictureURLs = gamePlay.getSelectedPictures();
         Picture[] pictures = new Picture[16];
         for(int i = 0; i < pictureURLs.length; i++){
+            pictures[i] = new Picture();
             pictures[i].setPictureLink(pictureURLs[i]);
         }
         return gamePlay != null ? pictures : null;
