@@ -77,15 +77,18 @@ public class GameService {
            // game.setLobby(this.lobbyRepository.findByLobbyId(lobbyId));
             game.setCorrespondingLobbyID(lobbyId);
             game.setNumberOfPlayers(usersList.size());  // needed for round counting
+            game.setRoundInited(false);
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
-
         }
-        //select pictures to corresponding gameplay entity
-        selectPictures(lobbyId);
+        if(!gameSessionRepository.findByCorrespondingLobbyID(lobbyId).roundInited){
+            assignCoordinates(usersList);
+            assignSets(usersList);
+            gameSessionRepository.findByCorrespondingLobbyID(lobbyId).setRoundInited(true);
+        }
 
-        assignCoordinates(usersList);
-        assignSets(usersList);
+        //select pictures to corresponding gameplay entity
+        //selectPictures(lobbyId);
 
         for (User u : usersList) {
             userRepository.save(u);
@@ -123,7 +126,6 @@ public class GameService {
         gameSessionRepository.flush();
     }
 
-
     /**
      * used to get the playing users from the Lobby
      *
@@ -140,7 +142,6 @@ public class GameService {
 
         return usersList;
     }
-
 
     /**
      * Method is used to assigned a random set to every User
@@ -198,7 +199,6 @@ public class GameService {
         return game;
     }
 
-
     public void createTestUsers() {
 
         for (int i = 0; i < NR_OF_PLAYERS; i++) {
@@ -215,7 +215,6 @@ public class GameService {
         }
 
     }
-
 
 //*****PICTURE HANDLING
 
@@ -425,7 +424,6 @@ public class GameService {
 
     }
 
-
     public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) throws ResponseStatusException {
         checkLobbyExists(lobbyId); //throws Runtime Exception
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
@@ -439,6 +437,7 @@ public class GameService {
 
         for (User usr : usersList) {
             correctedGuesses = usr.getCorrectedGuesses();
+            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
             if (correctedGuesses != null) {
                 // convert
                 for (int i = 0; i < correctedGuesses.length(); i++) {
@@ -453,10 +452,13 @@ public class GameService {
                     username = answer = ""; // reset
                 }
                 temp.put("points", String.valueOf(usr.getPoints()));
-                System.out.println("points: " + String.valueOf(usr.getPoints()));
                 result.put(usr.getUsername(), temp);
             }
+            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
         }
+
+        // set to false for next round
+        gameSessionRepository.findByCorrespondingLobbyID(lobbyId).setRoundInited(false);
 
         return result;
     }
@@ -499,5 +501,16 @@ public class GameService {
         return idxList;
     }
 
+    public void saveScreenshotURL(String screenshotURL, String username) {
+        User user = userRepository.findByUsername(username);
+
+        if(user != null){
+            user.setScreenshotURL(screenshotURL);
+        }
+        else{
+            // TODO throw exception here
+            System.out.println("ERROR: can't save screenshot URL because user was not found.");
+        }
+    }
 }
 
