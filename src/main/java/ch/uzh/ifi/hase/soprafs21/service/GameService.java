@@ -505,7 +505,7 @@ public class GameService {
         User user = userRepository.findByUsername(username);
 
         if(user != null){
-            user.setScreenshotURL(screenshotURL);
+            user.setScreenshotURL(screenshotURL.replace("\"", ""));
         }
         else{
             // TODO throw exception here
