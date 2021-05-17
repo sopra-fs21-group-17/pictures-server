@@ -50,6 +50,7 @@ public interface DTOMapper {
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
 
+    //LOBBY DTOs
     @Mapping(source = "lobbyId", target = "lobbyId")
     Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
 
@@ -67,6 +68,22 @@ public interface DTOMapper {
     @Mapping(source = "lobbyReady", target = "lobbyReady")
     @Mapping(source = "playersCount", target = "playersCount")
     Lobby convertLobbyPutDTOtoEntity(LobbyPutDTO lobbyPutDTO);
+
+    //BuildRoom DTOs
+    @Mapping(source = "roomId", target = "roomId")
+    BuildRoom convertBuildRoomPostDTOtoEntity(BuildRoomPostDTO buildRoomPostDTO);
+
+    @Mapping(source = "roomId", target = "roomId")
+    @Mapping(source = "creationTime", target = "creationTime")
+    @Mapping(source = "timeDifference", target = "timeDifference")
+    BuildRoomGetDTO convertEntityToBuildRoomGetDTO(BuildRoom buildRoom);
+
+    @Mapping(source = "roomId", target = "roomId")
+    @Mapping(source = "creationTime", target = "creationTime")
+    @Mapping(source = "timeDifference", target = "timeDifference")
+    BuildRoom convertBuildRoomPutDTOtoEntity(BuildRoomPutDTO buildRoomPutDTO);
+
+
 
     // PICTURES DTOs //
     @Mapping(source = "pictureLink", target="pictureLink")
