@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 //TODO test that an instance has not been entered at the wrong time when initializing game
 
 @WebAppConfiguration
+
 @SpringBootTest
 @Transactional
 public class GameServiceIntegrationTest {
@@ -55,13 +56,13 @@ public class GameServiceIntegrationTest {
     @BeforeEach
     public void setup(){
         picturesRepository.deleteAll();
-        picturesRepository.flush();
+
         userRepository.deleteAll();
-        userRepository.flush();
+
         lobbyRepository.deleteAll();
-        lobbyRepository.flush();
+
         gameSessionRepository.deleteAll();
-        gameSessionRepository.flush();
+
     }
     @Test
     public void testGetPictureUsingUserIDSuccess(){
@@ -82,11 +83,13 @@ public class GameServiceIntegrationTest {
 
         //initialize Gameplay
         GamePlay testGameplay = new GamePlay();
-        testGameplay.setCorrespondingLobbyID("testLobby_1");
+        testGameplay.setLobbyForGamePlay(lobbyRepository.findByLobbyId(lobby.getLobbyId()));
 
         //add GamePlay to gameSession repository
+
         gameSessionRepository.save(testGameplay);
         gameSessionRepository.flush();
+
 
         //initialize Picture add to GamePlay entity
         Picture testPicture = new Picture();
@@ -139,7 +142,7 @@ public class GameServiceIntegrationTest {
 
         //initialize Gameplay
         GamePlay testGameplay = new GamePlay();
-        testGameplay.setCorrespondingLobbyID("testLobby_1");
+        testGameplay.setLobbyForGamePlay(lobbyRepository.findByLobbyId(lobby.getLobbyId()));
 
         //initialize Picture add to GamePlay entity
         Picture testPicture = new Picture();

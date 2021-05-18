@@ -31,6 +31,7 @@ public class GamePlay implements Serializable {
 
 
     @OneToOne(targetEntity = Lobby.class)
+    @JoinColumn(columnDefinition = "ID_lobby")
     @MapsId
     private Lobby lobby;
 
