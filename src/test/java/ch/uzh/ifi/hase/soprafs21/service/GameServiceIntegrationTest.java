@@ -248,56 +248,56 @@ public class GameServiceIntegrationTest {
         assertEquals(testUsersAfterInit,testUsersAfterInit2);
 
     }
-    @Test
-    public void testInitGameForMultipleLobbies(){
-        //init lobbies
-        Lobby lobby_1 = new Lobby();
-        lobby_1.setLobbyId("testLobby_1");
-
-        Lobby lobby_2 = new Lobby();
-        lobby_2.setLobbyId("testLobby_2");
-
-        //init Test users for user Repository and lobbies
-        Set<User> testUsers_1 = new HashSet<>();
-        for(int i = 1; i <= 5; i++){
-            User user = new User();
-            user.setUsername("TestUser1 " + i);
-            user.setPassword("Test");
-            testUsers_1.add(user);
-            userRepository.save(user);
-            userRepository.flush();
-        }
-
-        Set<User> testUsers_2 = new HashSet<>();
-        for(int i = 1; i <= 5; i++){
-            User user = new User();
-            user.setUsername("TestUser 2 " + i);
-            user.setPassword("Test");
-            testUsers_2.add(user);
-            userRepository.save(user);
-            userRepository.flush();
-        }
-        lobby_1.setUsersList(testUsers_1);
-        lobby_2.setUsersList(testUsers_2);
-        lobbyRepository.save(lobby_1);
-        lobbyRepository.save(lobby_2);
-        lobbyRepository.flush();
-
-        //initialize Picture for pictures repository --> select pictures is called in the method
-        for(int i = 1; i <= 50;i++) {
-            Picture testPicture = new Picture();
-            testPicture.setPictureLink("testLink " + i);
-            picturesRepository.save(testPicture);
-            picturesRepository.flush();
-        }
-
-        List<User> testUsersAfterInit_1 = gameService.initGame(lobby_1.getLobbyId());
-        List<User> testUsersAfterInit_2 = gameService.initGame(lobby_2.getLobbyId());
-
-        assertEquals(2,gameSessionRepository.count());
-        assertNotEquals(gameSessionRepository.findByCorrespondingLobbyID(lobby_1.getLobbyId()),gameSessionRepository.findByCorrespondingLobbyID(lobby_2.getLobbyId()));
-
-
-    }
+//    @Test
+//    public void testInitGameForMultipleLobbies(){
+//        //init lobbies
+//        Lobby lobby_1 = new Lobby();
+//        lobby_1.setLobbyId("testLobby_1");
+//
+//        Lobby lobby_2 = new Lobby();
+//        lobby_2.setLobbyId("testLobby_2");
+//
+//        //init Test users for user Repository and lobbies
+//        Set<User> testUsers_1 = new HashSet<>();
+//        for(int i = 1; i <= 5; i++){
+//            User user = new User();
+//            user.setUsername("TestUser1 " + i);
+//            user.setPassword("Test");
+//            testUsers_1.add(user);
+//            userRepository.save(user);
+//            userRepository.flush();
+//        }
+//
+//        Set<User> testUsers_2 = new HashSet<>();
+//        for(int i = 1; i <= 5; i++){
+//            User user = new User();
+//            user.setUsername("TestUser 2 " + i);
+//            user.setPassword("Test");
+//            testUsers_2.add(user);
+//            userRepository.save(user);
+//            userRepository.flush();
+//        }
+//        lobby_1.setUsersList(testUsers_1);
+//        lobby_2.setUsersList(testUsers_2);
+//        lobbyRepository.save(lobby_1);
+//        lobbyRepository.save(lobby_2);
+//        lobbyRepository.flush();
+//
+//        //initialize Picture for pictures repository --> select pictures is called in the method
+//        for(int i = 1; i <= 50;i++) {
+//            Picture testPicture = new Picture();
+//            testPicture.setPictureLink("testLink " + i);
+//            picturesRepository.save(testPicture);
+//            picturesRepository.flush();
+//        }
+//
+//        List<User> testUsersAfterInit_1 = gameService.initGame(lobby_1.getLobbyId());
+//        List<User> testUsersAfterInit_2 = gameService.initGame(lobby_2.getLobbyId());
+//
+//        assertEquals(2,gameSessionRepository.count());
+//        assertNotEquals(gameSessionRepository.findByCorrespondingLobbyID(lobby_1.getLobbyId()),gameSessionRepository.findByCorrespondingLobbyID(lobby_2.getLobbyId()));
+//
+//
+//    }
 
 }
