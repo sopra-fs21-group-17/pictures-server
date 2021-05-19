@@ -265,12 +265,16 @@ public class GameService {
         checkLobbyExists(lobbyID); // throws ResponseStatus Exception
         GamePlay gamePlay = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
         String[] pictureURLs = gamePlay.getSelectedPictures();
-        Picture[] pictures = new Picture[16];
-        for(int i = 0; i < pictureURLs.length; i++){
-            pictures[i] = new Picture();
-            pictures[i].setPictureLink(pictureURLs[i]);
+        if(pictureURLs != null) {
+            Picture[] pictures = new Picture[16];
+            for (int i = 0; i < pictureURLs.length; i++) {
+                pictures[i] = new Picture();
+                pictures[i].setPictureLink(pictureURLs[i]);
+            }
+            return gamePlay != null ? pictures : null;
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"The List of Pictures was empty");
         }
-        return gamePlay != null ? pictures : null;
     }
 
     /**
@@ -280,13 +284,13 @@ public class GameService {
      * @return returns Picture that has the corresponding token of the User
      */
     public Picture getCorrespondingToUser(Long userId) throws ResponseStatusException {
-        User corresponding = userRepository.findByid(userId);
+        User correspondingUser = userRepository.findByid(userId);
 
 
-        if (corresponding != null && corresponding.getAssignedCoordinates() >= 0) {
-            checkLobbyExists(corresponding.getLobbyId()); // Throws responsestatus exeption
-            GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(corresponding.getLobbyId());
-            String pictureURL = currentGame.getPictureWithCoordinates(corresponding.getAssignedCoordinates());
+        if (correspondingUser != null && correspondingUser.getAssignedCoordinates() >= 0) {
+            checkLobbyExists(correspondingUser.getLobbyId()); // Throws responsestatus exeption
+            GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(correspondingUser.getLobbyId());
+            String pictureURL = currentGame.getPictureWithCoordinates(correspondingUser.getAssignedCoordinates());
             if (pictureURL != null) {
                 Picture picture = new Picture();
                 picture.setPictureLink(pictureURL);
