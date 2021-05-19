@@ -44,6 +44,24 @@ public class BuildRoomController {
         buildRoomService.updateCount(roomId);
     }
 
+    @PutMapping("/guessing/time/{roomId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void setGuessingTime(@PathVariable String roomId)  {
+
+        //sets the creationTime of Guessing
+        buildRoomService.setTimeGuessing(roomId);
+    }
+
+    @PutMapping("/guessing/count/{roomId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void updateCountGuessing(@PathVariable String roomId)  {
+
+        //updates the Guessing count
+        buildRoomService.updateCountGuessing(roomId);
+    }
+
     @PutMapping("/buildRooms/rounds/count/{roomId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody

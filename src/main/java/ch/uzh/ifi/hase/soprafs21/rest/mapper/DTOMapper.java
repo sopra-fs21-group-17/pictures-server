@@ -76,11 +76,15 @@ public interface DTOMapper {
     @Mapping(source = "roomId", target = "roomId")
     @Mapping(source = "creationTime", target = "creationTime")
     @Mapping(source = "timeDifference", target = "timeDifference")
+    @Mapping(source = "creationTimeGuessing", target = "creationTimeGuessing")
+    @Mapping(source = "timeDifferenceGuessing", target = "timeDifferenceGuessing")
     BuildRoomGetDTO convertEntityToBuildRoomGetDTO(BuildRoom buildRoom);
 
     @Mapping(source = "roomId", target = "roomId")
     @Mapping(source = "creationTime", target = "creationTime")
     @Mapping(source = "timeDifference", target = "timeDifference")
+    @Mapping(source = "creationTimeGuessing", target = "creationTimeGuessing")
+    @Mapping(source = "timeDifferenceGuessing", target = "timeDifferenceGuessing")
     BuildRoom convertBuildRoomPutDTOtoEntity(BuildRoomPutDTO buildRoomPutDTO);
 
 

@@ -8,6 +8,10 @@ public class BuildRoomGetDTO {
 
     private double timeDifference;
 
+    private long creationTimeGuessing;
+
+    private double timeDifferenceGuessing;
+
     public String getRoomId() { return roomId; }
 
     public void setRoomId(String roomId) { this.roomId = roomId; }
@@ -20,5 +24,13 @@ public class BuildRoomGetDTO {
 
     public void setTimeDifference(double timeDifference) { this.timeDifference = timeDifference; }
 
+    public long getCreationTimeGuessing() { return creationTimeGuessing; }
 
+    public void setCreationTimeGuessing(long creationTimeGuessing) { this.creationTimeGuessing = creationTimeGuessing; }
+
+    public double getTimeDifferenceGuessing() { return timeDifferenceGuessing; }
+
+    public void setTimeDifferenceGuessing(double timeDifferenceGuessing) { this.timeDifferenceGuessing = timeDifferenceGuessing;
+
+    }
 }

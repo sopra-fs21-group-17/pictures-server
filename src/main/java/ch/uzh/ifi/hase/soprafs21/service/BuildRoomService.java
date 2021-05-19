@@ -42,6 +42,18 @@ public class BuildRoomService {
         return newBuildRoom;
     }
 
+    //set creationTime for GuessingTimer
+    public void setTimeGuessing(String roomId){
+        BuildRoom foundByRoomId = buildRoomRepository.findByRoomId(roomId);
+
+        if(foundByRoomId != null){
+            foundByRoomId.setCreationTimeGuessing(System.nanoTime());
+
+            buildRoomRepository.flush();
+
+        }
+    }
+
     //calculates and sets the timeDifference in order to after update the count
     public void updateCount(String roomId){
         BuildRoom foundByRoomId = buildRoomRepository.findByRoomId(roomId);
@@ -56,6 +68,20 @@ public class BuildRoomService {
 
         buildRoomRepository.flush();
 
+    }
+    //calculates and sets the timeDifferenceGuessing in order to update the count
+    public void updateCountGuessing(String roomId){
+        BuildRoom foundByRoomId = buildRoomRepository.findByRoomId(roomId);
+
+        if(foundByRoomId != null){
+            long currentTime = System.nanoTime();
+
+            long timeDifference= foundByRoomId.getCreationTimeGuessing() - currentTime;
+
+            foundByRoomId.setTimeDifferenceGuessing((double) timeDifference /1_000_000_000);
+        }
+
+        buildRoomRepository.flush();
     }
     public void resetRoom(String roomId){
         buildRoomRepository.deleteById(roomId);

@@ -16,6 +16,12 @@ public class BuildRoom implements Serializable{
     @Column
     private double timeDifference;
 
+    @Column
+    private long creationTimeGuessing;
+
+    @Column
+    double timeDifferenceGuessing;
+
     public String getRoomId() {
         return roomId;
     }
@@ -40,7 +46,12 @@ public class BuildRoom implements Serializable{
         this.timeDifference = timeDifference;
     }
 
+    public long getCreationTimeGuessing() { return creationTimeGuessing; }
 
+    public void setCreationTimeGuessing(long creationTimeGuessing) { this.creationTimeGuessing = creationTimeGuessing; }
 
+    public double getTimeDifferenceGuessing() { return timeDifferenceGuessing; }
+
+    public void setTimeDifferenceGuessing(double timeDifferenceGuessing) { this.timeDifferenceGuessing = timeDifferenceGuessing; }
 
 }
