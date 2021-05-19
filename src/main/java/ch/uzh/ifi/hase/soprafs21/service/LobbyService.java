@@ -91,13 +91,14 @@ public class LobbyService {
         lobbyRepository.flush();
     }
 
-//    public void removeUserFromLobby(String username, String lobbyId){
-//        User userToRemove = userRepository.findByUsername(username);
-//        //lobbyRepository.findByLobbyId(lobbyId).getUsersList().remove(userToRemove);
-//
-//        userRepository.flush();
-//        lobbyRepository.flush();
-//    }
+    public void removeUserFromLobby(String username, String lobbyId){
+        User userToRemove = userRepository.findByUsername(username);
+        //lobbyRepository.findByLobbyId(lobbyId).getUsersList().remove(userToRemove);
+        userToRemove.setLobbyId(null);
+
+        userRepository.flush();
+        lobbyRepository.flush();
+    }
 
     //checks if the User are ready and gets the Players count in the lobby
     public Lobby checkReadyAndGetCount(String lobbyId){
