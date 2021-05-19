@@ -87,8 +87,8 @@ public class GameController {
     @GetMapping("/screenshot/{lobbyID}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<ScreenshotGetDTO> showScreenshots(@PathVariable String lobbyId) {
-        List<Screenshot> screenshots = gameService.getScreenshots(lobbyId);
+    public List<ScreenshotGetDTO> showScreenshots(@PathVariable String lobbyID) {
+        List<Screenshot> screenshots = gameService.getScreenshots(lobbyID);
         List<ScreenshotGetDTO> screenshotGetDTOs = new ArrayList<>();
         for (Screenshot shot : screenshots) {
             screenshotGetDTOs.add(DTOMapper.INSTANCE.convertEntityToScreenshotGetDTO(shot));
