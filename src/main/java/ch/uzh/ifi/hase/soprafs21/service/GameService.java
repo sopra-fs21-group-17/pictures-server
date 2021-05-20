@@ -78,15 +78,18 @@ public class GameService {
            // game.setLobby(this.lobbyRepository.findByLobbyId(lobbyId));
             game.setLobbyForGamePlay(lobbyRepository.findByLobbyId(lobbyId));
             game.setNumberOfPlayers(usersList.size());  // needed for round counting
+            game.setRoundInited(false);
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
-
         }
+        if(!gameSessionRepository.findByCorrespondingLobbyID(lobbyId).roundInited){
+            assignCoordinates(usersList);
+            assignSets(usersList);
+            gameSessionRepository.findByCorrespondingLobbyID(lobbyId).setRoundInited(true);
+        }
+
         //select pictures to corresponding gameplay entity
         selectPictures(lobbyId);
-
-        assignCoordinates(usersList);
-        assignSets(usersList);
 
         for (User u : usersList) {
             userRepository.save(u);
@@ -131,6 +134,13 @@ public class GameService {
         gameSessionRepository.save(currentGame);
         gameSessionRepository.flush();
         }
+    /**
+     * used to get the playing users from the Lobby
+     *
+     * @param userNames
+     * @return returns a list of the playing users
+     */
+    public ArrayList<User> getPlayingUsers(String[] userNames) {
 
 
 //    /**
@@ -149,7 +159,6 @@ public class GameService {
 //
 //        return usersList;
 //    }
-
 
     /**
      * Method is used to assigned a random set to every User
@@ -207,7 +216,6 @@ public class GameService {
         return game;
     }
 
-
     public void createTestUsers() {
 
         for (int i = 0; i < NR_OF_PLAYERS; i++) {
@@ -224,7 +232,6 @@ public class GameService {
         }
 
     }
-
 
 //*****PICTURE HANDLING
 
@@ -366,7 +373,7 @@ public class GameService {
 //*****GUESSING handlers
 
     public Map<String, String> getGuessesHashMap(String guesses) {
-        // convert string and save values into hashmap ////////
+        // convert string and save values into hashmap
         String tempUsername = "";
         String tempCoordinates = "";
         Map<String, String> result = new HashMap<String, String>();
@@ -416,7 +423,8 @@ public class GameService {
                 // check if coordinates match
                 if (tempUsr != null) {
                     if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
-                        tempUsr.setPoints(tempUsr.getPoints() + 1); // give user a point
+                        player.setPoints(player.getPoints() + 1);   // give player a point
+                        tempUsr.setPoints(tempUsr.getPoints() + 1); // also give to other player a point
                         result += "y" + entry.getKey();
                     }
                     else {
@@ -438,7 +446,6 @@ public class GameService {
 
     }
 
-
     public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) throws ResponseStatusException {
         checkLobbyExists(lobbyId); //throws Runtime Exception
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
@@ -452,6 +459,7 @@ public class GameService {
 
         for (User usr : usersList) {
             correctedGuesses = usr.getCorrectedGuesses();
+            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
             if (correctedGuesses != null) {
                 // convert
                 for (int i = 0; i < correctedGuesses.length(); i++) {
@@ -466,10 +474,13 @@ public class GameService {
                     username = answer = ""; // reset
                 }
                 temp.put("points", String.valueOf(usr.getPoints()));
-                System.out.println("points: " + String.valueOf(usr.getPoints()));
                 result.put(usr.getUsername(), temp);
             }
+            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
         }
+
+        // set to false for next round
+        gameSessionRepository.findByCorrespondingLobbyID(lobbyId).setRoundInited(false);
 
         return result;
     }
@@ -512,5 +523,16 @@ public class GameService {
         return idxList;
     }
 
+    public void saveScreenshotURL(String screenshotURL, String username) {
+        User user = userRepository.findByUsername(username);
+
+        if(user != null){
+            user.setScreenshotURL(screenshotURL.replace("\"", ""));
+        }
+        else{
+            // TODO throw exception here
+            System.out.println("ERROR: can't save screenshot URL because user was not found.");
+        }
+    }
 }
 

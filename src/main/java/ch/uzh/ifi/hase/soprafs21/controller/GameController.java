@@ -74,11 +74,17 @@ public class GameController {
 //        gameService.saveScreenshot(submittedShot, Long.valueOf(userId));
 //    }
 
+//    @PutMapping("/screenshot/{username}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String username) {
+//        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
+//        gameService.saveScreenshot(submittedShot, username);
+//    }
+
     @PutMapping("/screenshot/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String username) {
-        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
-        gameService.saveScreenshot(submittedShot, username);
+    public void saveScreenshots(@RequestBody String screenshotURL, @PathVariable String username) {
+        gameService.saveScreenshotURL(screenshotURL, username);
     }
 
     /**

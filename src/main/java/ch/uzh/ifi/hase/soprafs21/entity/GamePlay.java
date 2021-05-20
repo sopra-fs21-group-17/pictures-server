@@ -25,7 +25,6 @@ public class GamePlay implements Serializable {
 
     // TODO see if still needed and remove otherwise
 
-
     @Id
     private String correspondingLobbyID;
 
@@ -45,12 +44,16 @@ public class GamePlay implements Serializable {
     @Column
     private int numberOfPlayers = 0;
 
+    @Column
+    private int roundsCounter;
+
+    @Column
+    public boolean roundInited;
 
     // key UserID value GuessCoordinate
     @ElementCollection
     @CollectionTable
     private final Map<Long, ArrayList<Integer>> guesses = new HashMap<>();
-
 
     // key coordinate, value Picture
     @ElementCollection
@@ -66,7 +69,6 @@ public class GamePlay implements Serializable {
     public Map<Long, ArrayList<Integer>> getGuesses() {
         return guesses;
     }
-
 
     //*****PICTURE SELECTION handlers
 
@@ -95,7 +97,6 @@ public class GamePlay implements Serializable {
         selectedPicturesURLs.clear();
     }
 
-
     //****CORRESPONDING LOBBY to GAME handlers
 
     public Lobby getLobbyForGamePlay() {
@@ -114,7 +115,6 @@ public class GamePlay implements Serializable {
         this.correspondingLobbyID = correspondingLobbyID;
     }
 
-
     //**** SCREENSHOT handlers currently not used may be deleted
     public void addScreenshot(Screenshot screenshot) {
         screenshots.add(screenshot);
@@ -129,7 +129,6 @@ public class GamePlay implements Serializable {
     }
 
     //***** ROUND HANDLERs
-
 
     public int getAllUsersFinishedRound() {
         return allUsersFinishedRound;
@@ -154,4 +153,8 @@ public class GamePlay implements Serializable {
     public void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
     }
+
+    public boolean getRoundInited(){ return roundInited; }
+
+    public void setRoundInited(boolean value){ roundInited = value; }
 }
