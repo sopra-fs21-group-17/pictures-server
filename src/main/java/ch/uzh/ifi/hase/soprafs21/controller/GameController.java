@@ -87,8 +87,8 @@ public class GameController {
     @GetMapping("/screenshot/{lobbyID}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<ScreenshotGetDTO> showScreenshots(@PathVariable String lobbyId) {
-        List<Screenshot> screenshots = gameService.getScreenshots(lobbyId);
+    public List<ScreenshotGetDTO> showScreenshots(@PathVariable String lobbyID) {
+        List<Screenshot> screenshots = gameService.getScreenshots(lobbyID);
         List<ScreenshotGetDTO> screenshotGetDTOs = new ArrayList<>();
         for (Screenshot shot : screenshots) {
             screenshotGetDTOs.add(DTOMapper.INSTANCE.convertEntityToScreenshotGetDTO(shot));
@@ -161,6 +161,16 @@ public class GameController {
     public GamePlayGetDTO getCurrentRound(@PathVariable String lobbyId){
        GamePlayGetDTO gamePlayGetDTO = DTOMapper.INSTANCE.convertEntityToGamePlayGetDTO(gameService.getGamePlay(lobbyId));
        return gamePlayGetDTO;
+    }
+
+    /**
+     * will be used in the client to reset the counters for round handling
+     * (use a later Component, rather than MainBoard in Fe)
+     */
+    @PutMapping("/rounds/{lobbyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetCounterForNextRound(@PathVariable String lobbyId){
+        gameService.resetCounterForRoundHandling(lobbyId);
     }
 
 //    @GetMapping(mainGame)

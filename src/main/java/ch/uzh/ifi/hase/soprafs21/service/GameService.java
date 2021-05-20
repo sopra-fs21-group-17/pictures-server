@@ -117,30 +117,38 @@ public class GameService {
         current.setAllUsersFinishedRound(current.getAllUsersFinishedRound() + 1);
         if (current.getAllUsersFinishedRound() == current.getNumberOfPlayers()) {
             current.setRoundsFinished(current.getRoundsFinished() + 1);
-            current.setAllUsersFinishedRound(0);
+
         }
 
         gameSessionRepository.save(current);
         gameSessionRepository.flush();
     }
 
-
-    /**
-     * used to get the playing users from the Lobby
-     *
-     * @param userNames
-     * @return returns a list of the playing users
-     */
-    public ArrayList<User> getPlayingUsers(String[] userNames) {
-
-        ArrayList<User> usersList = new ArrayList<>();
-
-        for (int i = 0; i < NR_OF_PLAYERS; i++) {
-            usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
+    public void resetCounterForRoundHandling(String lobbyID){
+        checkLobbyExists(lobbyID);
+        GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
+        currentGame.setAllUsersFinishedRound(0);
+        gameSessionRepository.save(currentGame);
+        gameSessionRepository.flush();
         }
 
-        return usersList;
-    }
+
+//    /**
+//     * used to get the playing users from the Lobby
+//     *
+//     * @param userNames
+//     * @return returns a list of the playing users
+//     */
+//    public ArrayList<User> getPlayingUsers(String[] userNames) {
+//
+//        ArrayList<User> usersList = new ArrayList<>();
+//
+//        for (int i = 0; i < NR_OF_PLAYERS; i++) {
+//            usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
+//        }
+//
+//        return usersList;
+//    }
 
 
     /**

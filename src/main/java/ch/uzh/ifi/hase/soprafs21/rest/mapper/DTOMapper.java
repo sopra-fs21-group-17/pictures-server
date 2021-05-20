@@ -7,6 +7,8 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+import javax.persistence.MapsId;
+
 /**
  * DTOMapper
  * This class is responsible for generating classes that will automatically transform/map the internal representation
@@ -102,6 +104,8 @@ public interface DTOMapper {
     ScreenshotGetDTO convertEntityToScreenshotGetDTO(Screenshot screenshot);
 
     @Mapping(source = "roundsFinished", target = "rounds")
+    @Mapping(source = "allUsersFinishedRound", target="allUsersFinishedRound")
+    @Mapping(source = "numberOfPlayers", target = "numberOfPlayers")
     GamePlayGetDTO convertEntityToGamePlayGetDTO(GamePlay gamePlay);
 
 //@Mapping(source = "pictureLink", target = "pictureLink")
