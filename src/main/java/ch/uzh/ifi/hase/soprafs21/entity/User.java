@@ -73,7 +73,7 @@ public class User implements Serializable {
     @Column
     private String guesses; // TODO how to make collection for guesses???
 
-    @Column
+    @Column( length = 100000 )
     private String screenshotURL;
 
     @Column
