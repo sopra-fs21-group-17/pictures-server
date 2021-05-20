@@ -68,12 +68,12 @@ public class User implements Serializable {
     private int assignedCoordinates; // mapping style: A1=0,A2=1...D5=15
 
     @Column
-    private String correctedGuesses; // TODO change to array sth...
+    private String correctedGuesses;
 
     @Column
-    private String guesses; // TODO how to make collection for guesses???
+    private String guesses;
 
-    @Column( length = 100000 )
+    @Column( length = 1000000000) // max nr of possible chars
     private String screenshotURL;
 
     @Column
