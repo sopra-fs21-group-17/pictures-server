@@ -168,17 +168,4 @@ public class GameController {
        return gamePlayGetDTO;
     }
 
-//    @GetMapping(mainGame)
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public void exitGame(){
-//        // TODO
-//    }
-//
-//    @GetMapping(mainGame)
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public void playAgain(){
-//        // TODO
-//    }
 }

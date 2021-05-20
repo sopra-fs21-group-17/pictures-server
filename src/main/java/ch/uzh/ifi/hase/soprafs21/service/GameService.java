@@ -88,7 +88,7 @@ public class GameService {
         }
 
         //select pictures to corresponding gameplay entity
-        //selectPictures(lobbyId);
+        selectPictures(lobbyId);
 
         for (User u : usersList) {
             userRepository.save(u);

@@ -1,16 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs21.game.Guesses;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Internal User Representation
@@ -68,17 +61,17 @@ public class User implements Serializable {
     private int assignedCoordinates; // mapping style: A1=0,A2=1...D5=15
 
     @Column
-    private String correctedGuesses; // TODO change to array sth...
+    private String correctedGuesses;
 
     @Column
-    private String guesses; // TODO how to make collection for guesses???
+    private String guesses;
 
-    @Column( length = 100000 )
+    // TODO test mit viele sachen auf dem board für max chars
+    @Column( length = 1000000 )
     private String screenshotURL;
 
     @Column
     private int points;
-
 
     public Long getId() { return id; }
 
