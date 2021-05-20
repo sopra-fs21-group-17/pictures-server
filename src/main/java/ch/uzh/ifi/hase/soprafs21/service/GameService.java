@@ -81,6 +81,7 @@ public class GameService {
             game.setRoundInited(false);
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
+            game = null; //trying for constraint reasons
         }
         GamePlay game = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
         if (!game.roundInited) {
