@@ -75,27 +75,32 @@ public class GameService {
         if (gameSessionRepository.findByCorrespondingLobbyID(lobbyId) == null) {
             //add new GamePlay entity
             GamePlay game = new GamePlay();
-           // game.setLobby(this.lobbyRepository.findByLobbyId(lobbyId));
+            // game.setLobby(this.lobbyRepository.findByLobbyId(lobbyId));
             game.setLobbyForGamePlay(lobbyRepository.findByLobbyId(lobbyId));
             game.setNumberOfPlayers(usersList.size());  // needed for round counting
             game.setRoundInited(false);
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
         }
-        if(!gameSessionRepository.findByCorrespondingLobbyID(lobbyId).roundInited){
+        GamePlay game = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
+        if (!game.roundInited) {
             assignCoordinates(usersList);
             assignSets(usersList);
-            gameSessionRepository.findByCorrespondingLobbyID(lobbyId).setRoundInited(true);
+            game.setRoundInited(true);
+            gameSessionRepository.save(game);
+            gameSessionRepository.flush();
+            //       }
+
+            //select pictures to corresponding gameplay entity
+            selectPictures(lobbyId);
+
+            for (User u : usersList) {
+                userRepository.save(u);
+                userRepository.flush();
+            }
+
+
         }
-
-        //select pictures to corresponding gameplay entity
-        selectPictures(lobbyId);
-
-        for (User u : usersList) {
-            userRepository.save(u);
-            userRepository.flush();
-        }
-
         return usersList;
     }
 
@@ -134,7 +139,7 @@ public class GameService {
         gameSessionRepository.save(currentGame);
         gameSessionRepository.flush();
         }
-  
+
 //     * used to get the playing users from the Lobby
 //     *
 //     * @param userNames
