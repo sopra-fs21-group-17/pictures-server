@@ -253,4 +253,12 @@ public class GameControllerTest {
         }
     }
 
+    @Test
+    public void testResetRoundHandle() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+        MockHttpServletRequestBuilder putRequest = put("/rounds/"+testLobby.getLobbyId());
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
+    }
+
 }

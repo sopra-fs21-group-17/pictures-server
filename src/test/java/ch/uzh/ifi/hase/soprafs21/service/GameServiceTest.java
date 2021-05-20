@@ -206,6 +206,13 @@ public class GameServiceTest {
         assertEquals(1,testGameplay.getRoundsFinished());
     }
 
+    @Test
+    public void testResetRoundHandle(){
+        testGameplay.setAllUsersFinishedRound(5);
+        gameService.resetCounterForRoundHandling("test");
+        assertEquals(0,testGameplay.getAllUsersFinishedRound());
+    }
+
 //    @Test
 //    public void testHandleGuesses()
 //    {

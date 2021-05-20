@@ -163,6 +163,16 @@ public class GameController {
        return gamePlayGetDTO;
     }
 
+    /**
+     * will be used in the client to reset the counters for round handling
+     * (use a later Component, rather than MainBoard in Fe)
+     */
+    @PutMapping("/rounds/{lobbyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetCounterForNextRound(@PathVariable String lobbyId){
+        gameService.resetCounterForRoundHandling(lobbyId);
+    }
+
 //    @GetMapping(mainGame)
 //    @ResponseStatus(HttpStatus.OK)
 //    @ResponseBody
