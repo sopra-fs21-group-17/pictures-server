@@ -134,16 +134,7 @@ public class GameService {
         gameSessionRepository.save(currentGame);
         gameSessionRepository.flush();
         }
-    /**
-     * used to get the playing users from the Lobby
-     *
-     * @param userNames
-     * @return returns a list of the playing users
-     */
-    public ArrayList<User> getPlayingUsers(String[] userNames) {
-
-
-//    /**
+  
 //     * used to get the playing users from the Lobby
 //     *
 //     * @param userNames
