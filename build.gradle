@@ -89,6 +89,14 @@ if (secretPropsFile.exists()) {
     }
 }
 
+tasks.withType(Test){
+    scanForTestClasses = false
+    include "**/*Test.class"
+}
+test {
+    useJUnitPlatform()
+}
+
 
 
 sonarqube {

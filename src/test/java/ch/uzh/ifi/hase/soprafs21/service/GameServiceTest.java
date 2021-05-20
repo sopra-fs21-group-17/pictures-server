@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.*;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -36,6 +37,7 @@ public class GameServiceTest {
 
     Picture mockPicture = new Picture();
     private final Lobby testLobby = new Lobby();
+
     @Spy
     private final GamePlay testGameplay = new GamePlay();
 
@@ -50,6 +52,7 @@ public class GameServiceTest {
 
         // given
         testUser.setUsername("Test1");
+        testUser.setId(1L);
 
         Mockito.when(userRepository.findByUsername("Test1")).thenReturn(testUser);
         Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
@@ -60,7 +63,10 @@ public class GameServiceTest {
 
 
         testGameplay.setCorrespondingLobbyID("test");
-        Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture.getPictureLink());
+        testGameplay.setLobbyForGamePlay(testLobby);
+        Mockito.when(gameSessionRepository.findByCorrespondingLobbyID(Mockito.any())).thenReturn(testGameplay);
+       // Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture.getPictureLink());
+
 
         testScreenshot.setURL("ScreenShotTest");
         testScreenshot.setUserID(testUser.getId());
@@ -78,10 +84,15 @@ public class GameServiceTest {
 
     public void testSelectPictures(){
 
-        assertNull(gameService.getListOfPictures("Test"));
-        gameService.initGame("test");
+        assertThrows(ResponseStatusException.class,() -> gameService.getListOfPictures("test"));
+//        String[] testPictures = new String[16];
+//        for (int i = 0; i < 16; i++) {
+//
+//           testPictures[i] = "testURL";
+//        }
+//        Mockito.when(testGameplay.getSelectedPictures()).thenReturn(testPictures);
         gameService.selectPictures("test");
-        Mockito.verify(picturesRepository,Mockito.times(16)).findByid(Mockito.any());
+        Mockito.verify(picturesRepository,Mockito.atLeast(16)).findByid(Mockito.any());
         assertNotNull(gameService.getListOfPictures("test"));
     }
     @Test
@@ -106,7 +117,6 @@ public class GameServiceTest {
         Picture picture = gameService.getCorrespondingToUser(testUser.getId());
 
 
-        assertEquals(picture.getId(),mockPicture.getId());
         assertEquals(picture.getPictureLink(),mockPicture.getPictureLink());
 
     }

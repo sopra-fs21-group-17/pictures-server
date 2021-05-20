@@ -28,10 +28,11 @@ public class GamePlay implements Serializable {
     @Id
     private String correspondingLobbyID;
 
-//    @OneToOne(fetch = FetchType.LAZY, targetEntity = Lobby.class)
-//    @JoinColumn(name = "ID_lobby")
-//    @MapsId
-//    private Lobby lobby;
+
+    @OneToOne(targetEntity = Lobby.class)
+    @JoinColumn(columnDefinition = "ID_lobby")
+    @MapsId
+    private Lobby lobby;
 
     // counts all users that have finished the round
     @Column
@@ -98,13 +99,13 @@ public class GamePlay implements Serializable {
 
     //****CORRESPONDING LOBBY to GAME handlers
 
-//    public Lobby getLobby() {
-//        return lobby;
-//    }
-//
-//    public void setLobby(Lobby lobby) {
-//        this.lobby = lobby;
-//    }
+    public Lobby getLobbyForGamePlay() {
+        return lobby;
+    }
+
+    public void setLobbyForGamePlay(Lobby lobby) {
+        this.lobby = lobby;
+    }
 
     public String getCorrespondingLobbyID() {
         return correspondingLobbyID;
