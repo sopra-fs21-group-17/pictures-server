@@ -204,7 +204,6 @@ public class GameServiceTest {
         gameService.prepareNewRound("test");
         gameService.prepareNewRound("test");
         assertEquals(1,testGameplay.getRoundsFinished());
-        assertEquals(0,testGameplay.getAllUsersFinishedRound());
     }
 
 //    @Test

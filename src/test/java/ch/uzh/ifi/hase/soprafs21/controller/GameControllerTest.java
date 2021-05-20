@@ -229,14 +229,18 @@ public class GameControllerTest {
         testLobby.setLobbyId("test");
 
         GamePlay testGameplay = new GamePlay();
+        testGameplay.setAllUsersFinishedRound(4);
         testGameplay.setRoundsFinished(4);
+        testGameplay.setNumberOfPlayers(5);
 
         given(gameService.getGamePlay("test")).willReturn(testGameplay);
 
         MockHttpServletRequestBuilder getRequest = get("/rounds/"+testLobby.getLobbyId());
 
         mockMvc.perform(getRequest).andExpect(status().isOk())
-                .andExpect(jsonPath("$.rounds",is(testGameplay.getRoundsFinished())));
+                .andExpect(jsonPath("$.rounds",is(testGameplay.getRoundsFinished())))
+                .andExpect(jsonPath("$.allUsersFinishedRound",is(testGameplay.getAllUsersFinishedRound())))
+                .andExpect(jsonPath("$.numberOfPlayers",is(testGameplay.getNumberOfPlayers())));
     }
 
 

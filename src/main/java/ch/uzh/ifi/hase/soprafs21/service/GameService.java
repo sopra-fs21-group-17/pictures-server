@@ -81,6 +81,9 @@ public class GameService {
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
 
+        } else {
+            GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
+            currentGame.setAllUsersFinishedRound(0);
         }
         //select pictures to corresponding gameplay entity
         selectPictures(lobbyId);
@@ -117,7 +120,7 @@ public class GameService {
         current.setAllUsersFinishedRound(current.getAllUsersFinishedRound() + 1);
         if (current.getAllUsersFinishedRound() == current.getNumberOfPlayers()) {
             current.setRoundsFinished(current.getRoundsFinished() + 1);
-            current.setAllUsersFinishedRound(0);
+
         }
 
         gameSessionRepository.save(current);
