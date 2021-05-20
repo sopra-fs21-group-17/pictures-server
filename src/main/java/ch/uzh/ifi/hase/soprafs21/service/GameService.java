@@ -42,7 +42,7 @@ public class GameService {
 
     // game variables
     private final int NR_OF_PLAYERS = 4;
-    private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS"};// "ICONS", "LACE"};
+    private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS", "LACE"};
     private final int NR_OF_SETS = SET_NAMES.length;
     private final int MAX_GAME_ROUNDS = 5;
 
