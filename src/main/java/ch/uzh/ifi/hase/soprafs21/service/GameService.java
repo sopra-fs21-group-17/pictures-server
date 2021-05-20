@@ -89,7 +89,7 @@ public class GameService {
             game.setRoundInited(true);
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
-            //       }
+        }
 
             //select pictures to corresponding gameplay entity
             selectPictures(lobbyId);
@@ -100,7 +100,6 @@ public class GameService {
             }
 
 
-        }
         return usersList;
     }
 
