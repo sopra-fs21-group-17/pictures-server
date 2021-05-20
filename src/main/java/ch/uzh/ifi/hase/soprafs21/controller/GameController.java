@@ -87,6 +87,7 @@ public class GameController {
         gameService.saveScreenshotURL(screenshotURL, username);
     }
 
+
     /**
      * @return Return a List of Screenshots for the guessing screen
      */

@@ -66,8 +66,7 @@ public class User implements Serializable {
     @Column
     private String guesses;
 
-    // TODO test mit viele sachen auf dem board für max chars
-    @Column( length = 1000000 )
+    @Column( length = 1000000000) // max nr of possible chars
     private String screenshotURL;
 
     @Column
