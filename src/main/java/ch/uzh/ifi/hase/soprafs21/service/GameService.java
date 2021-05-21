@@ -69,7 +69,6 @@ public class GameService {
         checkLobbyExists(lobbyId);
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
 
-
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         if (gameSessionRepository.findByCorrespondingLobbyID(lobbyId) == null) {
@@ -92,14 +91,13 @@ public class GameService {
             gameSessionRepository.flush();
         }
 
-            //select pictures to corresponding gameplay entity
-            selectPictures(lobbyId);
+        //select pictures to corresponding gameplay entity
+        selectPictures(lobbyId);
 
-            for (User u : usersList) {
-                userRepository.save(u);
-                userRepository.flush();
-            }
-
+        for (User u : usersList) {
+            userRepository.save(u);
+            userRepository.flush();
+        }
 
         return usersList;
     }
@@ -125,7 +123,6 @@ public class GameService {
         current.setAllUsersFinishedRound(current.getAllUsersFinishedRound() + 1);
         if (current.getAllUsersFinishedRound() == current.getNumberOfPlayers()) {
             current.setRoundsFinished(current.getRoundsFinished() + 1);
-
         }
 
         gameSessionRepository.save(current);
@@ -138,23 +135,7 @@ public class GameService {
         currentGame.setAllUsersFinishedRound(0);
         gameSessionRepository.save(currentGame);
         gameSessionRepository.flush();
-        }
-
-//     * used to get the playing users from the Lobby
-//     *
-//     * @param userNames
-//     * @return returns a list of the playing users
-//     */
-//    public ArrayList<User> getPlayingUsers(String[] userNames) {
-//
-//        ArrayList<User> usersList = new ArrayList<>();
-//
-//        for (int i = 0; i < NR_OF_PLAYERS; i++) {
-//            usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
-//        }
-//
-//        return usersList;
-//    }
+    }
 
     /**
      * Method is used to assigned a random set to every User
@@ -243,7 +224,6 @@ public class GameService {
             int maxPictures = 16;
             int randomLimit = 51; //limit will be strictly smaller than
 
-
             ArrayList<Integer> checkID = new ArrayList();
 
             int idx = 0;
@@ -325,20 +305,11 @@ public class GameService {
      * @param submittedShot
      * @param //userId
      */
-//    public void saveScreenshot(Screenshot submittedShot, Long userId){
-//        User user = userRepository.findByid(userId);
-//
-//
-//        user.setScreenshotURL(submittedShot.getURL());
-//        userRepository.save(user);
-//        userRepository.flush();
-//    }
     public void saveScreenshot(Screenshot submittedShot, String username) {
         User user = userRepository.findByUsername(username);
         user.setScreenshotURL(submittedShot.getURL());
         userRepository.save(user);
         userRepository.flush();
-        System.out.println(user.getScreenshotURL());
     }
 
     // Currently unused
@@ -392,22 +363,22 @@ public class GameService {
     }
 
     public String handleGuesses(String lobbyId, User user) {
-        User player = null;
+
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
-        for (User u : usersList) {
-            if (u != null) {
-                if (u.getUsername().equals(user.getUsername())) {
-                    player = u;
-                    break;
-                }
-            }
+
+        String username = user.getUsername();
+        User player = null;
+        if(username != null){
+            player = userRepository.findByUsername(user.getUsername());
+        }
+        else{
+            System.out.println("Sorry, the username I got was null!");
         }
 
         // convert String(guesses) to hashmap with username and coordinate
         String result = "";
         if (player != null) {
-            //System.out.println("USERS GUESSES: "+user.getGuesses());
             Map<String, String> guesses = getGuessesHashMap(user.getGuesses());
 
             // correct guesses
@@ -418,10 +389,17 @@ public class GameService {
                 tempUsr = userRepository.findByUsername(entry.getKey());
                 // check if coordinates match
                 if (tempUsr != null) {
+                    System.out.println("USERNAME: "+player.getUsername());
+                    System.out.println("coord: "+coordinateNames[tempUsr.getAssignedCoordinates()]+" GUESS: "+entry.getValue().toUpperCase());
                     if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
                         player.setPoints(player.getPoints() + 1);   // give player a point
                         tempUsr.setPoints(tempUsr.getPoints() + 1); // also give to other player a point
                         result += "y" + entry.getKey();
+
+                        // update user repo
+                        userRepository.save(player);
+                        userRepository.save(tempUsr);
+                        userRepository.flush();
                     }
                     else {
                         result += "n" + entry.getKey();
@@ -432,14 +410,15 @@ public class GameService {
             player.setCorrectedGuesses(result);
             userRepository.save(player);
             userRepository.flush();
-
         }
         else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Guesses could not be assigned to users");
         }
 
-        return result;
+        User test = userRepository.findByUsername(username);
+        System.out.println("updated points?: "+test.getPoints());
 
+        return result;
     }
 
     public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) throws ResponseStatusException {
@@ -455,7 +434,7 @@ public class GameService {
 
         for (User usr : usersList) {
             correctedGuesses = usr.getCorrectedGuesses();
-            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
+
             if (correctedGuesses != null) {
                 // convert
                 for (int i = 0; i < correctedGuesses.length(); i++) {
@@ -472,7 +451,6 @@ public class GameService {
                 temp.put("points", String.valueOf(usr.getPoints()));
                 result.put(usr.getUsername(), temp);
             }
-            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
         }
 
         // set to false for next round

@@ -103,19 +103,12 @@ public class GameController {
         return screenshotGetDTOs;
     }
 
-//    @PutMapping("/guesses/{lobbyid}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void submitGuesses(@RequestBody UserPutDTO userPutDTO, @PathVariable String lobbyid) {
-//        User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-//        gameService.handleGuesses(lobbyid, user);
-//    }
-
     @PostMapping("/guesses/{lobbyid}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String submitGuesses(@RequestBody UserPostDTO userPostDTO, @PathVariable String lobbyid) {
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-        System.out.println("username for guesses: "+user.getUsername());
+        //System.out.println("username for guesses: "+user.getUsername());
         return gameService.handleGuesses(lobbyid, user);
     }
 
