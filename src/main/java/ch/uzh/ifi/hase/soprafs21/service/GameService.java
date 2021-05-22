@@ -383,18 +383,21 @@ public class GameService {
 
             // correct guesses
             String[] coordinateNames = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "D1", "D2", "D3", "D4"};
-            User tempUsr;
-            Map<String, String> correctedGuesses = new HashMap<String, String>();
             for (Map.Entry<String, String> entry : guesses.entrySet()) {
-                tempUsr = userRepository.findByUsername(entry.getKey());
+                User tempUsr = userRepository.findByUsername(entry.getKey());
                 // check if coordinates match
                 if (tempUsr != null) {
+                    System.out.println("--------");
                     System.out.println("USERNAME: "+player.getUsername());
                     System.out.println("coord: "+coordinateNames[tempUsr.getAssignedCoordinates()]+" GUESS: "+entry.getValue().toUpperCase());
                     if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
                         player.setPoints(player.getPoints() + 1);   // give player a point
                         tempUsr.setPoints(tempUsr.getPoints() + 1); // also give to other player a point
                         result += "y" + entry.getKey();
+                        System.out.println("--------");
+                        System.out.println("user: "+player.getPoints());
+                        System.out.println("other: "+tempUsr.getPoints());
+                        System.out.println("--------");
 
                         // update user repo
                         userRepository.save(player);
@@ -421,7 +424,7 @@ public class GameService {
         return result;
     }
 
-    public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) throws ResponseStatusException {
+    public Map<String, Map<String, String>> returnScore(String lobbyId) throws ResponseStatusException {
         checkLobbyExists(lobbyId); //throws Runtime Exception
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
@@ -434,7 +437,7 @@ public class GameService {
 
         for (User usr : usersList) {
             correctedGuesses = usr.getCorrectedGuesses();
-
+            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
             if (correctedGuesses != null) {
                 // convert
                 for (int i = 0; i < correctedGuesses.length(); i++) {
@@ -451,6 +454,7 @@ public class GameService {
                 temp.put("points", String.valueOf(usr.getPoints()));
                 result.put(usr.getUsername(), temp);
             }
+            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
         }
 
         // set to false for next round

@@ -108,15 +108,14 @@ public class GameController {
     @ResponseBody
     public String submitGuesses(@RequestBody UserPostDTO userPostDTO, @PathVariable String lobbyid) {
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-        //System.out.println("username for guesses: "+user.getUsername());
         return gameService.handleGuesses(lobbyid, user);
     }
 
     @GetMapping("/score/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Map<String, String>> returnCorrectedGuesses(@PathVariable String lobbyId) {
-        return gameService.returnCorrectedGuesses(lobbyId);
+    public Map<String, Map<String, String>> returnScore(@PathVariable String lobbyId) {
+        return gameService.returnScore(lobbyId);
     }
 
     /**
@@ -143,7 +142,6 @@ public class GameController {
     @GetMapping("/picture/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-
     public PicturesGetDTO getCorrespondingPicture(@PathVariable String id) {
         Picture correspondingPicture = gameService.getCorrespondingToUser(Long.valueOf(id));
         PicturesGetDTO pictureResult = DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);
@@ -173,17 +171,4 @@ public class GameController {
         gameService.resetCounterForRoundHandling(lobbyId);
     }
 
-//    @GetMapping(mainGame)
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public void exitGame(){
-//        // TODO
-//    }
-//
-//    @GetMapping(mainGame)
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public void playAgain(){
-//        // TODO
-//    }
 }
