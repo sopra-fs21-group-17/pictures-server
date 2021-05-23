@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -180,12 +181,12 @@ public class GameController {
         gameService.resetCounterForRoundHandling(lobbyId);
     }
 
-//    @GetMapping(mainGame)
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public void exitGame(){
-//        // TODO
-//    }
+    @DeleteMapping("/players/{lobbyId}/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void exitGame(@PathVariable String lobbyId,@PathVariable Long userId){
+
+    }
 //
 //    @GetMapping(mainGame)
 //    @ResponseStatus(HttpStatus.OK)

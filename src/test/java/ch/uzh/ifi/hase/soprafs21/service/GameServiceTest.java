@@ -213,6 +213,17 @@ public class GameServiceTest {
         assertEquals(0,testGameplay.getAllUsersFinishedRound());
     }
 
+    @Test
+    public void testRemoveUserFromLobby(){
+        Set<User> testUserSet = new HashSet<>();
+        testUserSet.add(testUser);
+        testLobby.setUsersList(testUserSet);
+        gameService.removeUserFromLobby("test",1L);
+        assertEquals(0,lobbyRepository.findByLobbyId("test").getUsersList().size());
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(null);
+        assertThrows(ResponseStatusException.class,()-> gameService.removeUserFromLobby("test",2L));
+    }
+
 //    @Test
 //    public void testHandleGuesses()
 //    {

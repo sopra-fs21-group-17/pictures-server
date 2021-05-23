@@ -140,6 +140,20 @@ public class GameService {
         gameSessionRepository.flush();
         }
 
+    public void removeUserFromLobby(String lobbyId,Long userId){
+        checkLobbyExists(lobbyId);
+        Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
+        User userForRemoval = userRepository.findByid(userId);
+        if(userForRemoval != null) {
+            Set<User> currentUsers = currentLobby.getUsersList();
+            currentUsers.remove(userForRemoval);
+            currentLobby.setUsersList(currentUsers);
+            lobbyRepository.save(currentLobby);
+        } else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User for removal could not be found");
+        }
+    }
+
 //     * used to get the playing users from the Lobby
 //     *
 //     * @param userNames

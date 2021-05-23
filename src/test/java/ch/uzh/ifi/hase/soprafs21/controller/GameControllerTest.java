@@ -24,12 +24,11 @@ import org.springframework.web.server.ResponseStatusException;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import java.util.*;
 
 import static org.mockito.BDDMockito.given;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -259,6 +258,16 @@ public class GameControllerTest {
         testLobby.setLobbyId("test");
         MockHttpServletRequestBuilder putRequest = put("/rounds/"+testLobby.getLobbyId());
         mockMvc.perform(putRequest).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testRemoveUserFromLobby() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+        User testUser = new User();
+        testUser.setId(1L);
+        MockHttpServletRequestBuilder deleteRequest = delete("/players/"+testLobby.getLobbyId()+"/"+testUser.getId());
+        mockMvc.perform(deleteRequest).andExpect(status().isNoContent());
     }
 
 }
