@@ -125,6 +125,9 @@ public class GameService {
         checkLobbyExists(lobbyID);
         GamePlay current = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
 
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyID);
+
         // if the pictures list wasn't already null
         if (current != null) {
             current.clearSelectedPictures();
@@ -138,6 +141,12 @@ public class GameService {
 
         gameSessionRepository.save(current);
         gameSessionRepository.flush();
+
+        // reset "done guessing" attribute for new round
+        for(User u : usersList){
+            u.setDoneGuessing(false);
+        }
+
     }
 
     public void resetCounterForRoundHandling(String lobbyID){
