@@ -141,9 +141,11 @@ public class GameService {
         gameSessionRepository.save(current);
         gameSessionRepository.flush();
 
-        // reset "done guessing" attribute for new round
+        // reset user's game attributes for new round
         for(User u : usersList){
             u.setDoneGuessing(false);
+            u.setScreenshotURL(null);
+            u.setCorrectedGuesses("");
         }
 
     }
