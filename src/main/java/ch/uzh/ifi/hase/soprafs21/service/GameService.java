@@ -27,7 +27,7 @@ import java.util.*;
  * State of the Game according to the position in the round
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class GameService {
 
     // user list for test purposes
@@ -37,14 +37,12 @@ public class GameService {
     private final UserRepository userRepository;
     private final GameSessionRepository gameSessionRepository;
     private final LobbyRepository lobbyRepository;
-    private Boolean gameInited = false;
     private Random rand = SecureRandom.getInstanceStrong();
 
     // game variables
     private final int NR_OF_PLAYERS = 4;
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS", "LACE"};
     private final int NR_OF_SETS = SET_NAMES.length;
-    private final int MAX_GAME_ROUNDS = 5;
 
     @Autowired
     public GameService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) throws NoSuchAlgorithmException {
@@ -69,7 +67,6 @@ public class GameService {
         checkLobbyExists(lobbyId);
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
 
-
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
         if (gameSessionRepository.findByCorrespondingLobbyID(lobbyId) == null) {
@@ -83,25 +80,36 @@ public class GameService {
             gameSessionRepository.flush();
             game = null; //trying for constraint reasons
         }
+
         GamePlay game = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
         if (!game.roundInited) {
             assignCoordinates(usersList);
             assignSets(usersList);
-            game.setRoundInited(true);
+            resetDoneGuessing(usersList);
+            game.setRoundInited(true); // TODO when switch round inited to false??
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
         }
 
-            //select pictures to corresponding gameplay entity
-            selectPictures(lobbyId);
+        //select pictures to corresponding gameplay entity
+        selectPictures(lobbyId);
 
-            for (User u : usersList) {
-                userRepository.save(u);
-                userRepository.flush();
-            }
-
+        for (User u : usersList) {
+            userRepository.save(u);
+            userRepository.flush();
+        }
 
         return usersList;
+    }
+
+    /**
+     * Used to reset the attribute "done guessing" to false for all playing users.
+     * Called at the beginning of each round.
+     * */
+    private void resetDoneGuessing(List<User> usersList) {
+        for (User user : usersList) {
+            user.setDoneGuessing(false);
+        }
     }
 
     /**
@@ -116,6 +124,9 @@ public class GameService {
         checkLobbyExists(lobbyID);
         GamePlay current = gameSessionRepository.findByCorrespondingLobbyID(lobbyID);
 
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyID);
+
         // if the pictures list wasn't already null
         if (current != null) {
             current.clearSelectedPictures();
@@ -125,11 +136,18 @@ public class GameService {
         current.setAllUsersFinishedRound(current.getAllUsersFinishedRound() + 1);
         if (current.getAllUsersFinishedRound() == current.getNumberOfPlayers()) {
             current.setRoundsFinished(current.getRoundsFinished() + 1);
-
         }
 
         gameSessionRepository.save(current);
         gameSessionRepository.flush();
+
+        // reset user's game attributes for new round
+        for(User u : usersList){
+            u.setDoneGuessing(false);
+            u.setScreenshotURL(null);
+            u.setCorrectedGuesses("");
+        }
+
     }
 
     public void resetCounterForRoundHandling(String lobbyID){
@@ -138,7 +156,7 @@ public class GameService {
         currentGame.setAllUsersFinishedRound(0);
         gameSessionRepository.save(currentGame);
         gameSessionRepository.flush();
-        }
+    }
 
     public void removeUserFromLobby(String lobbyId,Long userId){
         checkLobbyExists(lobbyId);
@@ -188,7 +206,7 @@ public class GameService {
 
     // coordinates represented in code like this:
     // A1 = 0, A2 = 1, D4 = 15 ...
-    // so just pick random nr between 0-15x3
+    // so just pick random nr between 0-15 x3 (each coordinate is "duplicated" 3 times according to game rules)
     public void assignCoordinates(List<User> usersList) {
         int repetitions = 3;
         int nrOfCoordinates = 16;
@@ -256,7 +274,6 @@ public class GameService {
         if (gamePlay.getSelectedPictures() == null) {
             int maxPictures = 16;
             int randomLimit = 51; //limit will be strictly smaller than
-
 
             ArrayList<Integer> checkID = new ArrayList();
 
@@ -339,20 +356,11 @@ public class GameService {
      * @param submittedShot
      * @param //userId
      */
-//    public void saveScreenshot(Screenshot submittedShot, Long userId){
-//        User user = userRepository.findByid(userId);
-//
-//
-//        user.setScreenshotURL(submittedShot.getURL());
-//        userRepository.save(user);
-//        userRepository.flush();
-//    }
     public void saveScreenshot(Screenshot submittedShot, String username) {
         User user = userRepository.findByUsername(username);
         user.setScreenshotURL(submittedShot.getURL());
         userRepository.save(user);
         userRepository.flush();
-        System.out.println(user.getScreenshotURL());
     }
 
     // Currently unused
@@ -406,36 +414,46 @@ public class GameService {
     }
 
     public String handleGuesses(String lobbyId, User user) {
-        User player = null;
+
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
-        for (User u : usersList) {
-            if (u != null) {
-                if (u.getUsername().equals(user.getUsername())) {
-                    player = u;
-                    break;
-                }
-            }
+
+        String username = user.getUsername();
+        User player = null;
+        if(username != null){
+            player = userRepository.findByUsername(user.getUsername());
+        }
+        else{
+            System.out.println("Sorry, the username I got was null!");
         }
 
         // convert String(guesses) to hashmap with username and coordinate
         String result = "";
         if (player != null) {
-            //System.out.println("USERS GUESSES: "+user.getGuesses());
             Map<String, String> guesses = getGuessesHashMap(user.getGuesses());
 
             // correct guesses
             String[] coordinateNames = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "D1", "D2", "D3", "D4"};
-            User tempUsr;
-            Map<String, String> correctedGuesses = new HashMap<String, String>();
             for (Map.Entry<String, String> entry : guesses.entrySet()) {
-                tempUsr = userRepository.findByUsername(entry.getKey());
+                User tempUsr = userRepository.findByUsername(entry.getKey());
                 // check if coordinates match
                 if (tempUsr != null) {
+                    System.out.println("--------");
+                    System.out.println("USERNAME: "+player.getUsername());
+                    System.out.println("coord: "+coordinateNames[tempUsr.getAssignedCoordinates()]+" GUESS: "+entry.getValue().toUpperCase());
                     if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
                         player.setPoints(player.getPoints() + 1);   // give player a point
                         tempUsr.setPoints(tempUsr.getPoints() + 1); // also give to other player a point
                         result += "y" + entry.getKey();
+                        System.out.println("--------");
+                        System.out.println("user: "+player.getPoints());
+                        System.out.println("other: "+tempUsr.getPoints());
+                        System.out.println("--------");
+
+                        // update user repo
+                        userRepository.save(player);
+                        userRepository.save(tempUsr);
+                        userRepository.flush();
                     }
                     else {
                         result += "n" + entry.getKey();
@@ -444,53 +462,69 @@ public class GameService {
                 }
             }
             player.setCorrectedGuesses(result);
+            player.setDoneGuessing(true); // update is done guessing
             userRepository.save(player);
             userRepository.flush();
-
         }
         else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Guesses could not be assigned to users");
         }
 
-        return result;
+        User test = userRepository.findByUsername(username);
+        System.out.println("updated points?: "+test.getPoints());
 
+        return result;
     }
 
-    public Map<String, Map<String, String>> returnCorrectedGuesses(String lobbyId) throws ResponseStatusException {
+    public ArrayList<ArrayList<String>> returnScore(String lobbyId) throws ResponseStatusException {
         checkLobbyExists(lobbyId); //throws Runtime Exception
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
-        String correctedGuesses;
-        Map<String, String> temp = new HashMap<>();
-        String username = "";
-        String answer = "";
-        Map<String, Map<String, String>> result = new HashMap<>(); // { username:{max:y,eva:n}, username:{max:y,eva:n}}
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        ArrayList<String> temp = new ArrayList<>();
 
-        for (User usr : usersList) {
-            correctedGuesses = usr.getCorrectedGuesses();
-            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
-            if (correctedGuesses != null) {
-                // convert
-                for (int i = 0; i < correctedGuesses.length(); i++) {
-                    answer += correctedGuesses.charAt(i);
-                    i++; // skip answer "y"/"n"
-                    // parse username
-                    while (i < correctedGuesses.length() - 1 && correctedGuesses.charAt(i) != '-') {
-                        username += correctedGuesses.charAt(i);
-                        i++;
-                    }
-                    temp.put(username, answer);
-                    username = answer = ""; // reset
-                }
-                temp.put("points", String.valueOf(usr.getPoints()));
-                result.put(usr.getUsername(), temp);
-            }
-            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
+        // add usernames + points of all playing users to list
+        for(User u : usersList){
+            temp.add(u.getUsername());
+            temp.add(String.valueOf(u.getPoints()));
+            result.add(temp);
         }
 
+//        String correctedGuesses;
+//        Map<String, String> temp = new HashMap<>();
+//        String username = "";
+//        String answer = "";
+//        Map<String, Map<String, String>> result = new HashMap<>(); // { username:{max:y,eva:n}, username:{max:y,eva:n}}
+//
+//        for (User usr : usersList) {
+//            correctedGuesses = usr.getCorrectedGuesses();
+//            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
+//            if (correctedGuesses != null) {
+//                // convert
+//                for (int i = 0; i < correctedGuesses.length(); i++) {
+//                    answer += correctedGuesses.charAt(i);
+//                    i++; // skip answer "y"/"n"
+//                    // parse username
+//                    while (i < correctedGuesses.length() - 1 && correctedGuesses.charAt(i) != '-') {
+//                        username += correctedGuesses.charAt(i);
+//                        i++;
+//                    }
+//                    temp.put(username, answer);
+//                    username = answer = ""; // reset
+//                }
+//                temp.put("points", String.valueOf(usr.getPoints()));
+//                result.put(usr.getUsername(), temp);
+//            }
+//            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
+//        }
+//
         // set to false for next round
         gameSessionRepository.findByCorrespondingLobbyID(lobbyId).setRoundInited(false);
+
+        for(ArrayList<String> e : result){
+            System.out.println("Result: "+e);
+        }
 
         return result;
     }
@@ -543,6 +577,22 @@ public class GameService {
             // TODO throw exception here
             System.out.println("ERROR: can't save screenshot URL because user was not found.");
         }
+    }
+
+    public boolean checkUsersDoneGuessing(String lobbyId) {
+        checkLobbyExists(lobbyId);
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
+        boolean status = true;
+
+        for(User u : usersList){
+            if(!u.getDoneGuessing()){
+                status = false;
+                break;
+            }
+        }
+
+        return status;
     }
 }
 

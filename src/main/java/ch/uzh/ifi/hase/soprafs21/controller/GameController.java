@@ -45,6 +45,14 @@ public class GameController {
         return initializedUsersDTOs;
     }
 
+    @GetMapping("/game/checkUsersDoneGuessing/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public boolean checkUsersDoneGuessing(@PathVariable String lobbyId){
+        // returns true if all user's are done guessing
+        return gameService.checkUsersDoneGuessing(lobbyId);
+    }
+
     /**
      * used to reset temporary fields such as pictures for the grid
      * @param lobbyId
@@ -62,25 +70,6 @@ public class GameController {
         ArrayList<ArrayList<String>> response = gameService.getUsersScreenshots(lobbyId);
         return response;
     }
-
-    /**
-     * Used to save screenshot URLs to the Back end
-     *
-     * @param screenshotPutDTO
-     */
-//    @PutMapping("/screenshot/{id}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String userId){
-//        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
-//        gameService.saveScreenshot(submittedShot, Long.valueOf(userId));
-//    }
-
-//    @PutMapping("/screenshot/{username}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String username) {
-//        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
-//        gameService.saveScreenshot(submittedShot, username);
-//    }
 
     @PutMapping("/screenshot/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -104,27 +93,19 @@ public class GameController {
         return screenshotGetDTOs;
     }
 
-//    @PutMapping("/guesses/{lobbyid}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void submitGuesses(@RequestBody UserPutDTO userPutDTO, @PathVariable String lobbyid) {
-//        User user = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-//        gameService.handleGuesses(lobbyid, user);
-//    }
-
     @PostMapping("/guesses/{lobbyid}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String submitGuesses(@RequestBody UserPostDTO userPostDTO, @PathVariable String lobbyid) {
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-        System.out.println("username for guesses: "+user.getUsername());
         return gameService.handleGuesses(lobbyid, user);
     }
 
     @GetMapping("/score/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Map<String, String>> returnCorrectedGuesses(@PathVariable String lobbyId) {
-        return gameService.returnCorrectedGuesses(lobbyId);
+    public ArrayList<ArrayList<String>> returnScore(@PathVariable String lobbyId) {
+        return gameService.returnScore(lobbyId);
     }
 
     /**
@@ -151,7 +132,6 @@ public class GameController {
     @GetMapping("/picture/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-
     public PicturesGetDTO getCorrespondingPicture(@PathVariable String id) {
         Picture correspondingPicture = gameService.getCorrespondingToUser(Long.valueOf(id));
         PicturesGetDTO pictureResult = DTOMapper.INSTANCE.convertEntityToPicturesGetDTO(correspondingPicture);

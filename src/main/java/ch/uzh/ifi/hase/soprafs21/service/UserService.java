@@ -118,6 +118,17 @@ public class UserService {
 
     }
 
+    public void doneGuessingTrue(String username){
+        User foundByName = userRepository.findByUsername(username);
+
+        if(foundByName != null) {
+            foundByName.setDoneGuessing(true);
+            userRepository.flush();
+        }
+        else{ System.out.println("Sorry, username not found!"); }
+
+    }
+
     /**changes the date format of the input
      *
      * @param date

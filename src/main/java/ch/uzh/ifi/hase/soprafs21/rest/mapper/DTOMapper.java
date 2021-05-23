@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 
 import ch.uzh.ifi.hase.soprafs21.entity.*;
-import ch.uzh.ifi.hase.soprafs21.game.Guesses;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;

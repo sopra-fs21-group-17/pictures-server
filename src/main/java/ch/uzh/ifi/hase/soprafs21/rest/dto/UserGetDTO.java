@@ -22,6 +22,7 @@ public class UserGetDTO {
     private boolean isReady;
     private String lobbyId;
     private int points;
+    private Boolean doneGuessing;
 
     private UserStatus status;
 
@@ -101,5 +102,13 @@ public class UserGetDTO {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public Boolean getDoneGuessing() {
+        return doneGuessing;
+    }
+
+    public void setDoneGuessing(Boolean doneGuessing) {
+        this.doneGuessing = doneGuessing;
     }
 }

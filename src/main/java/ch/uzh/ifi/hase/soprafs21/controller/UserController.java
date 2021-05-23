@@ -38,9 +38,11 @@ public class UserController {
         for (User user : users) {
             userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
+
         //returns list
         return userGetDTOs;
     }
+
     @GetMapping("/lobbies/users/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -71,7 +73,6 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
 
-
     @PutMapping("/users/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
@@ -81,6 +82,14 @@ public class UserController {
 
         //updates the User
         userService.updateIsReady(username, userInput);
+    }
+
+    @PutMapping("/users/doneGuessing/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void doneGuessingTrue(@PathVariable String username) throws ParseException {
+        //updates the User "doneGuessing" attribute
+        userService.doneGuessingTrue(username);
     }
 
     @PostMapping("/users/names")
