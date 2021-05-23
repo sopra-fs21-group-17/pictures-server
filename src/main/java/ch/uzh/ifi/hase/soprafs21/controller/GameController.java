@@ -103,7 +103,7 @@ public class GameController {
     @GetMapping("/score/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Map<String, String>> returnScore(@PathVariable String lobbyId) {
+    public ArrayList<ArrayList<String>> returnScore(@PathVariable String lobbyId) {
         return gameService.returnScore(lobbyId);
     }
 

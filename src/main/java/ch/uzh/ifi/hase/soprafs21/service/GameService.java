@@ -27,7 +27,7 @@ import java.util.*;
  * State of the Game according to the position in the round
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class GameService {
 
     // user list for test purposes
@@ -43,7 +43,6 @@ public class GameService {
     private final int NR_OF_PLAYERS = 4;
     private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS", "LACE"};
     private final int NR_OF_SETS = SET_NAMES.length;
-    private final int MAX_GAME_ROUNDS = 5;
 
     @Autowired
     public GameService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("picturesRepository") PicturesRepository picturesRepository, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("gameSessionRepository") GameSessionRepository gameSessionRepository) throws NoSuchAlgorithmException {
@@ -431,6 +430,7 @@ public class GameService {
                 }
             }
             player.setCorrectedGuesses(result);
+            player.setDoneGuessing(true); // update is done guessing
             userRepository.save(player);
             userRepository.flush();
         }
@@ -444,41 +444,55 @@ public class GameService {
         return result;
     }
 
-    public Map<String, Map<String, String>> returnScore(String lobbyId) throws ResponseStatusException {
+    public ArrayList<ArrayList<String>> returnScore(String lobbyId) throws ResponseStatusException {
         checkLobbyExists(lobbyId); //throws Runtime Exception
         LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
         List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
 
-        String correctedGuesses;
-        Map<String, String> temp = new HashMap<>();
-        String username = "";
-        String answer = "";
-        Map<String, Map<String, String>> result = new HashMap<>(); // { username:{max:y,eva:n}, username:{max:y,eva:n}}
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        ArrayList<String> temp = new ArrayList<>();
 
-        for (User usr : usersList) {
-            correctedGuesses = usr.getCorrectedGuesses();
-            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
-            if (correctedGuesses != null) {
-                // convert
-                for (int i = 0; i < correctedGuesses.length(); i++) {
-                    answer += correctedGuesses.charAt(i);
-                    i++; // skip answer "y"/"n"
-                    // parse username
-                    while (i < correctedGuesses.length() - 1 && correctedGuesses.charAt(i) != '-') {
-                        username += correctedGuesses.charAt(i);
-                        i++;
-                    }
-                    temp.put(username, answer);
-                    username = answer = ""; // reset
-                }
-                temp.put("points", String.valueOf(usr.getPoints()));
-                result.put(usr.getUsername(), temp);
-            }
-            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
+        // add usernames + points of all playing users to list
+        for(User u : usersList){
+            temp.add(u.getUsername());
+            temp.add(String.valueOf(u.getPoints()));
+            result.add(temp);
         }
 
+//        String correctedGuesses;
+//        Map<String, String> temp = new HashMap<>();
+//        String username = "";
+//        String answer = "";
+//        Map<String, Map<String, String>> result = new HashMap<>(); // { username:{max:y,eva:n}, username:{max:y,eva:n}}
+//
+//        for (User usr : usersList) {
+//            correctedGuesses = usr.getCorrectedGuesses();
+//            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
+//            if (correctedGuesses != null) {
+//                // convert
+//                for (int i = 0; i < correctedGuesses.length(); i++) {
+//                    answer += correctedGuesses.charAt(i);
+//                    i++; // skip answer "y"/"n"
+//                    // parse username
+//                    while (i < correctedGuesses.length() - 1 && correctedGuesses.charAt(i) != '-') {
+//                        username += correctedGuesses.charAt(i);
+//                        i++;
+//                    }
+//                    temp.put(username, answer);
+//                    username = answer = ""; // reset
+//                }
+//                temp.put("points", String.valueOf(usr.getPoints()));
+//                result.put(usr.getUsername(), temp);
+//            }
+//            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
+//        }
+//
         // set to false for next round
         gameSessionRepository.findByCorrespondingLobbyID(lobbyId).setRoundInited(false);
+
+        for(ArrayList<String> e : result){
+            System.out.println("Result: "+e);
+        }
 
         return result;
     }
