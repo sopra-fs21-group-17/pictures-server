@@ -37,7 +37,6 @@ public class GameService {
     private final UserRepository userRepository;
     private final GameSessionRepository gameSessionRepository;
     private final LobbyRepository lobbyRepository;
-    private Boolean gameInited = false;
     private Random rand = SecureRandom.getInstanceStrong();
 
     // game variables
@@ -82,11 +81,13 @@ public class GameService {
             gameSessionRepository.flush();
             game = null; //trying for constraint reasons
         }
+
         GamePlay game = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
         if (!game.roundInited) {
             assignCoordinates(usersList);
             assignSets(usersList);
-            game.setRoundInited(true);
+            resetDoneGuessing(usersList);
+            game.setRoundInited(true); // TODO when switch round inited to false??
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
         }
@@ -100,6 +101,16 @@ public class GameService {
         }
 
         return usersList;
+    }
+
+    /**
+     * Used to reset the attribute "done guessing" to false for all playing users.
+     * Called at the beginning of each round.
+     * */
+    private void resetDoneGuessing(List<User> usersList) {
+        for (User user : usersList) {
+            user.setDoneGuessing(false);
+        }
     }
 
     /**
@@ -155,7 +166,7 @@ public class GameService {
 
     // coordinates represented in code like this:
     // A1 = 0, A2 = 1, D4 = 15 ...
-    // so just pick random nr between 0-15x3
+    // so just pick random nr between 0-15 x3 (each coordinate is "duplicated" 3 times according to game rules)
     public void assignCoordinates(List<User> usersList) {
         int repetitions = 3;
         int nrOfCoordinates = 16;
@@ -511,6 +522,22 @@ public class GameService {
             // TODO throw exception here
             System.out.println("ERROR: can't save screenshot URL because user was not found.");
         }
+    }
+
+    public boolean checkUsersDoneGuessing(String lobbyId) {
+        checkLobbyExists(lobbyId);
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
+        boolean status = true;
+
+        for(User u : usersList){
+            if(!u.getDoneGuessing()){
+                status = false;
+                break;
+            }
+        }
+
+        return status;
     }
 }
 

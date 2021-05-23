@@ -44,6 +44,14 @@ public class GameController {
         return initializedUsersDTOs;
     }
 
+    @GetMapping("/game/checkUsersDoneGuessing/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public boolean checkUsersDoneGuessing(@PathVariable String lobbyId){
+        // returns true if all user's are done guessing
+        return gameService.checkUsersDoneGuessing(lobbyId);
+    }
+
     /**
      * used to reset temporary fields such as pictures for the grid
      * @param lobbyId
@@ -61,25 +69,6 @@ public class GameController {
         ArrayList<ArrayList<String>> response = gameService.getUsersScreenshots(lobbyId);
         return response;
     }
-
-    /**
-     * Used to save screenshot URLs to the Back end
-     *
-     * @param screenshotPutDTO
-     */
-//    @PutMapping("/screenshot/{id}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String userId){
-//        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
-//        gameService.saveScreenshot(submittedShot, Long.valueOf(userId));
-//    }
-
-//    @PutMapping("/screenshot/{username}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void saveScreenshots(@RequestBody ScreenshotPutDTO screenshotPutDTO, @PathVariable String username) {
-//        Screenshot submittedShot = DTOMapper.INSTANCE.convertScreenshotPutDTOtoEntity(screenshotPutDTO);
-//        gameService.saveScreenshot(submittedShot, username);
-//    }
 
     @PutMapping("/screenshot/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
