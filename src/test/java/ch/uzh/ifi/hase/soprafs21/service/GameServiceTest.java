@@ -11,6 +11,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.*;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -41,6 +43,7 @@ public class GameServiceTest {
     @Spy
     private final GamePlay testGameplay = new GamePlay();
 
+    @Spy
     private final LobbyService testLobbyService = new LobbyService(lobbyRepository,userRepository);
 
     Screenshot testScreenshot = new Screenshot();
@@ -128,13 +131,15 @@ public class GameServiceTest {
 
         Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(null);
         assertThrows(ResponseStatusException.class, () -> gameService.getCorrespondingToUser(1L));
+        Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture.getPictureLink());
 
         Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(null);
         assertThrows(ResponseStatusException.class, ()-> gameService.getCorrespondingToUser(1L));
+        Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
 
         Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(null);
         assertThrows(ResponseStatusException.class, () -> gameService.getCorrespondingToUser(2L) );
-
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
 
     }
 
@@ -219,6 +224,10 @@ public class GameServiceTest {
         testUserSet.add(testUser);
         testLobby.setUsersList(testUserSet);
         gameService.removeUserFromLobby("test",1L);
+
+        testUserSet.remove(testUser);
+        testLobby.setUsersList(testUserSet);
+
         assertEquals(0,lobbyRepository.findByLobbyId("test").getUsersList().size());
         Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(null);
         assertThrows(ResponseStatusException.class,()-> gameService.removeUserFromLobby("test",2L));

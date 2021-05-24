@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-
+// Please do not delete the greyed out Methods, they are necessary although its not visible
 public class GamePlayGetDTO {
 
     private int rounds;
@@ -17,12 +17,12 @@ public class GamePlayGetDTO {
         this.rounds = rounds;
     }
 
-    public int getAllUsersFinishedRound() {
-        return allUsersFinishedRound;
-    }
-
     public void setAllUsersFinishedRound(int allUsersFinishedRound) {
         this.allUsersFinishedRound = allUsersFinishedRound;
+    }
+
+    public int getAllUsersFinishedRound() {
+        return allUsersFinishedRound;
     }
 
     public int getNumberOfPlayers() {
