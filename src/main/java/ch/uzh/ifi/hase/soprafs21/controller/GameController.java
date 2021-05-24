@@ -161,17 +161,25 @@ public class GameController {
         gameService.resetCounterForRoundHandling(lobbyId);
     }
 
+    /**
+     * is used to have the user exit form a lobby if he leaves the game.
+     * @param lobbyId
+     * @param userId
+     */
     @DeleteMapping("/players/{lobbyId}/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void exitGame(@PathVariable String lobbyId,@PathVariable Long userId){
-
+    public void exitGame(@PathVariable String lobbyId,@PathVariable String userId){
+        gameService.removeUserFromLobby(lobbyId, Long.parseLong(userId));
     }
-//
-//    @GetMapping(mainGame)
-//    @ResponseStatus(HttpStatus.OK)
-//    @ResponseBody
-//    public void playAgain(){
-//        // TODO
-//    }
+
+    /**
+     * is used to remove game and lobby for all after a user left the game
+     * @param lobbyId
+     */
+    @DeleteMapping("/games/{lobbyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGameAndLobby(@PathVariable String lobbyId){
+        gameService.removeGameAndLobby(lobbyId);
+    }
 }

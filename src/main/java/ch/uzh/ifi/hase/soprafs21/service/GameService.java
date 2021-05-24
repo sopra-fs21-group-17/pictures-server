@@ -99,6 +99,7 @@ public class GameService {
             userRepository.flush();
         }
 
+
         return usersList;
     }
 
@@ -162,16 +163,22 @@ public class GameService {
         checkLobbyExists(lobbyId);
         Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
         User userForRemoval = userRepository.findByid(userId);
-        if(userForRemoval != null) {
-            Set<User> currentUsers = currentLobby.getUsersList();
-            currentUsers.remove(userForRemoval);
-            currentLobby.setUsersList(currentUsers);
-            lobbyRepository.save(currentLobby);
-        } else{
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User for removal could not be found");
-        }
+        GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
+        new LobbyService(lobbyRepository,userRepository).removeUserFromLobby(userForRemoval.getUsername(),lobbyId);
+        currentGame.setNumberOfPlayers(-1);
+        gameSessionRepository.save(currentGame);
+        gameSessionRepository.flush();
     }
 
+    public void removeGameAndLobby(String lobbyId) {
+        checkLobbyExists(lobbyId);
+        GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
+        Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
+        if ((currentGame != null) || (currentLobby != null)) {
+            gameSessionRepository.delete(currentGame);
+            lobbyRepository.delete(currentLobby);
+        }
+    }
 //     * used to get the playing users from the Lobby
 //     *
 //     * @param userNames

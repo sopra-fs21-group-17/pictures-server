@@ -270,4 +270,12 @@ public class GameControllerTest {
         mockMvc.perform(deleteRequest).andExpect(status().isNoContent());
     }
 
+    @Test
+    public void testRemoveGameAndLobby() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+        MockHttpServletRequestBuilder deleteRequest = delete("/games/"+testLobby.getLobbyId());
+        mockMvc.perform(deleteRequest).andExpect(status().isNoContent());
+    }
+
 }

@@ -224,6 +224,8 @@ public class GameServiceTest {
         assertThrows(ResponseStatusException.class,()-> gameService.removeUserFromLobby("test",2L));
     }
 
+
+
 //    @Test
 //    public void testHandleGuesses()
 //    {

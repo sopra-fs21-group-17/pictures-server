@@ -23,7 +23,8 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// ATTENTION: Three testcases had to be commented out otherwise the testsuite gradle cannot run them in a group, if you run them individually then it is possible
+// ATTENTION: Four testcases had to be commented out otherwise the testsuite gradle cannot run them in a group they start hanging, if you run them individually then it is possible and they pass
+
 
 @WebAppConfiguration
 @Transactional
@@ -248,6 +249,22 @@ public class GameServiceIntegrationTest {
         assertEquals(testUsersAfterInit,testUsersAfterInit2);
 
     }
+
+
+
+//    @Test
+//    public void testRemoveGameAndLobby(){
+//        Lobby testLobby2 = new Lobby();
+//        testLobby2.setLobbyId("test3");
+//        lobbyRepository.save(testLobby2);
+//        lobbyRepository.flush();
+//        gameService.initGame("test3");
+//
+//        gameService.removeGameAndLobby("test3");
+//        assertNull(gameSessionRepository.findByCorrespondingLobbyID("test3"));
+//        assertNull(lobbyRepository.findByLobbyId("test3"));
+//
+//    }
 //    @Test
 //    public void testInitGameForMultipleLobbies(){
 //        //init lobbies
