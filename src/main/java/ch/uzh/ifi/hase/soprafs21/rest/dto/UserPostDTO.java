@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs21.rest.dto;
 public class UserPostDTO {
 
     private Long id;
-    private String birthdate;
     private String username;
     private int assignedCoordinates;
     private String assignedSet;
@@ -20,10 +19,6 @@ public class UserPostDTO {
     public void setUsername(String username) {
         this.username = username;
     }
-
-    public String getBirthdate() { return birthdate; }
-
-    public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
 
     public int getAssignedCoordinates() {
         return assignedCoordinates;

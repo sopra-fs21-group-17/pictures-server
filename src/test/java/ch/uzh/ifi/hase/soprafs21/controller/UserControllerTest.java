@@ -103,7 +103,6 @@ public class UserControllerTest {
         user.setId(1L);
         user.setUsername("testUsername");
         user.setToken("1");
-        user.setBirthdate("01.01.2000");
         user.setPassword("testPassword");
 
 
@@ -111,7 +110,6 @@ public class UserControllerTest {
 
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setUsername("testUsername");
-        userPostDTO.setBirthdate("01.01.2000");
         user.setPassword("testPassword");
 
         given(userService.createUser(Mockito.any())).willReturn(user);
@@ -127,8 +125,7 @@ public class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
-                .andExpect(jsonPath("$.password", is(user.getPassword())))
-                .andExpect(jsonPath("$.birthdate", is(user.getBirthdate())));
+                .andExpect(jsonPath("$.password", is(user.getPassword())));
 
 
     }
@@ -139,7 +136,6 @@ public class UserControllerTest {
         user.setId(1L);
         user.setUsername("firstname@lastname");
         user.setPassword("Firstname Lastname");
-        user.setBirthdate("01.01.2000");
         user.setToken("1");
         user.setIsReady(false);
 
@@ -172,7 +168,7 @@ public class UserControllerTest {
         user.setUsername("firstname@lastname");
         user.setPassword("Firstname Lastname");
         user.setToken("1");
-        user.setBirthdate("01.01.2000");
+
 
 
         // this mocks the UserService -> we define above what the userService should return when getUserByUserID() is called
@@ -186,8 +182,8 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
-                .andExpect(jsonPath("$.password", is(user.getPassword())))
-                .andExpect(jsonPath("$.birthdate", is(user.getBirthdate())));
+                .andExpect(jsonPath("$.password", is(user.getPassword())));
+
 
     }
     @Test
@@ -201,7 +197,6 @@ public class UserControllerTest {
         user.setId(1l);
         user.setUsername("firstname@lastname");
         user.setPassword("Firstname Lastname");
-        user.setBirthdate("01.01.2000");
         user.setToken("1");
         user.setIsReady(false);
 
@@ -218,8 +213,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
                 .andExpect(jsonPath("$.password", is(user.getPassword())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
-                .andExpect(jsonPath("$.isReady", is(user.getIsReady())))
-                .andExpect(jsonPath("$.birthdate", is(user.getBirthdate())));
+                .andExpect(jsonPath("$.isReady", is(user.getIsReady())));
     }
 
     /**

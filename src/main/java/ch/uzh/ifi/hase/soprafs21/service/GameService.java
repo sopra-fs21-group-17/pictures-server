@@ -164,10 +164,21 @@ public class GameService {
         Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
         User userForRemoval = userRepository.findByid(userId);
         GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
-        new LobbyService(lobbyRepository,userRepository).removeUserFromLobby(userForRemoval.getUsername(),lobbyId);
-        currentGame.setNumberOfPlayers(-1);
-        gameSessionRepository.save(currentGame);
-        gameSessionRepository.flush();
+        if(userForRemoval != null) {
+            new LobbyService(lobbyRepository, userRepository).removeUserFromLobby(userForRemoval.getUsername(), lobbyId);
+
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User for removal does not exist");
+        }
+        //only remove something if there is a GamePlay entity --> in FE it is possible that the method is called from the lobby where
+        //there is of course still no initailized entity.
+        if(currentGame != null){
+            currentGame.setNumberOfPlayers(-1);
+            gameSessionRepository.save(currentGame);
+            gameSessionRepository.flush();
+        }
+
+
     }
 
     public void removeGameAndLobby(String lobbyId) {
