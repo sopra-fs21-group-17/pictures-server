@@ -91,6 +91,7 @@ public class LobbyService {
         lobbyRepository.flush();
     }
 
+    //removes the user from the corresponding lobby
     public void removeUserFromLobby(String username, String lobbyId){
         User userToRemove = userRepository.findByUsername(username);
         //lobbyRepository.findByLobbyId(lobbyId).getUsersList().remove(userToRemove);

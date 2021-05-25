@@ -38,9 +38,6 @@ public class User implements Serializable {
     //@Column // for testing
     private String password;
 
-    @Column
-    private String birthdate;
-
     //@Column(nullable = false, unique = true)
     @Column // for testing
     private String token;
@@ -119,10 +116,6 @@ public class User implements Serializable {
     }
 
     public void setPassword(String password) { this.password = password; }
-
-    public String getBirthdate() { return birthdate; }
-
-    public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
 
     public String getToken() { return token; }
 

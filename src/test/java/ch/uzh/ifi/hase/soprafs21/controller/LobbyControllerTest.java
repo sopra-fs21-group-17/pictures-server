@@ -72,7 +72,6 @@ class LobbyControllerTest {
         user.setUsername("Username");
         user.setPassword("Password");
         user.setToken("efg");
-        user.setBirthdate("01.01.2000");
         user.setId(1L);
         user.setLobbyId("AbCd");
         user.setIsReady(false);
@@ -105,7 +104,6 @@ class LobbyControllerTest {
 //        user.setName("Username");
 //        user.setPassword("Password");
 //        user.setToken("efg");
-//        user.setBirthdate("01.01.2000");
 //        user.setId(1L);
 //        user.setLobbyId("AbCd");
 //        user.setIsReady(false);
@@ -181,7 +179,6 @@ class LobbyControllerTest {
         user.setUsername("Username");
         user.setPassword("Password");
         user.setToken("efg");
-        user.setBirthdate("01.01.2000");
         user.setId(1L);
         user.setLobbyId("AbCd");
         user.setIsReady(false);

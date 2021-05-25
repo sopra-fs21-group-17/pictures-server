@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.slf4j.Logger;
@@ -11,14 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,8 +86,7 @@ public class UserService {
         newUser.setToken(UUID.randomUUID().toString());
 
         checkIfUserExists(newUser);
-        String birthdate = changeDateFormat(newUser.getBirthdate());
-        newUser.setBirthdate(birthdate);
+
         newUser.setIsReady(false);
 
         // saves the given entity but data is only persisted in the database once flush() is called
@@ -118,19 +111,6 @@ public class UserService {
 
     }
 
-    /**changes the date format of the input
-     *
-     * @param date
-     * @return formatted date
-     * @throws ParseException
-     */
-    public String changeDateFormat(String date) throws ParseException {
-
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat endFormat = new SimpleDateFormat("dd.MM.yyyy");
-        Date stringToDate = format.parse(date);
-        return endFormat.format(stringToDate);
-    }
 
     /**
      * This is a helper method that will check the uniqueness criteria of the username and the name

@@ -83,11 +83,14 @@ public class BuildRoomService {
 
         buildRoomRepository.flush();
     }
+
+    //deletes the room from the repository
     public void resetRoom(String roomId){
         buildRoomRepository.deleteById(roomId);
         buildRoomRepository.flush();
     }
 
+    //gets the searched BuildRoom by the roomId
     public BuildRoom getBuildRoom(String roomId){
 
         BuildRoom buildRoom = buildRoomRepository.findByRoomId(roomId);

@@ -23,7 +23,6 @@ public interface DTOMapper {
     // USER DTOs //
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
-    @Mapping(source = "birthdate", target = "birthdate")
     @Mapping(source = "id", target = "id")
     @Mapping(source = "guesses", target = "guesses")
     @Mapping(source = "assignedCoordinates", target = "assignedCoordinates")
@@ -33,7 +32,6 @@ public interface DTOMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
-    @Mapping(source = "birthdate", target = "birthdate")
     @Mapping(source = "model", target = "model")
     @Mapping(source = "totalScore", target = "totalScore")
     @Mapping(source = "isReady", target = "isReady")
