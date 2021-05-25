@@ -11,6 +11,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.*;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -41,6 +43,7 @@ public class GameServiceTest {
     @Spy
     private final GamePlay testGameplay = new GamePlay();
 
+    @Spy
     private final LobbyService testLobbyService = new LobbyService(lobbyRepository,userRepository);
 
     Screenshot testScreenshot = new Screenshot();
@@ -81,16 +84,9 @@ public class GameServiceTest {
      * tests if selected pictures are saved to the Gameplay entity
      */
     @Test
-
     public void testSelectPictures(){
 
         assertThrows(ResponseStatusException.class,() -> gameService.getListOfPictures("test"));
-//        String[] testPictures = new String[16];
-//        for (int i = 0; i < 16; i++) {
-//
-//           testPictures[i] = "testURL";
-//        }
-//        Mockito.when(testGameplay.getSelectedPictures()).thenReturn(testPictures);
         gameService.selectPictures("test");
         Mockito.verify(picturesRepository,Mockito.atLeast(16)).findByid(Mockito.any());
         assertNotNull(gameService.getListOfPictures("test"));
@@ -100,8 +96,9 @@ public class GameServiceTest {
      * tests if list of pictures is returned from the Gameplay entity
      */
     public void testGetSelectedPictures(){
+        Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
         gameService.selectPictures("test");
-       Picture[] selected =  gameService.getListOfPictures("test");
+        Picture[] selected =  gameService.getListOfPictures("test");
         assertEquals(selected.length,16);
     }
 
@@ -118,6 +115,31 @@ public class GameServiceTest {
 
 
         assertEquals(picture.getPictureLink(),mockPicture.getPictureLink());
+
+    }
+
+
+    /**
+     * tests if the exceptions are thrown correctly
+     * included the test for private method checkLobbyExists here;
+     */
+    @Test
+    public void testGetCorrespondingToUserThrowsExceptions(){
+
+
+        gameService.initGame(testLobby.getLobbyId());
+
+        Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(null);
+        assertThrows(ResponseStatusException.class, () -> gameService.getCorrespondingToUser(1L));
+        Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture.getPictureLink());
+
+        Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(null);
+        assertThrows(ResponseStatusException.class, ()-> gameService.getCorrespondingToUser(1L));
+        Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
+
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(null);
+        assertThrows(ResponseStatusException.class, () -> gameService.getCorrespondingToUser(2L) );
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
 
     }
 
@@ -169,6 +191,49 @@ public class GameServiceTest {
 
 
     }
+
+    @Test
+    public void testGetGamePlay(){
+        assertEquals(gameService.getGamePlay("test"),testGameplay);
+        Mockito.when(gameSessionRepository.findByCorrespondingLobbyID("test2")).thenReturn(null);
+        assertThrows(ResponseStatusException.class,()-> gameService.getGamePlay("test2"));
+
+    }
+
+    @Test
+    public void testPrepareNewRound(){
+        testGameplay.setNumberOfPlayers(3);
+        gameService.prepareNewRound("test");
+        assertEquals(1,testGameplay.getAllUsersFinishedRound());
+        assertNull(testGameplay.getSelectedPictures());
+        gameService.prepareNewRound("test");
+        gameService.prepareNewRound("test");
+        assertEquals(1,testGameplay.getRoundsFinished());
+    }
+
+    @Test
+    public void testResetRoundHandle(){
+        testGameplay.setAllUsersFinishedRound(5);
+        gameService.resetCounterForRoundHandling("test");
+        assertEquals(0,testGameplay.getAllUsersFinishedRound());
+    }
+
+    @Test
+    public void testRemoveUserFromLobby(){
+        Set<User> testUserSet = new HashSet<>();
+        testUserSet.add(testUser);
+        testLobby.setUsersList(testUserSet);
+        gameService.removeUserFromLobby("test",1L);
+
+        testUserSet.remove(testUser);
+        testLobby.setUsersList(testUserSet);
+
+        assertEquals(0,lobbyRepository.findByLobbyId("test").getUsersList().size());
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(null);
+        assertThrows(ResponseStatusException.class,()-> gameService.removeUserFromLobby("test",2L));
+    }
+
+
 
 //    @Test
 //    public void testHandleGuesses()

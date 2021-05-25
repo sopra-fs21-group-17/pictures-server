@@ -111,6 +111,17 @@ public class UserService {
 
     }
 
+    public void doneGuessingTrue(String username){
+        User foundByName = userRepository.findByUsername(username);
+
+        if(foundByName != null) {
+            foundByName.setDoneGuessing(true);
+            userRepository.flush();
+        }
+        else{ System.out.println("Sorry, username not found!"); }
+
+    }
+
 
     /**
      * This is a helper method that will check the uniqueness criteria of the username and the name

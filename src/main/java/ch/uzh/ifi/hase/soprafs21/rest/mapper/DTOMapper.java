@@ -2,10 +2,11 @@ package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 
 import ch.uzh.ifi.hase.soprafs21.entity.*;
-import ch.uzh.ifi.hase.soprafs21.game.Guesses;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
+
+import javax.persistence.MapsId;
 
 /**
  * DTOMapper
@@ -34,7 +35,7 @@ public interface DTOMapper {
     @Mapping(source = "password", target = "password")
     @Mapping(source = "model", target = "model")
     @Mapping(source = "totalScore", target = "totalScore")
-    @Mapping(source = "isReady", target = "isReady")
+    @Mapping(source = "isReady", target = "isReady") 
     //@Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
@@ -100,6 +101,8 @@ public interface DTOMapper {
     ScreenshotGetDTO convertEntityToScreenshotGetDTO(Screenshot screenshot);
 
     @Mapping(source = "roundsFinished", target = "rounds")
+    @Mapping(source = "allUsersFinishedRound", target="allUsersFinishedRound")
+    @Mapping(source = "numberOfPlayers", target = "numberOfPlayers")
     GamePlayGetDTO convertEntityToGamePlayGetDTO(GamePlay gamePlay);
 
 //@Mapping(source = "pictureLink", target = "pictureLink")

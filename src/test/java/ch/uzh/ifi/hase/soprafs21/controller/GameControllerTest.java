@@ -1,9 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.entity.GamePlay;
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.Picture;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.ScreenshotPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
@@ -25,13 +23,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.*;
 
 import static org.mockito.BDDMockito.given;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+//TODO Write Testcase for submitGuesses
+//TODO Wirte Testcase for returnCorrectedGuesses
 
 @WebMvcTest(GameController.class)
 public class GameControllerTest {
@@ -135,6 +137,110 @@ public class GameControllerTest {
 
    }
 
+   @Test
+   public void testSetupNextRound()  {
+       Lobby lobby = new Lobby();
+       lobby.setLobbyId("test");
+        MockHttpServletRequestBuilder putRequest = put("/board/"+lobby.getLobbyId());
+       try {
+           mockMvc.perform(putRequest).andExpect(status().isNoContent());
+       } catch (Exception e){
+           System.out.println("Cannot use mockMvc.perform for put request");
+       }
+   }
+
+    @Test
+    public void testSaveScreenShot() throws Exception {
+        User testUser = new User();
+        testUser.setId(((long) 1));
+        testUser.setUsername("Test"+1);
+        testUser.setAssignedCoordinates(1);
+
+        ScreenshotPutDTO screenshotPutDTO = new ScreenshotPutDTO();
+        screenshotPutDTO.setUserID(testUser.getId());
+        screenshotPutDTO.setURL("TestURL");
+
+        MockHttpServletRequestBuilder putRequest = put("/screenshot/"+testUser.getUsername()).content(asJsonString(screenshotPutDTO)).contentType(MediaType.APPLICATION_JSON);
+
+            mockMvc.perform(putRequest).andExpect(status().isNoContent());
+    }
+
+    @Test
+   public void testGetScreenshots() throws Exception {
+       Lobby testLobby = new Lobby();
+       testLobby.setLobbyId("test");
+
+       User testUser = new User();
+       testUser.setId(((long) 1));
+       testUser.setUsername("Test"+1);
+       testUser.setAssignedCoordinates(1);
+       testUser.setLobbyId(testLobby.getLobbyId());
+
+       Screenshot testShot = new Screenshot();
+       testShot.setUserID(testUser.getId());
+       testShot.setURL("testURL");
+
+       ArrayList<ArrayList<String>> userScreenshots = new ArrayList<>();
+       ArrayList<String> screenshots = new ArrayList<>();
+       screenshots.add(testShot.getURL());
+       userScreenshots.add(screenshots);
+
+       given(gameService.getUsersScreenshots("test")).willReturn(userScreenshots);
+
+       MockHttpServletRequestBuilder getRequest = get("/screenshots/"+testLobby.getLobbyId());
+
+       mockMvc.perform(getRequest).andExpect(status().isOk())
+               .andExpect(jsonPath("$.[0][0]",is(userScreenshots.get(0).get(0))));
+
+   }
+
+   @Test
+   public void testShowScreenshots() throws Exception{
+       Lobby testLobby = new Lobby();
+       testLobby.setLobbyId("test");
+
+       User testUser = new User();
+       testUser.setId(((long) 1));
+       testUser.setUsername("Test"+1);
+       testUser.setAssignedCoordinates(1);
+       testUser.setLobbyId(testLobby.getLobbyId());
+
+       Screenshot testShot = new Screenshot();
+       testShot.setUserID(testUser.getId());
+       testShot.setURL("testURL");
+
+       ArrayList<Screenshot> screenshots = new ArrayList<>();
+       screenshots.add(testShot);
+
+
+       given(gameService.getScreenshots("test")).willReturn(screenshots);
+
+       MockHttpServletRequestBuilder getRequest = get("/screenshot/"+testLobby.getLobbyId());
+
+       mockMvc.perform(getRequest).andExpect(status().isOk())
+               .andExpect(jsonPath("$[0].userID",is(Math.toIntExact(screenshots.get(0).getUserID()))))
+               .andExpect(jsonPath("$[0].url",is(screenshots.get(0).getURL())));
+    }
+
+    @Test
+    public void testGetCurrentRound() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+
+        GamePlay testGameplay = new GamePlay();
+        testGameplay.setAllUsersFinishedRound(4);
+        testGameplay.setRoundsFinished(4);
+        testGameplay.setNumberOfPlayers(5);
+
+        given(gameService.getGamePlay("test")).willReturn(testGameplay);
+
+        MockHttpServletRequestBuilder getRequest = get("/rounds/"+testLobby.getLobbyId());
+
+        mockMvc.perform(getRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$.rounds",is(testGameplay.getRoundsFinished())))
+                .andExpect(jsonPath("$.allUsersFinishedRound",is(testGameplay.getAllUsersFinishedRound())))
+                .andExpect(jsonPath("$.numberOfPlayers",is(testGameplay.getNumberOfPlayers())));
+    }
 
 
     private String asJsonString(final Object object) {
@@ -144,6 +250,32 @@ public class GameControllerTest {
         catch (JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
         }
+    }
+
+    @Test
+    public void testResetRoundHandle() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+        MockHttpServletRequestBuilder putRequest = put("/rounds/"+testLobby.getLobbyId());
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testRemoveUserFromLobby() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+        User testUser = new User();
+        testUser.setId(1L);
+        MockHttpServletRequestBuilder deleteRequest = delete("/players/"+testLobby.getLobbyId()+"/"+testUser.getId());
+        mockMvc.perform(deleteRequest).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testRemoveGameAndLobby() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+        MockHttpServletRequestBuilder deleteRequest = delete("/games/"+testLobby.getLobbyId());
+        mockMvc.perform(deleteRequest).andExpect(status().isNoContent());
     }
 
 }

@@ -8,6 +8,7 @@ public class UserPostDTO {
     private String assignedSet;
     private String password;
     private String guesses;
+    private Boolean doneGuessing;
     //private String name; // wieder hinzugefügt da in Tests gebraucht
 
 
@@ -60,5 +61,13 @@ public class UserPostDTO {
     }
 
     public void setName(String test_user) {
+    }
+
+    public Boolean getDoneGuessing() {
+        return doneGuessing;
+    }
+
+    public void setDoneGuessing(Boolean doneGuessing) {
+        this.doneGuessing = doneGuessing;
     }
 }

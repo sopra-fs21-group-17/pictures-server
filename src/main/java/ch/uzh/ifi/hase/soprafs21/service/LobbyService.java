@@ -25,20 +25,20 @@ public class LobbyService {
     private final LobbyRepository lobbyRepository;
 
     @Autowired
-    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("userRepository") UserRepository userRepository){
+    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("userRepository") UserRepository userRepository) {
         this.lobbyRepository = lobbyRepository;
         this.userRepository = userRepository;
     }
 
     //returns the list of Users in the Lobby
     public List<User> getUsersInLobby(String lobbyId) {
-        List<User> usersInLobby= new ArrayList<>();
+        List<User> usersInLobby = new ArrayList<>();
         List<User> allUsers = this.userRepository.findAll();
-       // System.out.println(allUsers);
+        // System.out.println(allUsers);
 
-        for(User user: allUsers){
-            if(user.getLobbyId() != null){
-                if (user.getLobbyId().equals(lobbyId)){
+        for (User user : allUsers) {
+            if (user.getLobbyId() != null) {
+                if (user.getLobbyId().equals(lobbyId)) {
                     usersInLobby.add(user);
                 }
             }
@@ -48,7 +48,7 @@ public class LobbyService {
     }
 
     //creates a new Lobby
-    public Lobby createLobby(Lobby newLobby)  {
+    public Lobby createLobby(Lobby newLobby) {
 
         checkIfLobbyExists(newLobby);
         newLobby.setCreationTime(System.nanoTime());
@@ -62,15 +62,15 @@ public class LobbyService {
     }
 
     //calculates and sets the timeDifference in order to after update the count
-    public void updateCount(String lobbyId){
+    public void updateCount(String lobbyId) {
         Lobby foundByLobbyId = lobbyRepository.findByLobbyId(lobbyId);
 
-        if(foundByLobbyId != null){
+        if (foundByLobbyId != null) {
             long currentTime = System.nanoTime();
 
             long timeDifference = foundByLobbyId.getCreationTime() - currentTime;
 
-            foundByLobbyId.setTimeDifference((double) timeDifference /1_000_000_000);
+            foundByLobbyId.setTimeDifference((double) timeDifference / 1_000_000_000);
         }
 
         lobbyRepository.flush();
@@ -78,11 +78,11 @@ public class LobbyService {
     }
 
     //adds  User to the Lobby
-    public void addUserToLobby(User user, String lobbyId){
+    public void addUserToLobby(User user, String lobbyId) {
         String username = user.getUsername();
 
         User userToAdd = userRepository.findByUsername(username);
-        if(userToAdd != null){
+        if (userToAdd != null) {
             userToAdd.setLobbyId(lobbyId);
             userToAdd.setIsReady(false);
         }
@@ -93,6 +93,7 @@ public class LobbyService {
 
     //removes the user from the corresponding lobby
     public void removeUserFromLobby(String username, String lobbyId){
+
         User userToRemove = userRepository.findByUsername(username);
         //lobbyRepository.findByLobbyId(lobbyId).getUsersList().remove(userToRemove);
         userToRemove.setLobbyId(null);
@@ -102,24 +103,26 @@ public class LobbyService {
     }
 
     //checks if the User are ready and gets the Players count in the lobby
-    public Lobby checkReadyAndGetCount(String lobbyId){
+    public Lobby checkReadyAndGetCount(String lobbyId) {
         int countReady = 0;
         int countUsers = 0;
 
         Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
 
-        if(currentLobby != null){List<User> usersInLobby = getUsersInLobby(lobbyId);
+        if (currentLobby != null) {
+            List<User> usersInLobby = getUsersInLobby(lobbyId);
 
-            for(User user : usersInLobby){
+            for (User user : usersInLobby) {
                 countUsers += 1;
-                if (user.getIsReady()){
+                if (user.getIsReady()) {
                     countReady += 1;
                 }
             }
             currentLobby.setPlayersCount(countUsers);
-            if (countReady >= 3 && countReady == countUsers){
+            if (countReady >= 3 && countReady == countUsers) {
                 currentLobby.setLobbyReady(true);
-            }else currentLobby.setLobbyReady(countReady == 5);
+            }
+            else currentLobby.setLobbyReady(countReady == 5);
         }
 
         lobbyRepository.flush();
@@ -140,14 +143,15 @@ public class LobbyService {
     }
 
     //checks if the lobbyId exists and is valid
-    public void checkLobbyId(String lobbyId){
+    public void checkLobbyId(String lobbyId) {
         Lobby lobbyById = lobbyRepository.findByLobbyId(lobbyId);
 
-        if(lobbyById != null){
-            if(!lobbyById.getLobbyId().equals(lobbyId)){
+        if (lobbyById != null) {
+            if (!lobbyById.getLobbyId().equals(lobbyId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game Code!");
             }
-        }else{
+        }
+        else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Game Code1!");
         }
     }
@@ -192,36 +196,35 @@ public class LobbyService {
 
 
     public Lobby getTestLobby(String lobbyId) {
-        Lobby createdLobby;
-        // für testzwecke lobby erzeugen
-        if(lobbyRepository.findByLobbyId(lobbyId) == null) {
-            LobbyPostDTO testInput = new LobbyPostDTO();
-            testInput.setLobbyId(lobbyId);
-            Lobby lobbyInput = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(testInput);
-            createdLobby = createLobby(lobbyInput);
-            lobbyRepository.save(createdLobby);
-            lobbyRepository.flush();
-
-            // Users manuell erzeugen für Testzwecke
-            String[] userNames = {"JULIA", "DOMINIK", "OLIVER", "SHINO", "VIKTOR"};
-            Set<User> testUsersList =   new HashSet<>();
-            int NR_OF_PLAYERS = 4;
-            for(int i = 0; i < NR_OF_PLAYERS; i++){
-                User user = new User();
-                user.setUsername(userNames[i]);
-                user.setAssignedCoordinates(i);
-                user.setPoints(0); // init all points to 0
-                //user.setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
-
-                userRepository.save(user);
-                userRepository.flush();
-
-                testUsersList.add(user);
-            }
-            createdLobby.setUsersList(testUsersList);
-            lobbyRepository.flush();
-        }
-
+//        Lobby createdLobby;
+//        // für testzwecke lobby erzeugen
+//        if(lobbyRepository.findByLobbyId(lobbyId) == null) {
+//            LobbyPostDTO testInput = new LobbyPostDTO();
+//            testInput.setLobbyId(lobbyId);
+//            Lobby lobbyInput = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(testInput);
+//            createdLobby = createLobby(lobbyInput);
+//            lobbyRepository.save(createdLobby);
+//            lobbyRepository.flush();
+//
+//            // Users manuell erzeugen für Testzwecke
+//            String[] userNames = {"JULIA", "DOMINIK", "OLIVER", "SHINO", "VIKTOR"};
+//            Set<User> testUsersList =   new HashSet<>();
+//            int NR_OF_PLAYERS = 4;
+//            for(int i = 0; i < NR_OF_PLAYERS; i++){
+//                User user = new User();
+//                user.setUsername(userNames[i]);
+//                user.setAssignedCoordinates(i);
+//                user.setPoints(0); // init all points to 0
+//                //user.setScreenshotURL("https://i.insider.com/5484d9d1eab8ea3017b17e29?width=600&format=jpeg&auto=webp");
+//
+//                userRepository.save(user);
+//                userRepository.flush();
+//
+//                testUsersList.add(user);
+//            }
+//            createdLobby.setUsersList(testUsersList);
+//            lobbyRepository.flush();
+//        }
 
 
         return lobbyRepository.findByLobbyId(lobbyId);
