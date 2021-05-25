@@ -16,14 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class BuildRoomService {
 
 
-    private final UserRepository userRepository;
-    private final LobbyRepository lobbyRepository;
+
     private final BuildRoomRepository buildRoomRepository;
 
     @Autowired
     public BuildRoomService(@Qualifier("buildRoomRepository") BuildRoomRepository buildRoomRepository,@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("userRepository") UserRepository userRepository){
-        this.lobbyRepository = lobbyRepository;
-        this.userRepository = userRepository;
+
         this.buildRoomRepository = buildRoomRepository;
     }
 
