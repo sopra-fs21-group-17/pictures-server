@@ -191,7 +191,7 @@ visible for other players if the user chooses so.
  
 
 ## 🖋️ Authors and acknowledgement
-@dkajin, @jukosta, @lakicv, @olstra, @xinox2000
+@dkajin, @jukosta, @lakicv, @olstra, @xinox2000  
 *We want to thank community of photographers on Unsplash for their wonderful work. 
 As we fetch the photos at random, the single contributors are hard to identify. We highly encourage 
 you to visit [Unsplash](https://unsplash.com/) as our form of appreciation.*
