@@ -129,7 +129,7 @@ The most crucial part of this test is seen when mockMvc.perform is called: most 
 #### Unit Testing
 We make unit tests to see if our methods behave in their core logic how they are expected to, many problems become visible 
 once you write a testcase for any method. The central part are the assertions. Here is an example for our unit tests:
-
+```java
      @Test
         public void create_BuildRoom_validInputs_success() {
             // when -> any object is being save in the buildRoomRepository -> return the dummy testBuildRoom
@@ -145,12 +145,13 @@ once you write a testcase for any method. The central part are the assertions. H
             assertEquals(testBuildRoom.getTimeDifferenceGuessing(), createdBuildRoom.getTimeDifferenceGuessing());
     
         }
-        
+ ```       
 #### Integration Testing
 Integration tests ensure that our methods behave as expected when they collaborate with other components depending on successful situations or failures of the system.
 Those tests are needed if have methods that heavily rely on for example Repositories. Here is an example for a possible 
 Integration test:
 
+```java
         @Test
         public void createLobby_validInputs_success() {
             // given
@@ -169,7 +170,7 @@ Integration test:
             assertEquals(testLobby.getLobbyId(), createdLobby.getLobbyId());
     
         }
-        
+```      
 More extensive examples can be found in [GameServiceIntegrationTest](test/java/ch/uzh/ifi/hase/soprafs21/service/GameServiceIntegrationTest.java)
 
 
