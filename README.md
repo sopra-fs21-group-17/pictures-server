@@ -96,7 +96,7 @@ We have controller tests for our REST-Controllers to ensure that they are behavi
 The tests also help you to see what the respective method will send as a response if there is any. 
 The most crucial part of this test is seen when mockMvc.perform is called: most checks are made here using 
 .andExpect(...). You can see this in the example below:
-
+```java
       @Test
        public void testGetScreenshots() throws Exception {
            Lobby testLobby = new Lobby();
@@ -125,7 +125,7 @@ The most crucial part of this test is seen when mockMvc.perform is called: most 
                    .andExpect(jsonPath("$.[0][0]",is(userScreenshots.get(0).get(0))));
     
        }
-
+```
 #### Unit Testing
 We make unit tests to see if our methods behave in their core logic how they are expected to, many problems become visible 
 once you write a testcase for any method. The central part are the assertions. Here is an example for our unit tests:
