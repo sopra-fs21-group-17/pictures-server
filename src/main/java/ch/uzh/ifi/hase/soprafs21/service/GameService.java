@@ -58,7 +58,7 @@ public class GameService {
      * Initializes the game:
      * - Assign random coordinates to each user
      * - Assign random sets to each user
-     * - Instanciate new GamePlayEntity
+     * - Instantiate new GamePlayEntity
      * - select Pictures for the first time
      *
      * @return the list of playing users
@@ -98,7 +98,6 @@ public class GameService {
             userRepository.save(u);
             userRepository.flush();
         }
-
 
         return usersList;
     }
@@ -178,7 +177,6 @@ public class GameService {
             gameSessionRepository.flush();
         }
 
-
     }
 
     public void removeGameAndLobby(String lobbyId) {
@@ -190,21 +188,22 @@ public class GameService {
             lobbyRepository.delete(currentLobby);
         }
     }
-//     * used to get the playing users from the Lobby
-//     *
-//     * @param userNames
-//     * @return returns a list of the playing users
-//     */
-//    public ArrayList<User> getPlayingUsers(String[] userNames) {
-//
-//        ArrayList<User> usersList = new ArrayList<>();
-//
-//        for (int i = 0; i < NR_OF_PLAYERS; i++) {
-//            usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
-//        }
-//
-//        return usersList;
-//    }
+
+     /** used to get the playing users from the Lobby
+     *
+     * @param userNames
+     * @return returns a list of the playing users
+     */
+    public ArrayList<User> getPlayingUsers(String[] userNames) {
+
+        ArrayList<User> usersList = new ArrayList<>();
+
+        for (int i = 0; i < NR_OF_PLAYERS; i++) {
+            usersList.add(userRepository.findByUsername("USER " + String.valueOf(i)));
+        }
+
+        return usersList;
+    }
 
     /**
      * Method is used to assigned a random set to every User
@@ -312,7 +311,6 @@ public class GameService {
                     }
                 }
             }
-
         }
     }
 
@@ -456,17 +454,10 @@ public class GameService {
                 User tempUsr = userRepository.findByUsername(entry.getKey());
                 // check if coordinates match
                 if (tempUsr != null) {
-                    System.out.println("--------");
-                    System.out.println("USERNAME: "+player.getUsername());
-                    System.out.println("coord: "+coordinateNames[tempUsr.getAssignedCoordinates()]+" GUESS: "+entry.getValue().toUpperCase());
                     if (coordinateNames[tempUsr.getAssignedCoordinates()].equals(entry.getValue().toUpperCase())) {
                         player.setPoints(player.getPoints() + 1);   // give player a point
                         tempUsr.setPoints(tempUsr.getPoints() + 1); // also give to other player a point
                         result += "y" + entry.getKey();
-                        System.out.println("--------");
-                        System.out.println("user: "+player.getPoints());
-                        System.out.println("other: "+tempUsr.getPoints());
-                        System.out.println("--------");
 
                         // update user repo
                         userRepository.save(player);
@@ -489,7 +480,6 @@ public class GameService {
         }
 
         User test = userRepository.findByUsername(username);
-        System.out.println("updated points?: "+test.getPoints());
 
         return result;
     }

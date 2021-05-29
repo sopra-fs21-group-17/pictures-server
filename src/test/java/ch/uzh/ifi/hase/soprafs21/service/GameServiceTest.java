@@ -29,6 +29,7 @@ public class GameServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private LobbyRepository lobbyRepository;
 
@@ -48,36 +49,49 @@ public class GameServiceTest {
 
     Screenshot testScreenshot = new Screenshot();
 
+    /** Define test help information */
+    private final ArrayList<User> testUsersList = new ArrayList<User>();
+    private final String testLobbyID = "test";
+    private final int NR_OF_PLAYERS = 3;    // at least 3 players needed to play the game
+    private final int testCoordinates = 5;  // nr from 0-15 possible, will be used for multiple tests
+    private final String[] coordinateNames = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "D1", "D2", "D3", "D4"};
+    private final String testUsername = "Test1";
+    /***/
+
     @BeforeAll
     // initializes this before every test case
     public void setup(){
         MockitoAnnotations.openMocks(this);
 
-        // given
+        // given test user
         testUser.setUsername("Test1");
         testUser.setId(1L);
+        String testGuess = "";
+        // create test guess
+        testGuess += coordinateNames[testCoordinates];
+        testGuess += testUsername;
+        testGuess += "-";
+        testUser.setGuesses(testGuess);
+        testUser.setAssignedCoordinates(testCoordinates);
 
         Mockito.when(userRepository.findByUsername("Test1")).thenReturn(testUser);
         Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
 
-
+        // given test lobby
         testLobby.setLobbyId("test");
         Mockito.when(lobbyRepository.findByLobbyId(Mockito.any())).thenReturn(testLobby);
-
 
         testGameplay.setCorrespondingLobbyID("test");
         testGameplay.setLobbyForGamePlay(testLobby);
         Mockito.when(gameSessionRepository.findByCorrespondingLobbyID(Mockito.any())).thenReturn(testGameplay);
-       // Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture.getPictureLink());
-
+        // Mockito.when(testGameplay.getPictureWithCoordinates(Mockito.anyInt())).thenReturn(mockPicture.getPictureLink());
 
         testScreenshot.setURL("ScreenShotTest");
         testScreenshot.setUserID(testUser.getId());
 
-
-            mockPicture.setPictureLink("mockURL_");
-            mockPicture.setId(1L);
-            Mockito.when(picturesRepository.findByid(Mockito.any())).thenReturn(mockPicture);
+        mockPicture.setPictureLink("mockURL_");
+        mockPicture.setId(1L);
+        Mockito.when(picturesRepository.findByid(Mockito.any())).thenReturn(mockPicture);
     }
 
     /**
@@ -91,6 +105,7 @@ public class GameServiceTest {
         Mockito.verify(picturesRepository,Mockito.atLeast(16)).findByid(Mockito.any());
         assertNotNull(gameService.getListOfPictures("test"));
     }
+
     @Test
     /**
      * tests if list of pictures is returned from the Gameplay entity
@@ -117,7 +132,6 @@ public class GameServiceTest {
         assertEquals(picture.getPictureLink(),mockPicture.getPictureLink());
 
     }
-
 
     /**
      * tests if the exceptions are thrown correctly
@@ -233,16 +247,28 @@ public class GameServiceTest {
         assertThrows(ResponseStatusException.class,()-> gameService.removeUserFromLobby("test",2L));
     }
 
+    @Test
+    public void guesses_all_correct(){
 
+        String expectedResult = "";
+        String testGuess = "";
 
-//    @Test
-//    public void testHandleGuesses()
-//    {
-//        //TODO fragen
-//        assertTrue(false);
-//    }
-//
-//
+        // manually create guessing information
+
+        // create test guess
+        testGuess += coordinateNames[testCoordinates];
+        testGuess += testUsername;
+        testGuess += "-";
+
+        // create expected result
+        expectedResult += "y";
+        expectedResult += "Test1";
+        expectedResult += "-";
+
+        //testUser.setGuesses(testGuess);
+        assertEquals(expectedResult, gameService.handleGuesses("test", testUser));
+
+    }
 
 
 
