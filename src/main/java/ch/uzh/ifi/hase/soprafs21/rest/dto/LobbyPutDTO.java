@@ -16,6 +16,8 @@ public class LobbyPutDTO {
 
     private int playersCount;
 
+    private boolean lobbyReadyBuildScreen;
+
 
     public String getLobbyId() { return lobbyId; }
 
@@ -37,4 +39,13 @@ public class LobbyPutDTO {
     public int getPlayersCount() { return playersCount; }
 
     public void setPlayersCount(int playersCount) { this.playersCount = playersCount; }
+
+    public boolean isLobbyReadyBuildScreen() {
+        return lobbyReadyBuildScreen;
+    }
+
+    public void setLobbyReadyBuildScreen(boolean lobbyReadyBuildScreen) {
+        this.lobbyReadyBuildScreen = lobbyReadyBuildScreen;
+    }
+
 }

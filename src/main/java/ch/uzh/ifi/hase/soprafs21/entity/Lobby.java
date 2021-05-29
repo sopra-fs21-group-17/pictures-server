@@ -34,6 +34,9 @@ public class Lobby  implements Serializable {
     private boolean lobbyReady;
 
     @Column
+    private boolean lobbyReadyBuildScreen;
+
+    @Column
     @ElementCollection
     private Set<User> usersList =  new HashSet<>();
 
@@ -63,6 +66,14 @@ public class Lobby  implements Serializable {
 
     public void setUsersList(Set<User> usersList) {
         this.usersList = usersList;
+    }
+
+    public boolean isLobbyReadyBuildScreen() {
+        return lobbyReadyBuildScreen;
+    }
+
+    public void setLobbyReadyBuildScreen(boolean lobbyReadyBuildScreen) {
+        this.lobbyReadyBuildScreen = lobbyReadyBuildScreen;
     }
 }
 

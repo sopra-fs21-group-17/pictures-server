@@ -72,6 +72,9 @@ public class User implements Serializable {
     @Column
     private boolean doneGuessing;
 
+    @Column
+    private boolean isReadyBuildScreen;
+
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
@@ -166,6 +169,14 @@ public class User implements Serializable {
 
     public void setDoneGuessing(boolean doneGuessing) {
         this.doneGuessing = doneGuessing;
+    }
+
+    public boolean isReadyBuildScreen() {
+        return isReadyBuildScreen;
+    }
+
+    public void setReadyBuildScreen(boolean readyBuildScreen) {
+        isReadyBuildScreen = readyBuildScreen;
     }
 }
 

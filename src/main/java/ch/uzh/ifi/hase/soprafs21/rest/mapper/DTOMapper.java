@@ -38,6 +38,7 @@ public interface DTOMapper {
     @Mapping(source = "isReady", target = "isReady")
     @Mapping(source = "assignedSet", target = "assignedSet")
     //@Mapping(source = "status", target = "status")
+    @Mapping(source ="readyBuildScreen", target = "readyBuildScreen")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "id", target = "id")
@@ -47,6 +48,7 @@ public interface DTOMapper {
     //@Mapping(source = "id", target =  "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "guesses", target = "guesses")
+    @Mapping(source = "readyBuildScreen", target = "readyBuildScreen")
     User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
 
@@ -60,6 +62,7 @@ public interface DTOMapper {
     @Mapping(source = "lobbyReady", target = "lobbyReady")
     @Mapping(source = "playersCount", target = "playersCount")
     @Mapping(source = "usersList", target = "usersList")
+    @Mapping(source = "lobbyReadyBuildScreen", target = "lobbyReadyBuildScreen")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
     @Mapping(source = "lobbyId", target = "lobbyId")
@@ -67,6 +70,7 @@ public interface DTOMapper {
     @Mapping(source = "timeDifference", target = "timeDifference")
     @Mapping(source = "lobbyReady", target = "lobbyReady")
     @Mapping(source = "playersCount", target = "playersCount")
+    @Mapping(source = "lobbyReadyBuildScreen", target = "lobbyReadyBuildScreen")
     Lobby convertLobbyPutDTOtoEntity(LobbyPutDTO lobbyPutDTO);
 
     //BuildRoom DTOs
