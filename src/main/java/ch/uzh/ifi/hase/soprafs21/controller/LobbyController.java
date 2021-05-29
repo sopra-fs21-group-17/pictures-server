@@ -91,6 +91,39 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
     }
 
+    @GetMapping("/lobbies/buildScreens/ready/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public LobbyGetDTO checkIsLobbyReadyBuildScreen(@PathVariable String lobbyId) {
+
+        //gets the current Lobby
+        Lobby lobby = lobbyService.checkReadyAndGetCountBuildScreen(lobbyId);
+
+        // convert lobby to the API representation
+
+        //returns lobby
+        return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
+    }
+
+    @PutMapping("/lobbies/buildScreens/ready/timers/{lobbyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void LobbyReadyBuildScreenTimeUp(@PathVariable String lobbyId) {
+
+        //gets the current Lobby
+         lobbyService.timeUpBuildScreen(lobbyId);
+
+    }
+    @PutMapping("/lobbies/buildScreens/ready/preparations/{lobbyId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void LobbyPrepareForBuildScreen(@PathVariable String lobbyId) {
+
+        //gets the current Lobby
+        lobbyService.startBuildScreen(lobbyId);
+
+    }
+
     // neu hinzugefügt
 //    @PostMapping("/lobbies/users/")
 //    @ResponseStatus(HttpStatus.CREATED)

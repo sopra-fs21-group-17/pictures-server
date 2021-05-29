@@ -130,6 +130,45 @@ public class LobbyService {
         return currentLobby;
     }
 
+    //checks if the User are ready and gets the Players count in the lobby
+    public Lobby checkReadyAndGetCountBuildScreen(String lobbyId) {
+        int countReady = 0;
+        int countUsers = 0;
+
+        Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
+
+        if (currentLobby != null) {
+            List<User> usersInLobby = getUsersInLobby(lobbyId);
+
+            for (User user : usersInLobby) {
+                countUsers += 1;
+                if (user.isReadyBuildScreen()) {
+                    countReady += 1;
+                }
+            }
+            currentLobby.setPlayersCount(countUsers);
+            if (countReady >= 3 && countReady == countUsers) {
+                currentLobby.setLobbyReadyBuildScreen(true);
+            }
+        }
+
+        lobbyRepository.flush();
+
+        return currentLobby;
+    }
+    public void timeUpBuildScreen(String lobbyId) {
+        Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
+        currentLobby.setLobbyReadyBuildScreen(true);
+        lobbyRepository.flush();
+
+
+    }
+    public void startBuildScreen(String lobbyId){
+        Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
+        currentLobby.setLobbyReadyBuildScreen(false);
+        lobbyRepository.flush();
+    }
+
 
     //checks if the lobby exists and is full
     private void checkIfLobbyExists(Lobby lobbyToBeCreated) {

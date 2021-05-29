@@ -9,6 +9,7 @@ public class UserPutDTO {
     private String lobbyId;
     private Long id;
     private boolean isReady;
+    private boolean isReadyBuildScreen;
 
 
     public String getUsername() {
@@ -40,6 +41,14 @@ public class UserPutDTO {
     public String getLobbyId() { return lobbyId; }
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
+
+    public boolean isReadyBuildScreen() {
+        return isReadyBuildScreen;
+    }
+
+    public void setReadyBuildScreen(boolean readyBuildScreen) {
+        isReadyBuildScreen = readyBuildScreen;
+    }
 
 
 }

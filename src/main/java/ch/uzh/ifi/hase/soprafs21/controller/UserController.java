@@ -84,6 +84,29 @@ public class UserController {
         userService.updateIsReady(username, userInput);
     }
 
+    @PutMapping("/users/buildScreens/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void updateUserBuildScreen(@RequestBody UserPutDTO userPutDTO, @PathVariable String username ) throws ParseException {
+        // convert API user to internal representation
+        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+
+        //updates the User
+        userService.updateIsReadyBuildScreen(username, userInput);
+    }
+    @PutMapping("/users/buildScreens/start/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void updateUserBeforeBuildScreen(@RequestBody UserPutDTO userPutDTO, @PathVariable String username ) throws ParseException {
+        // convert API user to internal representation
+        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+
+        //updates the User
+        userService.setReadyFalseForBuildScreen(username, userInput);
+    }
+
+
+
     @PutMapping("/users/doneGuessing/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody

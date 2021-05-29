@@ -111,6 +111,27 @@ public class UserService {
 
     }
 
+    //updates isReadyBuildScreen of the User
+    public void updateIsReadyBuildScreen(String username, User user){
+        User foundByName = userRepository.findByUsername(username);
+        checkUserLogin(foundByName);
+        //if (foundByName.isReadyBuildScreen() == false){
+        foundByName.setReadyBuildScreen(true);
+        userRepository.flush();
+        //}else{
+        //  foundByName.setReadyBuildScreen(false);
+          //  userRepository.flush();
+        //}
+
+    }
+    public void setReadyFalseForBuildScreen(String username, User user){
+        User foundByName = userRepository.findByUsername(username);
+        checkUserLogin(foundByName);
+        //if (foundByName.isReadyBuildScreen() == false){
+        foundByName.setReadyBuildScreen(false);
+        userRepository.flush();
+    }
+
     public void doneGuessingTrue(String username){
         User foundByName = userRepository.findByUsername(username);
 

@@ -10,7 +10,6 @@ import java.util.Dictionary;
 public class UserGetDTO {
 
     private Long id;
-
     private String username;
     private int assignedCoordinates;
     private String assignedSet;
@@ -22,6 +21,7 @@ public class UserGetDTO {
     private String lobbyId;
     private int points;
     private Boolean doneGuessing;
+    private boolean isReadyBuildScreen;
 
     private UserStatus status;
 
@@ -105,5 +105,13 @@ public class UserGetDTO {
 
     public void setDoneGuessing(Boolean doneGuessing) {
         this.doneGuessing = doneGuessing;
+    }
+
+    public boolean isReadyBuildScreen() {
+        return isReadyBuildScreen;
+    }
+
+    public void setReadyBuildScreen(boolean readyBuildScreen) {
+        isReadyBuildScreen = readyBuildScreen;
     }
 }

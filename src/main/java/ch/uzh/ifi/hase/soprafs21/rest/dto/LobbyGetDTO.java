@@ -18,6 +18,8 @@ public class LobbyGetDTO {
 
     private Set<User> usersList;
 
+    private boolean lobbyReadyBuildScreen;
+
     public String getLobbyId() { return lobbyId; }
 
     public void setLobbyId(String lobbyId) { this.lobbyId = lobbyId; }
@@ -44,5 +46,13 @@ public class LobbyGetDTO {
 
     public void setUsersList(Set<User> usersList) {
         this.usersList = usersList;
+    }
+
+    public boolean isLobbyReadyBuildScreen() {
+        return lobbyReadyBuildScreen;
+    }
+
+    public void setLobbyReadyBuildScreen(boolean lobbyReadyBuildScreen) {
+        this.lobbyReadyBuildScreen = lobbyReadyBuildScreen;
     }
 }
