@@ -159,6 +159,69 @@ public class UserControllerTest {
         mockMvc.perform(putRequest)
                 .andExpect(status().isNoContent());
     }
+    @Test
+    public void updateUser_validInput_validUsername_updateUserBuildScreen_userUpdated() throws Exception{
+        //given
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("firstname@lastname");
+        user.setPassword("Firstname Lastname");
+        user.setToken("1");
+        user.setIsReady(false);
+        user.setReadyBuildScreen(false);
+
+
+        UserPutDTO userInput = new UserPutDTO();
+        userInput.setUsername("username");
+
+
+
+        User convertedUser = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userInput);
+
+        // this mocks the UserService -> we define above what the userService should return when updateIsReadyBuildScreen() is called
+        doNothing().when(userService).updateIsReadyBuildScreen(user.getUsername(), convertedUser);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/users/buildScreens/"+user.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userInput));
+
+        //then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void updateUser_validInput_validUsername_updateUserBeforeBuildScreen_userUpdated() throws Exception{
+        //given
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("firstname@lastname");
+        user.setPassword("Firstname Lastname");
+        user.setToken("1");
+        user.setIsReady(false);
+        user.setReadyBuildScreen(false);
+
+
+        UserPutDTO userInput = new UserPutDTO();
+        userInput.setUsername("username");
+
+
+
+        User convertedUser = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userInput);
+
+        // this mocks the UserService -> we define above what the userService should return when updateIsReadyBuildScreen() is called
+        doNothing().when(userService).setReadyFalseForBuildScreen(user.getUsername(), convertedUser);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/users/buildScreens/start/"+user.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userInput));
+
+        //then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+    }
 
     @Test
     public void givenUser_whenFindByUserName_thenReturnUser() throws Exception{
