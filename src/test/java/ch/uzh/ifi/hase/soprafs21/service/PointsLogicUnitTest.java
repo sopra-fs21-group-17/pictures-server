@@ -92,7 +92,7 @@ public class PointsLogicUnitTest {
     @Test
     public void add_points(){
         // only 1 test user in repo, so 1 point for guessing correctly, 1 point for someone guessed my picture correctly
-        int expectedResult = 2;
+        int expectedResult = 4;
 
         // mock a correct guess
         String testGuess = "";
@@ -106,5 +106,45 @@ public class PointsLogicUnitTest {
         assertEquals(expectedResult, testUser.getPoints());
 
     }
+
+    @Test
+    public void check_initial_score_handling(){
+        ArrayList<ArrayList<String>> expectedResult = new ArrayList<>();
+
+        // mock a correct guess
+        String testGuess = "";
+        testGuess += coordinateNames[testCoordinates];
+        testGuess += testUsername;
+        testGuess += "-";
+
+        testUser.setGuesses(testGuess);
+
+        testUser.setGuesses(testGuess);
+
+        gameService.handleGuesses(testLobbyID, testUser);
+        ArrayList<ArrayList<String>> result = gameService.returnScore(testLobbyID);
+
+        assertEquals(expectedResult, result);
+
+    }
+
+    @Test
+    public void check_test_Users(){
+        ArrayList<ArrayList<String>> expectedResult = new ArrayList<>();
+
+        // mock a correct guess
+        String testGuess = "";
+        testGuess += coordinateNames[testCoordinates];
+        testGuess += testUsername;
+        testGuess += "-";
+
+        testUser.setGuesses(testGuess);
+
+        gameService.createTestUsers();
+        ArrayList<ArrayList<String>> result = gameService.returnScore(testLobbyID);
+        assertEquals(expectedResult, result);
+
+    }
+
 
 }

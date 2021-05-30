@@ -125,4 +125,50 @@ public class GuessingLogicUnitTest {
 
     }
 
+    @Test
+    public void user_done_guessing(){
+
+        boolean expectedResult = true;
+        String testGuess = "";
+        // manually create guessing information
+
+        // create test guess
+        testGuess += "A1"; // wrong coordinates
+        testGuess += testUsername;
+        testGuess += "-";
+        testUser.setGuesses(testGuess);
+        gameService.handleGuesses(testLobbyID, testUser);
+
+        boolean result = gameService.checkUsersDoneGuessing(testLobbyID);
+        assertEquals(expectedResult, result);
+
+    }
+
+    @Test
+    public void create_shuffledIndexes_list(){
+
+        Integer[] expectedResult = {1, 1, 1, 1, 1};
+
+        Integer[] result = gameService.getShuffledIdxList(5);
+        assertEquals(expectedResult.length, result.length);
+
+    }
+
+    @Test
+    public void create_guessesHashMap(){
+
+        String testGuess = "";
+        Map<String, String> expectedResult = new HashMap<>();
+        expectedResult.put(testUsername, "B2");
+
+        // create test guess
+        testGuess += "B2";
+        testGuess += testUsername;
+        testGuess += "-";
+
+        Map<String, String> result = gameService.getGuessesHashMap(testGuess);
+        assertEquals(expectedResult, result);
+
+    }
+
 }
