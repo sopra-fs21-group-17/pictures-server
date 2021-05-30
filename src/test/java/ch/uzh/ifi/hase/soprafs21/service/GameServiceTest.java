@@ -247,28 +247,28 @@ public class GameServiceTest {
         assertThrows(ResponseStatusException.class,()-> gameService.removeUserFromLobby("test",2L));
     }
 
-    @Test
-    public void guesses_all_correct(){
-
-        String expectedResult = "";
-        String testGuess = "";
-
-        // manually create guessing information
-
-        // create test guess
-        testGuess += coordinateNames[testCoordinates];
-        testGuess += testUsername;
-        testGuess += "-";
-
-        // create expected result
-        expectedResult += "y";
-        expectedResult += "Test1";
-        expectedResult += "-";
-
-        //testUser.setGuesses(testGuess);
-        assertEquals(expectedResult, gameService.handleGuesses("test", testUser));
-
-    }
+//    @Test
+//    public void guesses_all_correct(){
+//
+//        String expectedResult = "";
+//        String testGuess = "";
+//
+//        // manually create guessing information
+//
+//        // create test guess
+//        testGuess += coordinateNames[testCoordinates];
+//        testGuess += testUsername;
+//        testGuess += "-";
+//
+//        // create expected result
+//        expectedResult += "y";
+//        expectedResult += "Test1";
+//        expectedResult += "-";
+//
+//        //testUser.setGuesses(testGuess);
+//        assertEquals(expectedResult, gameService.handleGuesses("test", testUser));
+//
+//    }
 
 
 
