@@ -314,6 +314,24 @@ public class GameControllerTest {
 
     }
 
+    @Test
+    public void testReturnScore() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+
+        ArrayList<ArrayList<String>> testScore = new ArrayList<>();
+        ArrayList<String> testScoreElement = new ArrayList<>();
+        String score = "c1 d3 d4";
+        testScoreElement.add(score);
+        testScore.add(testScoreElement);
+
+        given(gameService.returnScore("test")).willReturn(testScore);
+        MockHttpServletRequestBuilder getRequest = get("/score/"+testLobby.getLobbyId());
+
+        mockMvc.perform(getRequest).andExpect(status().isOk());
+
+    }
+
     private String asJsonString(final Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
