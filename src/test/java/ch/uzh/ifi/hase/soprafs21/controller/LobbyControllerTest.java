@@ -132,7 +132,7 @@ class LobbyControllerTest {
         lobby.setLobbyId("AbCd");
         lobby.setCreationTime(System.nanoTime());
 
-        //this mocks the LobbyService -> we defined above what the LobbyService should return when addUserToLobby() is called
+        //this mocks the LobbyService -> we defined above what the LobbyService should return when checkLobbyId() is called
         doNothing().when(lobbyService).checkLobbyId(lobby.getLobbyId());
 
         // when/then -> do the request + validate the result
@@ -153,7 +153,7 @@ class LobbyControllerTest {
         long timeDifference = lobby.getCreationTime() - currentTime;
         lobby.setTimeDifference(timeDifference);
 
-        //this mocks the LobbyService -> we defined above what the LobbyService should return when addUserToLobby() is called
+        //this mocks the LobbyService -> we defined above what the LobbyService should return when updateCount() is called
         doNothing().when(lobbyService).updateCount(lobby.getLobbyId());
 
         // when/then -> do the request + validate the result
@@ -198,6 +198,86 @@ class LobbyControllerTest {
 
 
     }
+
+//    @Test
+//    void getsLobbyByGivenString_ChecksIfLobbyIsReadyBuildScreen_updatesLobbyIsReadyBuildScreen() throws Exception {
+//        //given
+//        Lobby lobby = new Lobby();
+//        lobby.setLobbyId("AbCd");
+//        lobby.setCreationTime(System.nanoTime());
+//        lobby.setTimeDifference(0.0);
+//        lobby.setLobbyReady(false);
+//        lobby.setPlayersCount(1);
+//        lobby.setLobbyReadyBuildScreen(false);
+//
+//        User user = new User();
+//        user.setUsername("Username");
+//        user.setPassword("Password");
+//        user.setToken("efg");
+//        user.setId(1L);
+//        user.setLobbyId("AbCd");
+//        user.setIsReady(false);
+//        user.setReadyBuildScreen(false);
+//
+//        given(lobbyService.checkReadyAndGetCount(Mockito.any())).willReturn(lobby);
+//
+//        MockHttpServletRequestBuilder getRequest = get("/lobbies/buildScreens/ready/"+user.getLobbyId());
+//
+//        //then
+//        mockMvc.perform(getRequest)
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.lobbyId", is(lobby.getLobbyId())))
+//                .andExpect(jsonPath("$.creationTime", is(lobby.getCreationTime())))
+//                .andExpect(jsonPath("$.timeDifference", is(lobby.getTimeDifference())))
+//                .andExpect(jsonPath("$.lobbyReady", is(lobby.isLobbyReady())))
+//                .andExpect(jsonPath("$.playersCount", is(lobby.getPlayersCount())))
+//                .andExpect(jsonPath("$.lobbyReadyBuildScreen", is(lobby.isLobbyReadyBuildScreen())));
+//    }
+
+    @Test
+    void findLobby_ByGivenID_setReadyBuildScreenTimeUp()throws Exception{
+        //given
+        Lobby lobby = new Lobby();
+        lobby.setLobbyId("AbCd");
+        lobby.setCreationTime(System.nanoTime());
+        lobby.setTimeDifference(0.0);
+        lobby.setLobbyReady(false);
+        lobby.setPlayersCount(1);
+        lobby.setLobbyReadyBuildScreen(false);
+
+        //this mocks the LobbyService -> we defined above what the LobbyService should return when timeUpBuildScreen() is called
+        doNothing().when(lobbyService).timeUpBuildScreen(lobby.getLobbyId());
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/lobbies/buildScreens/ready/timers/"+lobby.getLobbyId());
+
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void findLobby_ByGivenID_setReadyBuildScreenStartScreen()throws Exception{
+        //given
+        Lobby lobby = new Lobby();
+        lobby.setLobbyId("AbCd");
+        lobby.setCreationTime(System.nanoTime());
+        lobby.setTimeDifference(0.0);
+        lobby.setLobbyReady(false);
+        lobby.setPlayersCount(1);
+        lobby.setLobbyReadyBuildScreen(false);
+
+        //this mocks the LobbyService -> we defined above what the LobbyService should return when startBuildScreen() is called
+        doNothing().when(lobbyService).startBuildScreen(lobby.getLobbyId());
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/lobbies/buildScreens/ready/preparations/"+lobby.getLobbyId());
+
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+    }
+
 
     private String asJsonString(final Object object) {
         try {
