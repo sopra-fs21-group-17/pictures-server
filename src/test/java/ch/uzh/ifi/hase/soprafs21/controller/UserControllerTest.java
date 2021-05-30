@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -159,6 +160,69 @@ public class UserControllerTest {
         mockMvc.perform(putRequest)
                 .andExpect(status().isNoContent());
     }
+    @Test
+    public void updateUser_validInput_validUsername_updateUserBuildScreen_userUpdated() throws Exception{
+        //given
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("firstname@lastname");
+        user.setPassword("Firstname Lastname");
+        user.setToken("1");
+        user.setIsReady(false);
+        user.setReadyBuildScreen(false);
+
+
+        UserPutDTO userInput = new UserPutDTO();
+        userInput.setUsername("username");
+
+
+
+        User convertedUser = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userInput);
+
+        // this mocks the UserService -> we define above what the userService should return when updateIsReadyBuildScreen() is called
+        doNothing().when(userService).updateIsReadyBuildScreen(user.getUsername(), convertedUser);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/users/buildScreens/"+user.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userInput));
+
+        //then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void updateUser_validInput_validUsername_updateUserBeforeBuildScreen_userUpdated() throws Exception{
+        //given
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("firstname@lastname");
+        user.setPassword("Firstname Lastname");
+        user.setToken("1");
+        user.setIsReady(false);
+        user.setReadyBuildScreen(false);
+
+
+        UserPutDTO userInput = new UserPutDTO();
+        userInput.setUsername("username");
+
+
+
+        User convertedUser = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userInput);
+
+        // this mocks the UserService -> we define above what the userService should return when updateIsReadyBuildScreen() is called
+        doNothing().when(userService).setReadyFalseForBuildScreen(user.getUsername(), convertedUser);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/users/buildScreens/start/"+user.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userInput));
+
+        //then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+    }
 
     @Test
     public void givenUser_whenFindByUserName_thenReturnUser() throws Exception{
@@ -214,6 +278,40 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.password", is(user.getPassword())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.isReady", is(user.getIsReady())));
+    }
+
+    @Test
+    public void doneGuessingTrueTest() throws Exception{
+        User user = new User();
+        user.setId(1l);
+        user.setUsername("firstname@lastname");
+        user.setPassword("Firstname Lastname");
+        user.setToken("1");
+        user.setIsReady(false);
+
+        given(userService.getUser(Mockito.any())).willReturn(user);
+        MockHttpServletRequestBuilder putRequest = put("/users/doneGuessing/"+user.getUsername());
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void getUserTest() throws Exception{
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setId(1l);
+        userPostDTO.setUsername("firstname@lastname");
+        userPostDTO.setPassword("Firstname Lastname");
+
+        User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+
+        given(userService.getUserLogin(Mockito.any())).willReturn(user);
+
+        MockHttpServletRequestBuilder postRequest = post("/users/names").content(asJsonString(userPostDTO)).contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(postRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.password", is(user.getPassword())));
+
+
     }
 
     /**

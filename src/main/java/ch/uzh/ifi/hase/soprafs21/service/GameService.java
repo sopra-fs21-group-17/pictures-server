@@ -583,8 +583,8 @@ public class GameService {
 
         if(user != null){
             user.setScreenshotURL(screenshotURL.replace("\"", ""));
-            String scs = screenshotURL.replace("\"", "");
-            System.out.println("saved scs: "+user.getUsername()+ "size: "+scs.length());
+            userRepository.save(user);
+            userRepository.flush();
         }
         else{
             // TODO throw exception here

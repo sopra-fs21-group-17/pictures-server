@@ -278,6 +278,55 @@ class LobbyControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    void removeUserFromLobbyTest() throws Exception{
+        Lobby lobby = new Lobby();
+        lobby.setLobbyId("AbCd");
+        lobby.setCreationTime(System.nanoTime());
+        lobby.setTimeDifference(0.0);
+        lobby.setLobbyReady(false);
+        lobby.setPlayersCount(1);
+        lobby.setLobbyReadyBuildScreen(false);
+
+        User user = new User();
+        user.setUsername("Username");
+        user.setPassword("Password");
+        user.setToken("efg");
+        user.setId(1L);
+        user.setLobbyId("AbCd");
+        user.setIsReady(false);
+        user.setReadyBuildScreen(false);
+
+        doNothing().when(lobbyService).startBuildScreen(lobby.getLobbyId());
+        MockHttpServletRequestBuilder putRequest = put("/lobby/"+ user.getUsername()+"/"+lobby.getLobbyId());
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+
+
+    }
+
+    @Test
+    void checkIsLobbyReadyBuildScreenTest() throws Exception{
+        Lobby lobby = new Lobby();
+        lobby.setLobbyId("AbCd");
+        lobby.setCreationTime(System.nanoTime());
+        lobby.setTimeDifference(0.0);
+        lobby.setLobbyReady(false);
+        lobby.setPlayersCount(1);
+        lobby.setLobbyReadyBuildScreen(false);
+
+        doNothing().when(lobbyService).startBuildScreen(lobby.getLobbyId());
+        given(lobbyService.checkReadyAndGetCountBuildScreen(lobby.getLobbyId())).willReturn(lobby);
+
+        MockHttpServletRequestBuilder getRequest = get("/lobbies/buildScreens/ready/"+lobby.getLobbyId());
+        mockMvc.perform(getRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$.lobbyId", is(lobby.getLobbyId())))
+                .andExpect(jsonPath("$.lobbyReady", is(false)))
+                .andExpect(jsonPath("$.playersCount", is(lobby.getPlayersCount())));
+
+    }
+
 
     private String asJsonString(final Object object) {
         try {
