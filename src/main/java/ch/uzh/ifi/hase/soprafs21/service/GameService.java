@@ -33,6 +33,8 @@ public class GameService {
     // user list for test purposes
     ArrayList<User> playingUsers = new ArrayList<>();
 
+    private boolean firstRound = true;
+
     private final PicturesRepository picturesRepository;
     private final UserRepository userRepository;
     private final GameSessionRepository gameSessionRepository;
@@ -41,7 +43,7 @@ public class GameService {
 
     // game variables
     private final int NR_OF_PLAYERS = 4;
-    private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS", "LACE"};
+    private final String[] SET_NAMES = new String[]{"CUBES", "BLOCKS", "STICKS", "ICONS"};// "LACE"};
     private final int NR_OF_SETS = SET_NAMES.length;
 
     @Autowired
@@ -84,9 +86,29 @@ public class GameService {
         GamePlay game = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
         if (!game.roundInited) {
             assignCoordinates(usersList);
-            assignSets(usersList);
+
+            if(firstRound) {
+                // go to next set in "round list" fashion
+                int i = 0;
+                for (User u : usersList) {
+                    u.setSetIndex(i % SET_NAMES.length);
+                    i++;
+                }
+                assignSets(usersList);
+                firstRound = false;
+            }
+            else {
+                // go to next set in "round list" fashion
+                for (User u : usersList) {
+                    u.setSetIndex((u.getSetIndex() + 1) % SET_NAMES.length);
+                    userRepository.save(u);
+                    userRepository.flush();
+                }
+                assignSets(usersList);
+            }
+
             resetDoneGuessing(usersList);
-            game.setRoundInited(true); // TODO when switch round inited to false??
+            game.setRoundInited(true);
             gameSessionRepository.save(game);
             gameSessionRepository.flush();
         }
@@ -183,7 +205,19 @@ public class GameService {
         checkLobbyExists(lobbyId);
         GamePlay currentGame = gameSessionRepository.findByCorrespondingLobbyID(lobbyId);
         Lobby currentLobby = lobbyRepository.findByLobbyId(lobbyId);
+
+        LobbyService lobbyService = new LobbyService(this.lobbyRepository, this.userRepository);
+        List<User> usersList = lobbyService.getUsersInLobby(lobbyId);
+
         if ((currentGame != null) || (currentLobby != null)) {
+            // reset user's game attributes for new game
+            for(User u : usersList){
+                u.setDoneGuessing(false);
+                u.setScreenshotURL(null);
+                u.setCorrectedGuesses("");
+                u.setPoints(0);
+            }
+
             gameSessionRepository.delete(currentGame);
             lobbyRepository.delete(currentLobby);
         }
@@ -212,12 +246,13 @@ public class GameService {
      */
     public void assignSets(List<User> usersList) {
         // make shuffled array with indices to randomly assign sets
-        Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
-        int i = 0;
+        //Integer[] idxList = getShuffledIdxList(NR_OF_SETS);
+        //int i = 0;
         // assign random sets
         for (User user : usersList) {
-            user.setAssignedSet(SET_NAMES[idxList[i % SET_NAMES.length]]);
-            i++;
+           // user.setAssignedSet(SET_NAMES[idxList[i % SET_NAMES.length]]);
+            user.setAssignedSet(SET_NAMES[user.getSetIndex()]);
+            //i++;
         }
     }
 
@@ -499,40 +534,8 @@ public class GameService {
             result.add(temp);
         }
 
-//        String correctedGuesses;
-//        Map<String, String> temp = new HashMap<>();
-//        String username = "";
-//        String answer = "";
-//        Map<String, Map<String, String>> result = new HashMap<>(); // { username:{max:y,eva:n}, username:{max:y,eva:n}}
-//
-//        for (User usr : usersList) {
-//            correctedGuesses = usr.getCorrectedGuesses();
-//            System.out.println(usr.getUsername()+" "+usr.getCorrectedGuesses());
-//            if (correctedGuesses != null) {
-//                // convert
-//                for (int i = 0; i < correctedGuesses.length(); i++) {
-//                    answer += correctedGuesses.charAt(i);
-//                    i++; // skip answer "y"/"n"
-//                    // parse username
-//                    while (i < correctedGuesses.length() - 1 && correctedGuesses.charAt(i) != '-') {
-//                        username += correctedGuesses.charAt(i);
-//                        i++;
-//                    }
-//                    temp.put(username, answer);
-//                    username = answer = ""; // reset
-//                }
-//                temp.put("points", String.valueOf(usr.getPoints()));
-//                result.put(usr.getUsername(), temp);
-//            }
-//            //System.out.println(usr.getUsername()+" "+result.get(usr.getUsername()));
-//        }
-//
         // set to false for next round
         gameSessionRepository.findByCorrespondingLobbyID(lobbyId).setRoundInited(false);
-
-        for(ArrayList<String> e : result){
-            System.out.println("Result: "+e);
-        }
 
         return result;
     }
@@ -580,6 +583,8 @@ public class GameService {
 
         if(user != null){
             user.setScreenshotURL(screenshotURL.replace("\"", ""));
+            String scs = screenshotURL.replace("\"", "");
+            System.out.println("saved scs: "+user.getUsername()+ "size: "+scs.length());
         }
         else{
             // TODO throw exception here
