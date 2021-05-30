@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -277,6 +278,40 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.password", is(user.getPassword())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.isReady", is(user.getIsReady())));
+    }
+
+    @Test
+    public void doneGuessingTrueTest() throws Exception{
+        User user = new User();
+        user.setId(1l);
+        user.setUsername("firstname@lastname");
+        user.setPassword("Firstname Lastname");
+        user.setToken("1");
+        user.setIsReady(false);
+
+        given(userService.getUser(Mockito.any())).willReturn(user);
+        MockHttpServletRequestBuilder putRequest = put("/users/doneGuessing/"+user.getUsername());
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void getUserTest() throws Exception{
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setId(1l);
+        userPostDTO.setUsername("firstname@lastname");
+        userPostDTO.setPassword("Firstname Lastname");
+
+        User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+
+        given(userService.getUserLogin(Mockito.any())).willReturn(user);
+
+        MockHttpServletRequestBuilder postRequest = post("/users/names").content(asJsonString(userPostDTO)).contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(postRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.password", is(user.getPassword())));
+
+
     }
 
     /**

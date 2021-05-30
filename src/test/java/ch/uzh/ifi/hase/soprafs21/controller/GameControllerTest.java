@@ -3,12 +3,16 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.ScreenshotPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +21,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.mock;
 
 import java.util.*;
@@ -243,14 +252,6 @@ public class GameControllerTest {
     }
 
 
-    private String asJsonString(final Object object) {
-        try {
-            return new ObjectMapper().writeValueAsString(object);
-        }
-        catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
-        }
-    }
 
     @Test
     public void testResetRoundHandle() throws Exception{
@@ -277,5 +278,50 @@ public class GameControllerTest {
         MockHttpServletRequestBuilder deleteRequest = delete("/games/"+testLobby.getLobbyId());
         mockMvc.perform(deleteRequest).andExpect(status().isNoContent());
     }
+
+    @Test
+    public void testCheckUsersDoneGuessing() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+
+        MockHttpServletRequestBuilder getRequest = get("/game/checkUsersDoneGuessing/"+testLobby.getLobbyId());
+        given(gameService.checkUsersDoneGuessing("test")).willReturn(false);
+        mockMvc.perform(getRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$",is(false)));
+
+    }
+
+    //TODO find out content of response
+    @Test
+    public void testSubmitGuesses() throws Exception{
+        Lobby testLobby = new Lobby();
+        testLobby.setLobbyId("test");
+
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setId(1L);
+        userPostDTO.setUsername("test");
+        userPostDTO.setPassword("test");
+        userPostDTO.setGuesses("y-test-n");
+
+        User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+
+        given(gameService.handleGuesses(testLobby.getLobbyId(),user)).willReturn(userPostDTO.getGuesses());
+        MockHttpServletRequestBuilder postRequest = post("/guesses/"+testLobby.getLobbyId()).content(asJsonString(userPostDTO)).contentType(MediaType.APPLICATION_JSON);
+
+
+        mockMvc.perform(postRequest).andExpect(status().isOk());
+   //             .andExpect(MockMvcResultMatchers.header().string("",userPostDTO.getGuesses()));
+
+    }
+
+    private String asJsonString(final Object object) {
+        try {
+            return new ObjectMapper().writeValueAsString(object);
+        }
+        catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
+        }
+    }
+
 
 }

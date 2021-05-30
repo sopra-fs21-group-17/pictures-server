@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -164,6 +165,21 @@ class BuildRoomControllerTest {
                 .andExpect(jsonPath("$.creationTimeGuessing", is(buildRoom.getCreationTimeGuessing())))
                 .andExpect(jsonPath("$.timeDifferenceGuessing", is(buildRoom.getTimeDifferenceGuessing())));
 
+    }
+
+    @Test
+    public void resetRoomTest() throws Exception{
+        BuildRoom buildRoom = new BuildRoom();
+        buildRoom.setRoomId("aBcD");
+        buildRoom.setCreationTime(System.nanoTime());
+        buildRoom.setTimeDifference(1.0);
+        buildRoom.setCreationTimeGuessing(System.nanoTime());
+        buildRoom.setTimeDifferenceGuessing(1.0);
+
+        given(buildRoomService.getBuildRoom(buildRoom.getRoomId())).willReturn(buildRoom);
+
+        MockHttpServletRequestBuilder putRequest = put("/buildRooms/rounds/count/"+buildRoom.getRoomId());
+        mockMvc.perform(putRequest).andExpect(status().isNoContent());
     }
 
 
