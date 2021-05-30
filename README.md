@@ -25,7 +25,7 @@ Gameplay entities. The lobby entity is also the component providing the users fo
 GameService needs LobbyService to be able to operate on the received lobbies.
 
 Link: [LobbyService](main/java/ch/uzh/ifi/hase/soprafs21/service/LobbyService.java)  
-###GameService
+### GameService
 The game service handles the entire setup of a game.
 It contains the core game logic meaning any guesses users make
 and computes their score.
@@ -48,7 +48,7 @@ selects 16 of those pictures for every round.
 
 Link: [ScheduledTasks](main/java/ch/uzh/ifi/hase/soprafs21/schedulingtasks/ScheduledTasks.java)
 
-## Launch and Deployment
+## 🚀 Launch and Deployment
 ### Installations needed for server
 ##### GitHub
 To be able to collaborate and plan new developers need a gitHub account.
@@ -68,8 +68,6 @@ Our Projects code is assessed by SonarQube, make an account using your gitHub ac
 ##### Gradle
 The server part of "Pictures" uses gradle for building. To install Gradle follow the instructions [here](https://docs.gradle.org/current/userguide/installation.html).
 
-
-## 🚀 Launch & deployment
 After your following the installation guide to gradle you can build and run the code using the following commands:
 using the gradle wrapper:
 
@@ -171,7 +169,9 @@ Integration test:
     
         }
 ```      
-More extensive examples can be found in [GameServiceIntegrationTest](test/java/ch/uzh/ifi/hase/soprafs21/service/GameServiceIntegrationTest.java)
+More extensive examples can be found in [
+
+ServiceIntegrationTest](test/java/ch/uzh/ifi/hase/soprafs21/service/GameServiceIntegrationTest.java)
 
 
 
