@@ -25,7 +25,7 @@ Gameplay entities. The lobby entity is also the component providing the users fo
 GameService needs LobbyService to be able to operate on the received lobbies.
 
 Link: [LobbyService](main/java/ch/uzh/ifi/hase/soprafs21/service/LobbyService.java)  
-###GameService
+### GameService
 The game service handles the entire setup of a game.
 It contains the core game logic meaning any guesses users make
 and computes their score.
@@ -169,7 +169,9 @@ Integration test:
     
         }
 ```      
-More extensive examples can be found in [GameServiceIntegrationTest](test/java/ch/uzh/ifi/hase/soprafs21/service/GameServiceIntegrationTest.java)
+More extensive examples can be found in [
+
+ServiceIntegrationTest](test/java/ch/uzh/ifi/hase/soprafs21/service/GameServiceIntegrationTest.java)
 
 
 
